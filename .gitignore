@@ -3,6 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# mystuff
+/.vscode
+*.mid
+*.midi
+*.mcpack
+*.bdx
+*.json
+
 # C extensions
 *.so
 

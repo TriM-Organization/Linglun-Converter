@@ -1,6 +1,6 @@
-<h1 align="center">伶伦</h1>
+<h1 align="center">伶伦转换器</h1>
 
-<h3 align="center">一个免费开源的《我的世界》数字音频工作站</h3>
+<h3 align="center">一个免费开源的《我的世界》数字音频转换器</h3>
 
 <p align="center">
 <img src="https://forthebadge.com/images/badges/built-with-love.svg">
@@ -21,6 +21,8 @@
 ## 软件介绍🚀
 
 伶伦 是一款免费开源的 **《我的世界》** 数字音频工作站
+
+伶伦转换器 是仅用于 **《我的世界》** 数字音频转换的工具
 
 欢迎加群：[861684859](https://jq.qq.com/?_wv=1027&k=hpeRxrYr)
 
