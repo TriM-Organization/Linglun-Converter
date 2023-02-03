@@ -89,6 +89,7 @@ except ModuleNotFoundError as E:
 try:
     from utils.magicBeing import *
     import requests
+    import requests.exceptions
 except ModuleNotFoundError as E:
     if input(
         "您需要安装以下模块才能使用这个样例\nrequests==2.28.1\nrich==12.6.0\nzhdate==0.1\n请问是否安装？(y/n)："
@@ -179,7 +180,7 @@ else:
             style="#121110 on #F0F2F4",
             justify="center",
         )
-    except ConnectionError:
+    except ConnectionError, requests.exceptions.SSLError:
         MainConsole.print(
             "[#121110 on #F0F2F4]以梦想为驱使 创造属于自己的未来",
             style="#121110 on #F0F2F4",
