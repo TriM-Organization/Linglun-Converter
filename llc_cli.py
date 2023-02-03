@@ -180,7 +180,7 @@ else:
             style="#121110 on #F0F2F4",
             justify="center",
         )
-    except ConnectionError, requests.exceptions.SSLError:
+    except (ConnectionError, requests.exceptions.SSLError):
         MainConsole.print(
             "[#121110 on #F0F2F4]以梦想为驱使 创造属于自己的未来",
             style="#121110 on #F0F2F4",
