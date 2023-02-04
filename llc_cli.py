@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
 
+# 伶伦 开发交流群 861684859
 
-# 音·创 开发交流群 861684859
-# Email EillesWan2006@163.com W-YI_DoctorYI@outlook.com EillesWan@outlook.com
-# 版权所有 金羿("Eilles Wan") & 诸葛亮与八卦阵("bgArray") & 鸣凤鸽子("MingFengPigeon")
-# 若需转载或借鉴 许可声明请查看仓库目录下的 License.md
-
-print("小贴：不妨试试Mid-BDX转换网页：在线的多功能Midi转换器")
-print("https://dislink.github.io/midi2bdx/")
 
 """
-音·创 库版 MIDI转换示例程序
-Musicreater Package Version : Demo for Midi Conversion
+伶伦转换器
+Linglun Converter
 
-Copyright 2023 all the developers of Musicreater
+版权所有 © 2023 金羿 & 睿穆开发组
+Copyright © 2023 EillesWan & TriM Org.
 
 开源相关声明请见 ./License.md
 Terms & Conditions: ./Lisense.md
@@ -22,85 +17,18 @@ Terms & Conditions: ./Lisense.md
 __version__ = "0.0.1"
 
 import datetime
-import random
 import os
+import random
 import sys
 
-languages = {
-    "ZH-CN": {
-        "MSCT": "音·创",
-        "ChooseLang": "选择语言",
-        "LangChd": "当前语言已经切换为",
-        "ZH-CN": "简体中文",
-        "ZH-TW": "繁体中文（台湾）",
-        "EN-GB": "英语（英国）",
-        "EN-US": "英语（美国）",
-        ":": "：",
-        ",": "，",
-        ".": "。",
-        "ChoosePath": "请输入MIDI路径或所在文件夹",
-        "ChooseFileFormat": "请输入输出格式[BDX(1) 或 MCPACK(0)]",
-        "EnterMethod": "请输入转换算法[{}~{}]",
-        "MethodRangeErr": "输入的转换算法应为 [{},{}]（首尾皆含）之间的一个整数。",
-        "ChoosePlayer": "请选择播放方式[计分板(1) 或 延迟(0)]",
-        "WhetherArgEntering": "是否为文件夹内文件的转换统一参数[是(1) 或 否(0)]",
-        "EnterArgs": "请输入转换参数",
-        "noteofArgs": "注：文件夹内的全部midi将统一以此参数转换",
-        "EnterVolume": "请输入音量大小(0~1)",
-        "EnterSpeed": "请输入速度倍率",
-        "WhetherPgb": "是否自动生成进度条[是(1) 或 否(0)]",
-        "WhetherCstmProgressBar": "是否自定义进度条[是(1) 或 否(0)]",
-        "EnterProgressBarStyle": "请输入进度条样式",
-        "EnterSbName": "请输入计分板名称",
-        "EnterSelecter": "请输入播放者选择器",
-        "WhetherSbReset": "是否自动重置计分板[是(1) 或 否(0)]",
-        "EnterAuthor": "请输入作者",
-        "EnterMaxHeight": "请输入指令结构最大生成高度",
-        "ErrEnter": "输入错误",
-        "Re-Enter": "请重新输入",
-        "Dealing": "正在处理",
-        "FileNotFound": "文件(夹)不存在",
-        "ChooseOutPath": "请输入结果输出路径",
-        "Saying": "言·论",
-        "Failed": "失败",
-        "CmdLength": "指令数量",
-        "MaxDelay": "曲目时间(游戏刻)",
-        "PlaceSize": "结构占用大小",
-        "LastPos": "最末方块坐标",
-        "PressEnterExit": "请按下回车键退出。",
-    }
-}
+print("小贴：不妨试试Mid-BDX转换网页：在线的多功能Midi转换器")
+print("https://dislink.github.io/midi2bdx/")
 
 
-try:
-    import Musicreater
-    # import TrimLog
-    # from TrimLog import object_constants
-except ModuleNotFoundError as E:
-    if input("您需要安装 mido、Brotli 模块才能使用这个样例\n请问是否安装？(y/n)：").lower() in ("y", "1"):
-        os.system("pip install -r requirements.txt")
-        import Musicreater
-        # import TrimLog
-        # from TrimLog import object_constants
-    else:
-        raise E
+import Musicreater
 
-
-try:
-    from utils.magicBeing import *
-    import requests
-except ModuleNotFoundError as E:
-    if input(
-        "您需要安装以下模块才能使用这个样例\nrequests==2.28.1\nrich==12.6.0\nzhdate==0.1\n请问是否安装？(y/n)："
-    ).lower() in ("y", "1"):
-        open("Demo_Requirements.txt", "w").write("requests==2.28.1\nrich==12.6.0")
-        os.system("pip install -r Demo_Requirements.txt")
-        os.remove("./Demo_Requirements.txt")
-        from utils.magicBeing import *
-        import requests
-    else:
-        raise E
-
+from utils.io import *
+from languages.lang import *
 
 MainConsole.print(
     "[#121110 on #F0F2F4]     ",
@@ -109,10 +37,9 @@ MainConsole.print(
 )
 
 
-# osc = object_constants.ObjectStateConstant()
 
-# osc.project_name = "伶伦"
-# osc.version = __version__
+osc.project_name = "伶伦"
+osc.version = __version__
 
 
 def go_for_args(
@@ -125,13 +52,10 @@ def go_for_args(
         if languageChange.upper() in languages.keys()
         else 'ZH-CN'
     )
-    # osc.isRelease = False if debugMode.lower() in ("true", '1') else True
-    # logger = TrimLog.Logger(
-    #     is_logging=True,
-    #     printing=not osc.isRelease,
-    #     writing=True if logfile.lower() in ("true", '1') else False,
-    #     in_suffix='.llc',
-    # )
+    osc.isRelease = False if debugMode.lower() in ("true", '1') else True
+    logger.printing=not osc.isRelease
+    logger.writing=True if logfile.lower() in ("true", '1') else False
+    
 
 if len(sys.argv) > 0:
     go_for_args(*sys.argv)
@@ -169,17 +93,13 @@ else:
         MainConsole.print(
             "[#121110 on #F0F2F4]{}".format(
                 random.choice(
-                    requests.get(
-                        "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
-                    )
-                    .text.strip("\n")
-                    .split("\n")
+                    myWords
                 )
             ),
             style="#121110 on #F0F2F4",
             justify="center",
         )
-    except ConnectionError:
+    except (ConnectionError,SSLError):
         MainConsole.print(
             "[#121110 on #F0F2F4]以梦想为驱使 创造属于自己的未来",
             style="#121110 on #F0F2F4",
@@ -352,6 +272,7 @@ else:
             prompts.append(format_ipt(*args)[1])
 
 conversion = Musicreater.midiConvert(debug)
+
 for singleMidi in midis:
     prt("\n" f"{_('Dealing')} {singleMidi} {_(':')}")
     conversion.convert(singleMidi, out_path)

@@ -1,7 +1,23 @@
-from rich.console import Console
+
+
 from typing import Any, Literal, Optional, TextIO
 
+import requests
+from requests.exceptions import *
+import TrimLog
+from TrimLog import Console, object_constants
+
 MainConsole = Console()
+osc = object_constants.ObjectStateConstant()
+logger = TrimLog.Logger(
+    is_logging=True,
+    printing=not osc.isRelease,
+    in_suffix='.llc',
+)
+myWords = requests.get(
+    "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
+).text.strip("\n").split("\n")
+
 
 JustifyMethod = Literal["default", "left", "center", "right", "full"]
 OverflowMethod = Literal["fold", "crop", "ellipsis", "ignore"]

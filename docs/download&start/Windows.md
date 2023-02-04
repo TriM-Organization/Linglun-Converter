@@ -35,6 +35,8 @@
 	```bash
 	pip install mido -i https://mirrors.aliyun.com/pypi/simple/
 	pip install brotli -i https://mirrors.aliyun.com/pypi/simple/
+	pip install Musicreater -i https://mirrors.aliyun.com/pypi/simple/
+	pip install TrimLog -i https://mirrors.aliyun.com/pypi/simple/
 	```
 
 3.	安装成功后您可能会见到类似下图的提示：
@@ -48,19 +50,15 @@
 	-	若您使用git，请直接克隆本仓库：
 
 		```bash
-		git clone -b pkgver https://gitee.com/TriM-Organization/Musicreater.git
+		git clone https://gitee.com/TriM-Organization/Linglun-Converter.git
 		```
 
-	-	若您不使用git，可以在[*码云*(Gitee)](https://gitee.com/TriM-Organization/Musicreater.git)或[*GitHub*](https://github.com/TriM-Organization/Musicreater.git)下载zip包，或者[加入QQ群聊861684859](https://jq.qq.com/?_wv=1027&k=hpeRxrYr)，在群文件中获取。
-
-		<img src="https://foruda.gitee.com/images/1669540786443169766/fabf0acd_9911226.png">
-
-		值得注意的是，这张图上有1、2两个数字，虽然是手写的，但确实是数字，表示着要进行的步骤。希望眼尖得能找出我的口头禅的你们能够发现这两个用鼠标手写的数字并在安装时认真地执行。我认为这并不算十分的难，移动鼠标并单击大约消耗不了多少卡路里，不过我没有进行精确的计算，我也不是十分的清楚这个活动对于一个常人来讲有多难，但我怀疑它不难。
+	-	若您不使用git，可以在[*码云*(Gitee)](https://gitee.com/TriM-Organization/Linglun-Converter.git)或[*GitHub*](https://github.com/TriM-Organization/Linglun-Converter.git)下载zip包，或者[加入QQ群聊861684859](https://jq.qq.com/?_wv=1027&k=hpeRxrYr)，在群文件中获取。
 
 
 1. 开始使用
 
-	您可以直接双击 `magicDemo.py` 以运行演示程序，或者按照以下步骤使用终端应用运行。
+	您可以直接双击 `llc_cli.py` 以运行演示程序，或者按照以下步骤使用终端应用运行。
 
 	在目录下打开终端。
 	
@@ -72,7 +70,7 @@
 	使用以下指令：
 
 	```bash
-	python ./magicDemo.py	
+	python ./llc_cli.py	
 	```
 
 ## 三、安装时错误的补充说明

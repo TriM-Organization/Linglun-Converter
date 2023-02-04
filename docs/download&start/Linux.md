@@ -71,6 +71,8 @@
 	```bash
 	pip install mido -i https://mirrors.aliyun.com/pypi/simple/
 	pip install brotli -i https://mirrors.aliyun.com/pypi/simple/
+	pip install Musicreater -i https://mirrors.aliyun.com/pypi/simple/
+	pip install TrimLog -i https://mirrors.aliyun.com/pypi/simple/
 	```
 
 3.	安装成功后可能会见到类似下图的提示：
@@ -83,14 +85,14 @@
 1. 使用Git下载本库及其示例代码
 
 	```bash
-	git clone -b pkgver https://gitee.com/EillesWan/Musicreater.git MSCTpkgver
+	git clone https://gitee.com/TriM-Organization/Linglun-Converter.git llc
 	```
 
-	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `MSCTpkgver` 的文件夹，其中包含的正是我们心心念念下载的本程序和示例代码。
+	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `llc` 的文件夹，其中包含的正是我们心心念念下载的本程序和示例代码。
 	而我们要运行的也正是示例代码，因此，赶快进入下载到的文件夹：
 
 	```bash
-	cd MSCTpkgver
+	cd llc
 	```
 
 1. 开始使用
@@ -98,6 +100,6 @@
 	在目录下打开终端，执行以下命令以运行演示程序：
 
 	```bash
-	python magicDemo.py
+	python llc_cli.py
 	```
 
