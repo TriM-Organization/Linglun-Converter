@@ -10,6 +10,8 @@ __pycache__/
 *.mcpack
 *.bdx
 *.json
+/Musicreater
+/logs
 
 # C extensions
 *.so

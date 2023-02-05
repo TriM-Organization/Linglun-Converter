@@ -43,7 +43,7 @@ osc.version = __version__
 
 
 def go_for_args(
-    languageChange: str = "ZH-CN", debugMode: str = False, logfile: str = True
+    languageChange: str = "ZH-CN", debugMode: str = 'False', logfile: str = 'True'
 ):
     global currentLang
     global logger

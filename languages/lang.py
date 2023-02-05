@@ -5,7 +5,7 @@
 Copyright © 2023 all the developers of LinglunStudio
 """
 
-from ..utils.io import *
+from utils.io import *
 
 
 DEFAULTLANGUAGE = 'ZH-CN'
@@ -92,56 +92,56 @@ languages = {
     }
 }
 
+def passbt():
 
-
-def __loadLanguage(languageFilename: str):
-    with open(languageFilename, 'r', encoding='utf-8') as languageFile:
-        _text = {}
-        for line in languageFile:
-            if line.startswith('#'):
-                continue
-            line = line.split(' ', 1)
-            _text[line[0]] = line[1].replace('\n', '')
-    langkeys = _text.keys()
-    with open(languageFilename.replace(languageFilename[-10:-5], 'ZH-CN'), 'r', encoding='utf-8') as defaultLangFile:
-        for line in defaultLangFile:
-            if line.startswith('#'):
-                continue
-            line = line.split(' ', 1)
-            if not line[0] in langkeys:
+    def __loadLanguage(languageFilename: str):
+        with open(languageFilename, 'r', encoding='utf-8') as languageFile:
+            _text = {}
+            for line in languageFile:
+                if line.startswith('#'):
+                    continue
+                line = line.split(' ', 1)
                 _text[line[0]] = line[1].replace('\n', '')
-                logger.warning(f'丢失对于 {line[0]} 的本地化文本',)
-                langkeys = _text.keys()
-    # print(_text)
-    return _text
+        langkeys = _text.keys()
+        with open(languageFilename.replace(languageFilename[-10:-5], 'ZH-CN'), 'r', encoding='utf-8') as defaultLangFile:
+            for line in defaultLangFile:
+                if line.startswith('#'):
+                    continue
+                line = line.split(' ', 1)
+                if not line[0] in langkeys:
+                    _text[line[0]] = line[1].replace('\n', '')
+                    logger.warning(f'丢失对于 {line[0]} 的本地化文本',)
+                    langkeys = _text.keys()
+        # print(_text)
+        return _text
 
 
 
-if DEFAULTLANGUAGE in LANGUAGELIST.keys():
-    _TEXT = __loadLanguage('./languages/' + DEFAULTLANGUAGE + '.lang')
-else:
-    logger.error(f"无法打开当前本地化文本{DEFAULTLANGUAGE}")
-    raise KeyError(f'无法打开默认语言{DEFAULTLANGUAGE}')
+    if DEFAULTLANGUAGE in LANGUAGELIST.keys():
+        _TEXT = __loadLanguage('./languages/' + DEFAULTLANGUAGE + '.lang')
+    else:
+        logger.error(f"无法打开当前本地化文本{DEFAULTLANGUAGE}")
+        raise KeyError(f'无法打开默认语言{DEFAULTLANGUAGE}')
 
 
-def wordTranslate(singleWord: str, debug: bool = False):
-    try:
-        return \
-            requests.post('https://fanyi.baidu.com/sug', data={'kw': f'{singleWord}'}).json()['data'][0]['v'].split(
-                '; ')[0]
-    except:
-        logger.warning(f"无法翻译文本{singleWord}",)
-        return None
+    def wordTranslate(singleWord: str, debug: bool = False):
+        try:
+            return \
+                requests.post('https://fanyi.baidu.com/sug', data={'kw': f'{singleWord}'}).json()['data'][0]['v'].split(
+                    '; ')[0]
+        except:
+            logger.warning(f"无法翻译文本{singleWord}",)
+            return None
 
 
-def _(text: str, debug: bool = False):
-    try:
-        return _TEXT[text]
-    except:
-        if debug:
-            raise KeyError(f'无法找到本地化文本{text}')
-        else:
-            logger.warning(f'无法找到本地化文本{text}',)
-            return ''
+    def _(text: str, debug: bool = False):
+        try:
+            return _TEXT[text]
+        except:
+            if debug:
+                raise KeyError(f'无法找到本地化文本{text}')
+            else:
+                logger.warning(f'无法找到本地化文本{text}',)
+                return ''
 
 
