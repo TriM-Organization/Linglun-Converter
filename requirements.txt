@@ -2,3 +2,4 @@ Brotli>=1.0.9
 mido>=1.2.10
 Musicreater>=0.1.0
 TrimLog>=0.1.0
+requests>=2.25.1

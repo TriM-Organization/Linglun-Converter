@@ -24,10 +24,10 @@ import sys
 print("小贴：不妨试试Mid-BDX转换网页：在线的多功能Midi转换器")
 print("https://dislink.github.io/midi2bdx/")
 
-
 import Musicreater
 
-from utils.io import *
+# 这一句可以不要，因为lang里面已经有了
+# from utils.io import *
 from languages.lang import *
 
 MainConsole.print(
@@ -36,29 +36,28 @@ MainConsole.print(
     justify="center",
 )
 
-
-
 osc.project_name = "伶伦"
 osc.version = __version__
 
 
 def go_for_args(
-    languageChange: str = "ZH-CN", debugMode: str = 'False', logfile: str = 'True'
+    languageChange: str = "ZH-CN", debugMode: str = "False", logfile: str = "True"
 ):
     global currentLang
     global logger
     currentLang = (
         languageChange.upper()
         if languageChange.upper() in languages.keys()
-        else 'ZH-CN'
+        else "ZH-CN"
     )
-    osc.isRelease = False if debugMode.lower() in ("true", '1') else True
-    logger.printing=not osc.isRelease
-    logger.writing=True if logfile.lower() in ("true", '1') else False
-    
+    osc.isRelease = False if debugMode.lower() in ("true", "1") else True
+    logger.printing = not osc.isRelease
+    logger.writing = True if logfile.lower() in ("true", "1") else False
+
 
 if len(sys.argv) > 0:
     go_for_args(*sys.argv)
+
 
 def _(__):
     """
@@ -76,7 +75,7 @@ nowYang = datetime.datetime.now()
 if nowYang.month == 8 and nowYang.day == 6:
     # 诸葛八卦生日
     MainConsole.print(
-        "[#7DB5F0 on #121110]今天可不是催更的日子！\n诸葛亮与八卦阵{}岁生日快乐！".format(nowYang.year - 2009),
+        "[#7DB5F0 on #121110]今天可不是催更的日子！\n诸葛亮与八卦阵{}岁生日快乐！".format(nowYang.year - 2008),
         style="#7DB5F0 on #121110",
         justify="center",
     )
@@ -91,15 +90,11 @@ else:
     # 显示箴言部分
     try:
         MainConsole.print(
-            "[#121110 on #F0F2F4]{}".format(
-                random.choice(
-                    myWords
-                )
-            ),
+            "[#121110 on #F0F2F4]{}".format(random.choice(myWords)),
             style="#121110 on #F0F2F4",
             justify="center",
         )
-    except (ConnectionError,SSLError):
+    except (ConnectionError, SSLError):
         MainConsole.print(
             "[#121110 on #F0F2F4]以梦想为驱使 创造属于自己的未来",
             style="#121110 on #F0F2F4",

@@ -1,5 +1,3 @@
-
-
 from typing import Any, Literal, Optional, TextIO
 
 import requests
@@ -12,11 +10,22 @@ osc = object_constants.ObjectStateConstant()
 logger = TrimLog.Logger(
     is_logging=True,
     printing=not osc.isRelease,
-    in_suffix='.llc',
+    in_suffix=".llc",
 )
-myWords = requests.get(
-    "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
-).text.strip("\n").split("\n")
+
+try:
+    myWords = (
+        requests.get(
+            "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
+        )
+        .text.strip("\n")
+        .split("\n")
+    )
+except (ConnectionError, SSLError):
+    myWords = "以梦想为驱使 创造属于自己的未来"
+# noinspection PyBroadException
+except BaseException:
+    myWords = "以梦想为驱使 创造属于自己的未来"
 
 
 JustifyMethod = Literal["default", "left", "center", "right", "full"]
@@ -157,7 +166,8 @@ def format_ipt(
         try:
             fun_result = fun(result, *extraArg)
             break
-        except:
+        # noinspection PyBroadException
+        except BaseException:
             prt(err_note)
             continue
     return result, fun_result
