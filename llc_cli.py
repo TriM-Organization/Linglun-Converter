@@ -26,9 +26,8 @@ print("https://dislink.github.io/midi2bdx/")
 
 import Musicreater
 
-# 这一句可以不要，因为lang里面已经有了
 from utils.io import *
-from languages.lang import *
+from languages.lang import languages
 
 MainConsole.print(
     "[#121110 on #F0F2F4]     ",
@@ -36,7 +35,7 @@ MainConsole.print(
     justify="center",
 )
 
-osc.project_name = "伶伦"
+osc.project_name = "伶伦转换器"
 osc.version = __version__
 
 

@@ -1,7 +1,7 @@
 from typing import Any, Literal, Optional, TextIO
 
-import requests
-from requests.exceptions import *
+import urllib.request
+import urllib.error
 import TrimLog
 from TrimLog import Console, object_constants
 
@@ -13,18 +13,23 @@ logger = TrimLog.Logger(
     in_suffix=".llc",
 )
 
+
 try:
     myWords = (
-        requests.get(
-            "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
+        urllib.request.urlopen(
+            'https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt'
         )
-        .text.strip("\n")
+        .read()
+        .decode('utf-8')
+        .strip("\n")
         .split("\n")
     )
-except (ConnectionError, SSLError):
+except (ConnectionError, urllib.error.HTTPError) as E:
+    logger.warning(f"读取言·论信息发生 互联网连接 错误：\n{E}")
     myWords = ["以梦想为驱使 创造属于自己的未来"]
 # noinspection PyBroadException
-except BaseException:
+except BaseException as E:
+    logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
     myWords = ["以梦想为驱使 创造属于自己的未来"]
 
 

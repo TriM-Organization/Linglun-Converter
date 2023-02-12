@@ -5,7 +5,6 @@
 Copyright © 2023 all the developers of LinglunStudio
 """
 
-from utils.io import logger, requests
 
 DEFAULTLANGUAGE = "ZH-CN"
 
@@ -86,8 +85,11 @@ languages = {
     }
 }
 
-
+# 这个函数是不被加载的
 def passbt():
+
+    from utils.io import logger, requests
+
     def __loadLanguage(languageFilename: str):
         with open(languageFilename, "r", encoding="utf-8") as languageFile:
             _text = {}
