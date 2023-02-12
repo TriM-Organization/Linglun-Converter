@@ -27,7 +27,7 @@ print("https://dislink.github.io/midi2bdx/")
 import Musicreater
 
 # 这一句可以不要，因为lang里面已经有了
-# from utils.io import *
+from utils.io import *
 from languages.lang import *
 
 MainConsole.print(

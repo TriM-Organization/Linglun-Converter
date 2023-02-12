@@ -1,25 +1,24 @@
 # -*- coding:utf-8 -*-
-'''对于伶伦的语言支持兼语言文件编辑器'''
+"""对于伶伦的语言支持兼语言文件编辑器"""
 
 """
 Copyright © 2023 all the developers of LinglunStudio
 """
 
-from utils.io import *
+from utils.io import logger, requests
 
-
-DEFAULTLANGUAGE = 'ZH-CN'
+DEFAULTLANGUAGE = "ZH-CN"
 
 LANGUAGELIST = {
     # 第一个是语言的中文名称和地区
     # 第二个是语言的英文名称和地区
     # 第三个是语言的本地名称和地区
-    'ZH-CN': (
+    "ZH-CN": (
         "简体中文 中国大陆",
         "Simplified Chinese - China Mainland",
         "简体中文 中国大陆",
     ),
-    'ZH-TW': (
+    "ZH-TW": (
         "繁体中文 中国台湾省",
         "Traditional Chinese - Taiwan Province, China",
         "正體中文,中国台灣省",
@@ -34,18 +33,13 @@ LANGUAGELIST = {
     #     "Traditional Chinese - Macau SAR",
     #     "繁體中文,澳門特別行政區",
     # ),
-    'EN-GB': (
+    "EN-GB": (
         "英语 英国",
         "British English - the United Kingdom",
         "British English - the United Kingdom",
     ),
-    'ZH-ME' : (
-        "喵喵文 中国大陆",
-        "Meow Catsnese - China Mainland"
-        "喵喵喵~ 种花家~"
-    )
+    "ZH-ME": ("喵喵文 中国大陆", "Meow Catsnese - China Mainland" "喵喵喵~ 种花家~"),
 }
-
 
 languages = {
     "ZH-CN": {
@@ -92,56 +86,64 @@ languages = {
     }
 }
 
-def passbt():
 
+def passbt():
     def __loadLanguage(languageFilename: str):
-        with open(languageFilename, 'r', encoding='utf-8') as languageFile:
+        with open(languageFilename, "r", encoding="utf-8") as languageFile:
             _text = {}
             for line in languageFile:
-                if line.startswith('#'):
+                if line.startswith("#"):
                     continue
-                line = line.split(' ', 1)
-                _text[line[0]] = line[1].replace('\n', '')
+                line = line.split(" ", 1)
+                _text[line[0]] = line[1].replace("\n", "")
         langkeys = _text.keys()
-        with open(languageFilename.replace(languageFilename[-10:-5], 'ZH-CN'), 'r', encoding='utf-8') as defaultLangFile:
+        with open(
+            languageFilename.replace(languageFilename[-10:-5], "ZH-CN"),
+            "r",
+            encoding="utf-8",
+        ) as defaultLangFile:
             for line in defaultLangFile:
-                if line.startswith('#'):
+                if line.startswith("#"):
                     continue
-                line = line.split(' ', 1)
+                line = line.split(" ", 1)
                 if not line[0] in langkeys:
-                    _text[line[0]] = line[1].replace('\n', '')
-                    logger.warning(f'丢失对于 {line[0]} 的本地化文本',)
+                    _text[line[0]] = line[1].replace("\n", "")
+                    logger.warning(
+                        f"丢失对于 {line[0]} 的本地化文本",
+                    )
                     langkeys = _text.keys()
         # print(_text)
         return _text
 
-
-
     if DEFAULTLANGUAGE in LANGUAGELIST.keys():
-        _TEXT = __loadLanguage('./languages/' + DEFAULTLANGUAGE + '.lang')
+        _TEXT = __loadLanguage("./languages/" + DEFAULTLANGUAGE + ".lang")
     else:
         logger.error(f"无法打开当前本地化文本{DEFAULTLANGUAGE}")
-        raise KeyError(f'无法打开默认语言{DEFAULTLANGUAGE}')
-
+        raise KeyError(f"无法打开默认语言{DEFAULTLANGUAGE}")
 
     def wordTranslate(singleWord: str, debug: bool = False):
         try:
-            return \
-                requests.post('https://fanyi.baidu.com/sug', data={'kw': f'{singleWord}'}).json()['data'][0]['v'].split(
-                    '; ')[0]
+            return (
+                requests.post(
+                    "https://fanyi.baidu.com/sug", data={"kw": f"{singleWord}"}
+                )
+                .json()["data"][0]["v"]
+                .split("; ")[0]
+            )
         except:
-            logger.warning(f"无法翻译文本{singleWord}",)
+            logger.warning(
+                f"无法翻译文本{singleWord}",
+            )
             return None
-
 
     def _(text: str, debug: bool = False):
         try:
             return _TEXT[text]
         except:
             if debug:
-                raise KeyError(f'无法找到本地化文本{text}')
+                raise KeyError(f"无法找到本地化文本{text}")
             else:
-                logger.warning(f'无法找到本地化文本{text}',)
-                return ''
-
-
+                logger.warning(
+                    f"无法找到本地化文本{text}",
+                )
+                return ""
