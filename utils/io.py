@@ -22,10 +22,10 @@ try:
         .split("\n")
     )
 except (ConnectionError, SSLError):
-    myWords = "以梦想为驱使 创造属于自己的未来"
+    myWords = ["以梦想为驱使 创造属于自己的未来"]
 # noinspection PyBroadException
 except BaseException:
-    myWords = "以梦想为驱使 创造属于自己的未来"
+    myWords = ["以梦想为驱使 创造属于自己的未来"]
 
 
 JustifyMethod = Literal["default", "left", "center", "right", "full"]

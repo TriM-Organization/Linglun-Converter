@@ -88,18 +88,11 @@ elif nowYang.month == 4 and nowYang.day == 3:
     )
 else:
     # 显示箴言部分
-    try:
-        MainConsole.print(
-            "[#121110 on #F0F2F4]{}".format(random.choice(myWords)),
-            style="#121110 on #F0F2F4",
-            justify="center",
-        )
-    except (ConnectionError, SSLError):
-        MainConsole.print(
-            "[#121110 on #F0F2F4]以梦想为驱使 创造属于自己的未来",
-            style="#121110 on #F0F2F4",
-            justify="center",
-        )
+    MainConsole.print(
+        "[#121110 on #F0F2F4]{}".format(random.choice(myWords)),
+        style="#121110 on #F0F2F4",
+        justify="center",
+    )
 
 prt(f"{_('LangChd')}{_(':')}{_(currentLang)}")
 
