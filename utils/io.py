@@ -30,7 +30,7 @@ except (ConnectionError, urllib.error.HTTPError) as E:
 # noinspection PyBroadException
 except BaseException as E:
     logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
-    myWords = ["以梦想为驱使 创造属于自己的未来"]
+    myWords = ["灵光焕发 深艺献心"]
 
 
 JustifyMethod = Literal["default", "left", "center", "right", "full"]
