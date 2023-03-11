@@ -18,7 +18,7 @@ LANGUAGELIST = {
         "简体中文 中国大陆",
     ),
     "ZH-TW": (
-        "繁体中文 中国台湾省",
+        "繁体中文 中国台湾",
         "Traditional Chinese - Taiwan Province, China",
         "正體中文,中国台灣省",
     ),
@@ -85,10 +85,47 @@ languages = {
     }
 }
 
+class Lang():
+
+    def __init__(self, lang: str = "ZH-CN", debug:bool = False) -> None:
+        self.local = lang
+        self.debug = debug
+
+    
+    def __load_language(self, language_file_name: str):
+        with open(language_file_name, "r", encoding="utf-8") as languageFile:
+            _text = {}
+            for line in languageFile:
+                if line.startswith("#"):
+                    continue
+                line = line.split(" ", 1)
+                _text[line[0]] = line[1].replace("\n", "")
+        langkeys = _text.keys()
+        with open(
+            language_file_name.replace(language_file_name[-10:-5], "ZH-CN"),
+            "r",
+            encoding="utf-8",
+        ) as defaultLangFile:
+            for line in defaultLangFile:
+                if line.startswith("#"):
+                    continue
+                line = line.split(" ", 1)
+                if not line[0] in langkeys:
+                    _text[line[0]] = line[1].replace("\n", "")
+                    logger.warning(
+                        f"丢失对于 {line[0]} 的本地化文本",
+                    )
+                    langkeys = _text.keys()
+        # print(_text)
+        return _text
+
+
 # 这个函数是不被加载的
 def passbt():
 
     from utils.io import logger, requests
+
+    
 
     def __loadLanguage(languageFilename: str):
         with open(languageFilename, "r", encoding="utf-8") as languageFile:

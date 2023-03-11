@@ -14,7 +14,6 @@ Copyright © 2023 EillesWan & TriM Org.
 Terms & Conditions: ../Lisense.md
 """
 
-# 代码写的并非十分的漂亮，还请大佬多多包涵；本软件源代码依照Apache软件协议公开
 
 
 # 下面为正文
