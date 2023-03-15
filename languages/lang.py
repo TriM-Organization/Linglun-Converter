@@ -85,14 +85,14 @@ languages = {
     }
 }
 
-class Lang():
 
-    def __init__(self, lang: str = "ZH-CN", debug:bool = False) -> None:
+class Lang:
+    def __init__(self, lang: str = "ZH-CN", debug: bool = False) -> None:
         self.local = lang
         self.debug = debug
 
-    
     def __load_language(self, language_file_name: str):
+        global logger
         with open(language_file_name, "r", encoding="utf-8") as languageFile:
             _text = {}
             for line in languageFile:
@@ -123,9 +123,11 @@ class Lang():
 # 这个函数是不被加载的
 def passbt():
 
-    from utils.io import logger, requests
-
-    
+    from utils.io import logger
+    try:
+        from utils.io import requests
+    except ImportError:
+        pass
 
     def __loadLanguage(languageFilename: str):
         with open(languageFilename, "r", encoding="utf-8") as languageFile:

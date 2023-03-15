@@ -5,10 +5,12 @@ import urllib.error
 import TrimLog
 from TrimLog import Console, object_constants
 
+is_logging: bool = True
+
 MainConsole = Console()
 osc = object_constants.ObjectStateConstant()
 logger = TrimLog.Logger(
-    is_logging=True,
+    is_logging=is_logging,
     printing=not osc.isRelease,
     in_suffix=".llc",
 )
