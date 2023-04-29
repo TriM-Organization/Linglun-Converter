@@ -99,9 +99,12 @@
 	```bash
 	# 首先换源
 	pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
-	# 然后安装
+	# 然后安装（依次执行下面的指令）
 	pip install mido
 	pip install brotli
+	pip install Musicreater
+	pip install TrimLog
+	python -m pip install --upgrade pip setuptools wheel
 	```
 
 	- 如果出现以下情况，真是死了鬼的，我们要来再搞个设置：
@@ -121,6 +124,7 @@
 		pip install brotli
 		pip install Musicreater
 		pip install TrimLog
+		python -m pip install --upgrade pip setuptools wheel
 		```
 
 	安装成功后您可能会见到类似下图的提示：

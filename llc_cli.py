@@ -21,13 +21,13 @@ import os
 import random
 import sys
 
-print("小贴：不妨试试Mid-BDX转换网页：在线的多功能Midi转换器")
-print("https://dislink.github.io/midi2bdx/")
-
 import Musicreater
 
 from utils.io import *
 from languages.lang import languages
+
+print("小贴：不妨试试Mid-BDX转换网页：在线的多功能Midi转换器")
+print("https://dislink.github.io/midi2bdx/")
 
 MainConsole.print(
     "[#121110 on #F0F2F4]     ",
