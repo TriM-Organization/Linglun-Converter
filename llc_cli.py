@@ -14,7 +14,7 @@ Copyright © 2023 EillesWan & TriM Org.
 Terms & Conditions: ./Lisense.md
 """
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 import datetime
 import os
@@ -164,29 +164,40 @@ convert_method = format_ipt(
 )[1]
 
 # 选择输出格式
-while True:
-    fileFormat = ipt(f"{_('ChooseFileFormat')}{_(':')}").lower()
-    if fileFormat in ("0", "mcpack"):
-        fileFormat = 0
-        playerFormat = 1
-        break
 
-    elif fileFormat in ("1", "bdx"):
-        fileFormat = 1
-        while True:
-            playerFormat = ipt(f"{_('ChoosePlayer')}{_(':')}").lower()
-            if playerFormat in ("0", "延迟", "delay"):
-                playerFormat = 0
-            elif playerFormat in ("1", "计分板", "scoreboard"):
-                playerFormat = 1
-            else:
-                prt(f"{_('ErrEnter')}{_(',')}{_('Re-Enter')}{_('.')}")
-                continue
-            break
+
+def is_in_bdx_mcpack(sth: str):
+    if sth.lower() in ("0", "mcpack"):
+        return 0
+
+    elif sth.lower() in ("1", "bdx"):
+        return 1
+
     else:
-        prt(f"{_('ErrEnter')}{_(',')}{_('Re-Enter')}{_('.')}")
-        continue
-    break
+        raise ValueError("文件格式字符串啊？")
+
+
+fileFormat = format_ipt(
+    f"{_('ChooseFileFormat')}{_(':')}",
+    is_in_bdx_mcpack,
+    f"{_('ErrEnter')}{_(',')}{_('Re-Enter')}{_('.')}",
+)[1]
+
+
+def is_in_player(sth: str):
+    if sth.lower() in ("0", "延迟", "delay"):
+        return 0
+    elif sth.lower() in ("1", "计分板", "scoreboard"):
+        return 1
+    else:
+        raise ValueError("播放器字符串啊？")
+
+
+playerFormat = format_ipt(
+    f"{_('ChoosePlayer')}{_(':')}",
+    is_in_player,
+    f"{_('ErrEnter')}{_(',')}{_('Re-Enter')}{_('.')}",
+)[1]
 
 debug = False
 
@@ -196,9 +207,9 @@ def bool_str(sth: str) -> bool:
     try:
         return bool(int(sth))
     except ValueError:
-        if str(sth).lower() == "true":
+        if str(sth).lower() in ("true", "真", "是"):
             return True
-        elif str(sth).lower() == "false":
+        elif str(sth).lower() == ("false", "假", "否", "非"):
             return False
         else:
             raise ValueError("布尔字符串啊？")
@@ -252,7 +263,7 @@ else:
             f'{_("EnterMaxHeight")}{_(":")}',
             int,
         )
-        if fileFormat == 1
+        if playerFormat == 0
         else (),
     ]:
         if args:
@@ -268,7 +279,11 @@ for singleMidi in midis:
             json.dump(conversion.toDICT(), f)
             f.write(5 * "\n")
     conversion_result = (
-        conversion.to_mcpack(convert_method, *prompts)
+        (
+            conversion.to_mcpack(convert_method, *prompts)
+            if playerFormat == 1
+            else conversion.to_mcpack_with_delay(convert_method, *prompts)
+        )
         if fileFormat == 0
         else (
             conversion.to_BDX_file(convert_method, *prompts)

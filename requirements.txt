@@ -1,5 +1,5 @@
 Brotli>=1.0.9
 mido>=1.2.10
 rich>=10.9.0
-Musicreater>=0.1.0
+Musicreater>=0.5.0
 TrimLog>=0.1.0
