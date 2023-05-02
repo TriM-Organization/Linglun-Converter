@@ -269,7 +269,7 @@ else:
         if args:
             prompts.append(format_ipt(*args)[1])
 
-conversion = Musicreater.midiConvert(debug)
+conversion = Musicreater.midiConvert(debug=debug)
 
 for singleMidi in midis:
     prt("\n" f"{_('Dealing')} {singleMidi} {_(':')}")
