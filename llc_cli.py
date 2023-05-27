@@ -14,7 +14,7 @@ Copyright © 2023 EillesWan & TriM Org.
 Terms & Conditions: ./Lisense.md
 """
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 import datetime
 import os
@@ -22,6 +22,10 @@ import random
 import sys
 
 import Musicreater
+from Musicreater.plugin import ConvertConfig
+from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
+from Musicreater.plugin.funcpack import to_function_addon_in_score
+from Musicreater.plugin.mcstructpack import to_mcstructure_addon_in_delay
 
 from utils.io import *
 from languages.lang import languages
@@ -147,21 +151,6 @@ out_path = format_ipt(
     f"{_('FileNotFound')}{_(',')}{_('Re-Enter')}{_('.')}",
 )[0].lower()
 
-conversion = Musicreater.midiConvert()
-
-
-def isMethodOK(sth: str):
-    if int(sth) in range(1, len(conversion.methods) + 1):
-        return int(sth)
-    else:
-        raise ValueError
-
-
-convert_method = format_ipt(
-    f"{_('EnterMethod').format(1, len(conversion.methods))}{_(':')}",
-    isMethodOK,
-    f"{_('MethodRangeErr').format(1, len(conversion.methods))}",
-)[1]
 
 # 选择输出格式
 
@@ -199,8 +188,6 @@ playerFormat = format_ipt(
     f"{_('ErrEnter')}{_(',')}{_('Re-Enter')}{_('.')}",
 )[1]
 
-debug = False
-
 
 # 真假字符串判断
 def bool_str(sth: str) -> bool:
@@ -219,8 +206,7 @@ if os.path.exists("./demo_config.json"):
     import json
 
     prompts = json.load(open("./demo_config.json", "r", encoding="utf-8"))
-    if prompts[-1] == "debug":
-        debug = True
+    
     prompts = prompts[:-1]
 else:
     prompts = []
@@ -269,35 +255,26 @@ else:
         if args:
             prompts.append(format_ipt(*args)[1])
 
-conversion = Musicreater.midiConvert(debug=debug)
 
 for singleMidi in midis:
     prt("\n" f"{_('Dealing')} {singleMidi} {_(':')}")
-    conversion.convert(singleMidi, out_path)
-    if debug:
-        with open("./records.json", "a", encoding="utf-8") as f:
-            json.dump(conversion.toDICT(), f)
-            f.write(5 * "\n")
-    conversion_result = (
-        (
-            conversion.to_mcpack(convert_method, *prompts)
-            if playerFormat == 1
-            else conversion.to_mcpack_with_delay(convert_method, *prompts)
-        )
-        if fileFormat == 0
+    cvt_mid = Musicreater.MidiConvert.from_midi_file(singleMidi, old_exe_format=False)
+    cvt_cfg = ConvertConfig(out_path, *prompts[:3])
+    
+    conversion_result = ((
+                to_function_addon_in_score(cvt_mid, cvt_cfg, *prompts[3:])
+                if playerFormat == 1
+                else to_mcstructure_addon_in_delay(cvt_mid, cvt_cfg, *prompts[3:])
+            )if fileFormat == 0
         else (
-            conversion.to_BDX_file(convert_method, *prompts)
-            if playerFormat == 1
-            else conversion.to_BDX_file_with_delay(convert_method, *prompts)
-        )
-    )
+                to_BDX_file_in_score(cvt_mid, cvt_cfg, *prompts[3:])
+                if playerFormat == 1
+                else to_BDX_file_in_delay(cvt_mid, cvt_cfg, *prompts[3:])
+            ))
 
-    if conversion_result[0]:
-        prt(
-            f"	{_('CmdLength')}{_(':')}{conversion_result[1]}{_(',')}{_('MaxDelay')}{_(':')}{conversion_result[2]}{f'''{_(',')}{_('PlaceSize')}{_(':')}{conversion_result[3]}{_(',')}{_('LastPos')}{_(':')}{conversion_result[4]}''' if fileFormat == 1 else ''}"
+    prt(
+            f"	{_('CmdLength')}{_(':')}{conversion_result[0]}{_(',')}{_('MaxDelay')}{_(':')}{conversion_result[1]}{f'''{_(',')}{_('PlaceSize')}{_(':')}{conversion_result[2]}{_(',')}{_('LastPos')}{_(':')}{conversion_result[3]}''' if fileFormat == 1 else ''}"
         )
-    else:
-        prt(f"{_('Failed')}")
 
 exitSth = ipt(_("PressEnterExit")).lower()
 if exitSth == "record":
