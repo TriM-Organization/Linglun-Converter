@@ -100,7 +100,7 @@
 	# 首先换源
 	pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
 	# 然后安装（依次执行下面的指令）
-        apt-get install python-numpy
+    apt-get install python-numpy
 	pip install brotli TrimMCStruct
 	pip install Musicreater TrimLog
 	python -m pip install --upgrade pip setuptools wheel
@@ -120,8 +120,8 @@
 
 		```bash
 		pip install brotli TrimMCStruct
-	        pip install Musicreater TrimLog
-	        python -m pip install --upgrade pip setuptools wheel
+	    pip install Musicreater TrimLog
+	    python -m pip install --upgrade pip setuptools wheel
 		```
 
 	安装成功后您可能会见到类似下图的提示：
@@ -140,16 +140,16 @@ pkg install git
 
 <img height="512" src="https://foruda.gitee.com/images/1665933331269483373/9374c85d_9911226.jpeg">
 
-## 本软件的下载与演示程序的使用
+## 本软件的下载与使用
 
-1. 使用Git下载本库及其示例代码
+1. 使用Git下载本程序代码
 
 	```bash
 	git clone https://gitee.com/TriM-Organization/Linglun-Converter.git llc
 	```
 
-	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `llc` 的文件夹，其中包含的正是我们心心念念下载的本程序和示例代码。
-	而我们要运行的也正是示例代码，因此，赶快进入下载到的文件夹：
+	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `llc` 的文件夹，其中包含的正是我们心心念念下载的本程序源代码。
+	本程序可以直接从源代码运行，因此，赶快进入下载到的文件夹：
 
 	```bash
 	cd llc
