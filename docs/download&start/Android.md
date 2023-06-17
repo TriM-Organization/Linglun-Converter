@@ -165,5 +165,5 @@ pkg install git
 
 	运行成功了，哦耶！
 
-	<img height="512" src="https://foruda.gitee.com/images/1665933366784631363/db9f80f6_9911226.jpeg">
+	<img height="512" src="https://foruda.gitee.com/images/1686963721390700714/b82fb3d5_9911226.png">
 
