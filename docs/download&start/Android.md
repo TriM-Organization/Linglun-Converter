@@ -100,10 +100,9 @@
 	# 首先换源
 	pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
 	# 然后安装（依次执行下面的指令）
-	pip install mido
-	pip install brotli
-	pip install Musicreater
-	pip install TrimLog
+    apt-get install python-numpy
+	pip install brotli TrimMCStruct
+	pip install Musicreater TrimLog
 	python -m pip install --upgrade pip setuptools wheel
 	```
 
@@ -120,11 +119,9 @@
 		之后再来安装即可
 
 		```bash
-		pip install mido
-		pip install brotli
-		pip install Musicreater
-		pip install TrimLog
-		python -m pip install --upgrade pip setuptools wheel
+		pip install brotli TrimMCStruct
+	    pip install Musicreater TrimLog
+	    python -m pip install --upgrade pip setuptools wheel
 		```
 
 	安装成功后您可能会见到类似下图的提示：
@@ -133,7 +130,7 @@
 
 ###	安装下载工具
 
-既然已经有了运行环境，那么我们就需要下载下我们的**音·创库版示例代码**工具，我非常推崇**Git**这种方便快捷好用还能下载仓库的代码管理器，这个世界上你也找不到第二个，所以我们来安装一下：
+既然已经有了运行环境，那么我们就需要下载一个用来下载我们的**伶伦转换器**的工具，我非常推崇**Git**这种方便快捷好用还能下载仓库的代码管理器，这个世界上你也找不到第二个，所以我们来安装一下：
 
 ```bash
 pkg install git
@@ -143,24 +140,24 @@ pkg install git
 
 <img height="512" src="https://foruda.gitee.com/images/1665933331269483373/9374c85d_9911226.jpeg">
 
-## 本代码库的下载与演示程序的使用
+## 本软件的下载与使用
 
-1. 使用Git下载本库及其示例代码
+1. 使用Git下载本程序代码
 
 	```bash
 	git clone https://gitee.com/TriM-Organization/Linglun-Converter.git llc
 	```
 
-	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `llc` 的文件夹，其中包含的正是我们心心念念下载的本程序和示例代码。
-	而我们要运行的也正是示例代码，因此，赶快进入下载到的文件夹：
+	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `llc` 的文件夹，其中包含的正是我们心心念念下载的本程序源代码。
+	本程序可以直接从源代码运行，因此，赶快进入下载到的文件夹：
 
 	```bash
 	cd llc
 	```
 
-1. 开始使用演示程序
+1. 开始使用命令行程序
 
-	依照你的需要，执行以下命令以运行库的演示程序：
+	依照你的需要，执行以下命令以运行程序：
 
 	```bash
 	python llc_cli.py
@@ -168,5 +165,5 @@ pkg install git
 
 	运行成功了，哦耶！
 
-	<img height="512" src="https://foruda.gitee.com/images/1665933366784631363/db9f80f6_9911226.jpeg">
+	<img height="512" src="https://foruda.gitee.com/images/1686963721390700714/b82fb3d5_9911226.png">
 
