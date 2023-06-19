@@ -1,8 +1,10 @@
 ## 一、运行环境安装
 
-### （一）安装 Python3.6+
+### （一）安装 Python3.8+
 
-1.	首先需要下载Python的安装包，最好是 *Python3.8*，因为作者就用的是这个版本
+1.	首先需要下载Python的安装包，最好是 *Python3.10*，因为作者就用的是这个版本
+
+    ！注意！此程序现已不支持Python3.6。请更新到至少Python3.8，但是，我们对于Python3.8的支持也即将停止，为了更好的兼容，避免不必要的麻烦，我们强烈建议您更新到Python3.10。(这意味着我们即将放弃对Windows7的支持)
 
 	> [下载64位Python安装包](https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe)
 	> [下载32位Python安装包](https://www.python.org/ftp/python/3.8.10/python-3.8.10.exe)
