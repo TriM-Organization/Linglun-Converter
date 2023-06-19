@@ -7,7 +7,7 @@
 	> [下载64位Python安装包](https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe)
 	> [下载32位Python安装包](https://www.python.org/ftp/python/3.8.10/python-3.8.10.exe)
 
-2.	在安装时，最好需要勾选 `Add Python 3.X to PATH`，如下图所示，当然，如果您对自己非常自信，您也可以手动设置此项目：
+2.	在安装时，最好需要勾选 `Add Python 3.X to PATH`，如下图所示：
 
 	<img src=https://foruda.gitee.com/images/1662736520757331846/e38efb81_9911226.png>
 
@@ -33,10 +33,7 @@
 2.	打开了终端之后，请在终端中输入以下指令
 
 	```bash
-	pip install mido -i https://mirrors.aliyun.com/pypi/simple/
-	pip install brotli -i https://mirrors.aliyun.com/pypi/simple/
-	pip install Musicreater -i https://mirrors.aliyun.com/pypi/simple/
-	pip install TrimLog -i https://mirrors.aliyun.com/pypi/simple/
+	pip install Brotli TrimMCStruct Musicreater TrimLog --upgrade -i https://mirrors.aliyun.com/pypi/simple/
 	```
 
 3.	安装成功后您可能会见到类似下图的提示：
@@ -62,7 +59,7 @@
 
 	在目录下打开终端。
 	
-	例如：打开命令行：请进入到目录下，在文件资源管理器的地址框内输入`cmd`：
+	例如：打开命令行：请进入到目录下，在文件资源管理器的地址框内输入`cmd`并回车：
 
 	<img src=https://foruda.gitee.com/images/1659974437388532868/输入.png>
 	<img src=https://foruda.gitee.com/images/1659974754378201859/输入c.png>
