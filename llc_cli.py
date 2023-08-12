@@ -26,6 +26,7 @@ from Musicreater.plugin import ConvertConfig
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
 from Musicreater.plugin.funcpack import to_function_addon_in_score
 from Musicreater.plugin.mcstructpack import to_mcstructure_addon_in_delay
+# from Musicreater.plugin.mcstructure import commands_to_structure, commands_to_redstone_delay_structure
 
 from utils.io import *
 from languages.lang import languages
@@ -72,6 +73,7 @@ def _(__):
 # 显示大标题
 MainConsole.rule(title="[bold #AB70FF]欢迎使用伶伦独立转换器", characters="=", style="#26E2FF")
 MainConsole.rule(title="[bold #AB70FF]Welcome to Linglun Converter", characters="-")
+MainConsole.rule(title="[#AB70FF]版本{} | 音·创内核版本{}".format(__version__,Musicreater.__version__), characters="=", style="#26E2FF")
 
 nowYang = datetime.datetime.now()
 
