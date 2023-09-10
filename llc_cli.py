@@ -25,7 +25,7 @@ import Musicreater
 from Musicreater.plugin import ConvertConfig
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
 from Musicreater.plugin.funcpack import to_function_addon_in_score
-from Musicreater.plugin.mcstructpack import to_mcstructure_addon_in_delay
+from Musicreater.plugin.mcstructpack import to_mcstructure_addon_in_delay, to_mcstructure_addon_in_redstone_cd
 # from Musicreater.plugin.mcstructure import commands_to_structure, commands_to_redstone_delay_structure
 
 from utils.io import *
@@ -180,6 +180,8 @@ def is_in_player(sth: str):
         return 0
     elif sth.lower() in ("1", "计分板", "scoreboard"):
         return 1
+    elif sth.lower() in ('2', "红石", 'redstone'):
+        return 2
     else:
         raise ValueError("播放器字符串啊？")
 
@@ -258,15 +260,21 @@ else:
             prompts.append(format_ipt(*args)[1])
 
 
+if playerFormat == 1:
+    cvt_method = to_function_addon_in_score
+elif playerFormat == 0:
+    cvt_method = to_mcstructure_addon_in_delay
+elif playerFormat == 2:
+    cvt_method = to_mcstructure_addon_in_redstone_cd
+
+
 for singleMidi in midis:
     prt("\n" f"{_('Dealing')} {singleMidi} {_(':')}")
     cvt_mid = Musicreater.MidiConvert.from_midi_file(singleMidi, old_exe_format=False)
     cvt_cfg = ConvertConfig(out_path, *prompts[:3])
     
     conversion_result = ((
-                to_function_addon_in_score(cvt_mid, cvt_cfg, *prompts[3:])
-                if playerFormat == 1
-                else to_mcstructure_addon_in_delay(cvt_mid, cvt_cfg, *prompts[3:])
+                cvt_method(cvt_mid, cvt_cfg, *prompts[3:])
             )if fileFormat == 0
         else (
                 to_BDX_file_in_score(cvt_mid, cvt_cfg, *prompts[3:])
