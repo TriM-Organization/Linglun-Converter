@@ -14,7 +14,7 @@ Copyright © 2023 EillesWan & TriM Org.
 Terms & Conditions: ./Lisense.md
 """
 
-__version__ = "0.0.3"
+__version__ = "0.0.5"
 
 import datetime
 import os
