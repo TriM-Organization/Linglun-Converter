@@ -46,7 +46,7 @@
 		那么请把看到的如左下图的界面变为右下图吧：
 
 		<table><tr>
-		<td><img src="https://foruda.gitee.com/images/1665933104313107707/41108f03_9911226.jpeg"> </td>
+		<td><img src="https://foruda.gitee.com/images/1665933104313107707/41108f03_9911226.jpeg"></td>
 		<td><img src="https://foruda.gitee.com/images/1665933122534781330/3887a901_9911226.jpeg"></td>
 		</tr></table>
 
