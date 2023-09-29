@@ -1,7 +1,7 @@
-from typing import Any, Literal, Optional, TextIO
-
-import urllib.request
 import urllib.error
+import urllib.request
+from typing import Any, Callable, Literal, Optional, Set, TextIO, Tuple, Dict, List
+
 import TrimLog
 from TrimLog import Console, object_constants
 
@@ -19,10 +19,10 @@ logger = TrimLog.Logger(
 try:
     myWords = (
         urllib.request.urlopen(
-            'https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt'
+            "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
         )
         .read()
-        .decode('utf-8')
+        .decode("utf-8")
         .strip("\n")
         .split("\n")
     )
@@ -158,26 +158,31 @@ def ipt(
 
 def format_ipt(
     notice: str,
-    fun,
-    err_note: str = "",
+    fun: Callable,
+    err_note: str = "{}",
+    strict_mode: bool = False,
     *extraArg,
-):
+) -> Tuple[str, Any]:
     """循环输入，以某种格式
     notice: 输入时的提示
     fun: 格式函数
     err_note: 输入不符格式时的提示
+    strict_mode: 是否将函数值作为结束循环的判断依据之一
     *extraArg: 对于函数的其他参数"""
     while True:
         result = ipt(notice)
-        # noinspection PyBroadException
         try:
-            fun_result = fun(result, *extraArg)
-            break
-        # noinspection PyBroadException
-        except BaseException:
-            prt(err_note)
+            if strict_mode:
+                if fun_result := fun(result, *extraArg):
+                    break
+            else:
+                fun_result = fun(result, *extraArg)
+                break
+        except ValueError as E:
+            prt(err_note.format(E))
             continue
     return result, fun_result
+
 
 def isin(sth: str, range_list: dict):
     sth = sth.lower()
@@ -192,9 +197,9 @@ def bool_str(sth: str):
     try:
         return bool(float(sth))
     except:
-        if str(sth).lower() in ("true", "真", "是", 'y', 't'):
+        if str(sth).lower() in ("true", "真", "是", "y", "t"):
             return True
-        elif str(sth).lower() in ("false", "假", "否", 'f', 'n'):
+        elif str(sth).lower() in ("false", "假", "否", "f", "n"):
             return False
         else:
             raise ValueError
@@ -205,9 +210,37 @@ def float_str(sth: str):
         return float(sth)
     except ValueError:
         try:
-            return float(sth.replace("壹", "1").replace("贰", "2").replace("叁", "3").replace("肆", "4").replace("伍", "5").replace("陆", "6").replace("柒", "7").replace("捌", "8").replace("玖", "9").replace("零", "0").replace("一", "1").replace("二",'2').replace("三", "3").replace("四", "4").replace("五", "5").replace("六", "6").replace("七", "7").replace("八", "8").replace("九", "9").replace("〇", "0").replace("洞", "0").replace("幺", "1").replace("俩", "2").replace("两", "2").replace("拐","7").replace("点",'.'))
+            return float(
+                sth.replace("壹", "1")
+                .replace("贰", "2")
+                .replace("叁", "3")
+                .replace("肆", "4")
+                .replace("伍", "5")
+                .replace("陆", "6")
+                .replace("柒", "7")
+                .replace("捌", "8")
+                .replace("玖", "9")
+                .replace("零", "0")
+                .replace("一", "1")
+                .replace("二", "2")
+                .replace("三", "3")
+                .replace("四", "4")
+                .replace("五", "5")
+                .replace("六", "6")
+                .replace("七", "7")
+                .replace("八", "8")
+                .replace("九", "9")
+                .replace("〇", "0")
+                .replace("洞", "0")
+                .replace("幺", "1")
+                .replace("俩", "2")
+                .replace("两", "2")
+                .replace("拐", "7")
+                .replace("点", ".")
+            )
         except:
             raise ValueError
+
 
 def int_str(sth: str):
     try:

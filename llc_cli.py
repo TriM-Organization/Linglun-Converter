@@ -116,7 +116,7 @@ def format_ipt(
 
 # 获取midi列表
 while True:
-    midi_path = ipt(f"请键入MIDI地址或所在目录地址：")
+    midi_path = ipt(f"MIDI地址或所在目录地址：")
     try:
         if os.path.exists(midi_path):
             if os.path.isfile(midi_path):
@@ -140,7 +140,7 @@ while True:
 
 # 获取输出地址
 while True:
-    out_path = ipt(f"请键入文件生成输出地址：")
+    out_path = ipt(f"文件生成输出地址：")
     try:
         if not os.path.exists(out_path):
             prt("该地址不存在，或无法访问该地址，请重新输入。")
@@ -170,26 +170,26 @@ def is_in_player(sth: str):
 
 
 output_file_format = format_ipt(
-    "请键入输出文件类型 (mcpack/0|bdx/1)",
+    "输出文件类型 (mcpack/0|bdx/1)",
     is_in_bdx_mcpack,
     "输入内容有误，请重新输入。",
 )[1]
 
 if output_file_format == 0:
     player_format = format_ipt(
-        "请选择播放器类型 (延迟/0|计分板/1|中继器/2)",
+        "播放器类型 (延迟/0|计分板/1|中继器/2)",
         is_in_player,
         "输入内容有误，请重新输入。",
     )[1]
 else:
     player_format = format_ipt(
-        "请选择播放器类型 (延迟/0|计分板/1)",
+        "播放器类型 (延迟/0|计分板/1)",
         is_in_player,
         "输入内容有误，请重新输入。",
     )[1]
 
-old_exe_enabled = format_ipt(
-    "启用1.19以前的旧版execute指令格式 (否/0|是/1)：", bool_str, "输入内容格式错误，应为 是/1/真/t/y 或 否/0/假/f/n"
+old_exe_enabled = not format_ipt(
+    "启用新版代执行指令 (否/0|是/1)：", bool_str, "输入内容格式错误，应为 是/1/真/t/y 或 否/0/假/f/n"
 )[1]
 
 
