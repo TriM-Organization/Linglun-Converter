@@ -1,6 +1,6 @@
 import urllib.error
 import urllib.request
-from typing import Any, Callable, Literal, Optional, Set, TextIO, Tuple, Dict, List
+from typing import Any, Callable, Dict, List, Literal, Optional, Set, TextIO, Tuple
 
 import TrimLog
 from TrimLog import Console, object_constants

@@ -98,8 +98,6 @@ while True:
 speed: float = format_ipt("播放速度", float_str, "错误，需要浮点型数据；请重新输入。")[1]
 
 
-
-
 final_result: Dict[str, Dict[int, List[Tuple[str, int, str]]]] = {}
 
 for single_midi in midis:

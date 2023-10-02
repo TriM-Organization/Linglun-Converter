@@ -22,18 +22,18 @@ import random
 import sys
 
 import Musicreater
+from Musicreater.constants import DEFAULT_PROGRESSBAR_STYLE
 from Musicreater.plugin import ConvertConfig
-from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
 from Musicreater.plugin.addonpack import (
     to_addon_pack_in_delay,
     to_addon_pack_in_repeater,
     to_addon_pack_in_score,
 )
-from Musicreater.constants import DEFAULT_PROGRESSBAR_STYLE
+from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
+from utils.io import *
 
 # from Musicreater.plugin.mcstructure import commands_to_structure, commands_to_redstone_delay_structure
 
-from utils.io import *
 
 MainConsole.print(
     "[#121110 on #F0F2F4]     ",
