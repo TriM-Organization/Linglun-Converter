@@ -960,4 +960,4 @@ if __name__ == "__main__":
     app = LinglunConverterApp()
     app.MainLoop()
 
-    input("按下回车退出……")
+    # input("按下回车退出……")
