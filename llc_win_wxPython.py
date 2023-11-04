@@ -717,9 +717,9 @@ class LingLunMainFrame(wx.Frame):
 
     def onYanlunWheeled(self, event):
         if event.GetWheelRotation() < 0:
-            self.yanlun_now -= 1
-        else:
             self.yanlun_now += 1
+        else:
+            self.yanlun_now -= 1
         self.yanlun_now += (
             -yanlun_length
             if self.yanlun_now >= yanlun_length
