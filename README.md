@@ -2,7 +2,7 @@
 
 
 <p align="center">
-    <img width="128" height="128" src="https://gitee.com/TriM-Organization/LinglunConverter/raw/master/resources/LLC_LOGO_OK_PLAIN_BANNER.png">
+    <img width="128" height="128" src="https://gitee.com/TriM-Organization/Linglun-Converter/raw/master/resources/LLC_LOGO_OK_PLAIN_BANNER.png">
     </img>
 </p>
 
