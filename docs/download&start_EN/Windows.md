@@ -1,8 +1,32 @@
-## Install Runtime Environment
+## Use a Pre-Built Release (Recommended)
 
-### Install Python 3.6+
+### 一、Download the Packed Program
 
-1.	First of all, you need to install the runtime environment of this library, *Python*. And a Installation Pack maybe the best choice:
+1.	Fne the newest release in [The Release Page](https://gitee.com/TriM-Organization/Linglun-Converter/releases)
+
+	<img src=https://foruda.gitee.com/images/1699105959996885442/be19644e_9911226.png>
+
+	Please consider a proper build release that satisfy your device.
+
+### 二、Start Using
+
+2.	After downloading, extract the files and then double click `llc_win_wxPython.exe` to run.
+
+	<img src=https://foruda.gitee.com/images/1699106497816902973/48dc0942_9911226.png>
+	<img src=https://foruda.gitee.com/images/1699106542397488143/5638cd3e_9911226.png>
+	<img src=https://foruda.gitee.com/images/1699106557013748881/70f90fac_9911226.png>
+
+3.	Start to use now.
+
+	<img src=https://foruda.gitee.com/images/1699106948861444130/30c156bc_9911226.png>
+
+## Run From Source Code (latest functions provided)
+
+### Install Runtime Environment
+
+#### Install Python 3.8+
+
+1.	First of all, you need to install the runtime environment of this library, *Python*. But please ensure that the version is above 3.8. Maybe a Installation Pack could be one of the choices:
 
 	> [Downloading Python 64-bit](https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe)
 	> [Downloading Python 32-bit](https://www.python.org/ftp/python/3.8.10/python-3.8.10.exe)
@@ -22,7 +46,7 @@
 	<img src=https://foruda.gitee.com/images/1659972669907359295/cmd.png>
 
 
-### Installing Requirements
+#### Installing Requirements
 
 1.	It's better to open your *Terminal*(CMD/PowerShell/Bash/etc) under Administrator Mode.
 
@@ -42,14 +66,14 @@
 	<img src="https://foruda.gitee.com/images/1662737676719454287/f61a70f7_9911226.png">
 
 
-## Downloading & Using of this tool
+### Downloading & Using of this tool
 
-1. Download This Package and Demo(s)
+1. Download This Package
 
 	-	If you use Git, you can clone this lib via the following commands:
 
 	```bash
-	git clone -b pkgver https://github.com/TriM-Organization/Musicreater.git
+	git clone https://github.com/TriM-Organization/Linglun-Converter.git
 	```
 
 	-	If Git is not installed, you can download the zip package from the code page(from [GitHub](https://github.com/TriM-Organization/Musicreater.git) or [Gitee](https://gitee.com/TriM-Organization/Musicreater.git)). Or you are a Chinese fan having a QQ account, you can [Join the QQ Group 861684859](https://jq.qq.com/?_wv=1027&k=hpeRxrYr) and get it from our GroupFiles.
@@ -59,9 +83,9 @@
 	But it should be noticed that you're clear instructed to choose the branch "pkgver" first instead of downloading it directly from the "master" branch, the master branch is now under developing and has no practical use.
 
 
-2. Start Using Demo(s)
+2. Start Using
 
-	You can directly double click `magicDemo.py` to run the demo, or follow instructions below using Terminal APP to run it.
+	You can directly double click `llc_xxx(_xxx).py` to run the demo, or follow instructions below using Terminal APP to run it.
 
 	Open your terminal in the directory of this, taking CMD, for example, just enter the directory and enter `cmd` in the path box:
 
@@ -71,11 +95,11 @@
 	And enter the commands below:
 
 	```bash
-	python ./magicDemo.py	
+	python ./llc_win_wxPython.py	
 	```
 
 
-## Addition for Error(s) Using or Installing
+### Addition for Error(s) Using or Installing
 
 1. Environment Error of Microsoft Visual C++ Redistributable
 
