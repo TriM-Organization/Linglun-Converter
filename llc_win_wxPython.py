@@ -57,7 +57,7 @@ except BaseException as E:
     myWords = ["灵光焕发 深艺献心"]
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 0.0.2"
+__version__ = "WXGUI 0.0.7"
 
 
 yanlun_length = len(myWords)
