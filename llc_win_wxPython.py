@@ -58,6 +58,7 @@ except BaseException as E:
 
 __appname__ = "伶伦转换器"
 __version__ = "WXGUI 0.0.7"
+__zhver__ = "WX图形界面 预代预版第七次修订"
 
 
 yanlun_length = len(myWords)
