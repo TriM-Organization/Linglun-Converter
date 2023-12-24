@@ -4,8 +4,8 @@
 
 
 """
-伶伦转换器
-Linglun Converter
+伶伦转换器 命令行
+Linglun Converter CLI
 
 版权所有 © 2023 金羿 & 睿穆开发组
 Copyright © 2023 EillesWan & TriM Org.

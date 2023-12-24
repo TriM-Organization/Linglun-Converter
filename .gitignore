@@ -11,6 +11,7 @@ __pycache__/
 *.bdx
 *.json
 /Musicreater
+/TrimLog
 /logs
 
 # C extensions

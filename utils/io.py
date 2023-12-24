@@ -1,6 +1,20 @@
+# -*- coding: utf-8 -*-
+
+"""
+伶伦转换器 命令行组件
+Linglun Converter Command Line IO Component
+
+版权所有 © 2023 金羿 & 睿穆开发组
+Copyright © 2023 EillesWan & TriM Org.
+
+开源相关声明请见 ./License.md
+Terms & Conditions: ./Lisense.md
+"""
+
+
 import urllib.error
 import urllib.request
-from typing import Any, Callable, Dict, List, Literal, Optional, Set, TextIO, Tuple
+from typing import Any, Callable, Dict, List, Literal, Optional, Set, TextIO, Tuple, Iterable, Sequence
 
 import TrimLog
 from TrimLog import Console, object_constants
@@ -11,7 +25,7 @@ MainConsole = Console()
 osc = object_constants.ObjectStateConstant()
 logger = TrimLog.Logger(
     is_logging=is_logging,
-    printing=not osc.isRelease,
+    # printing=not osc.is_release,
     in_suffix=".llc",
 )
 

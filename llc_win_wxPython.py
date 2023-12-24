@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
 
+"""
+伶伦转换器 WXGUI
+Linglun Converter WxPython GUI
+
+版权所有 © 2023 金羿 & 睿穆开发组
+Copyright © 2023 EillesWan & TriM Org.
+
+开源相关声明请见 ./License.md
+Terms & Conditions: ./Lisense.md
+"""
+
+
 # 导入所需库
 import datetime
 import os
@@ -19,49 +31,35 @@ from Musicreater.plugin.addonpack import (
 )
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
 
-# import TrimLog
 import wx
 
-# from TrimLog import Console, object_constants
+from utils.io import myWords, osc, logger, object_constants, TrimLog, is_logging
+from utils.update_check import check_update
 
-# from utils.io import prt
-
-# is_logging: bool = True
-
-# osc = object_constants.ObjectStateConstant()
-# logger = TrimLog.Logger(
-#     is_logging=is_logging,
-#     printing=not osc.isRelease,
-#     in_suffix=".llc",
-# )
 
 WHITE = (242, 244, 246)  # F2F4F6
 BLACK = (18, 17, 16)  # 121110
 
-try:
-    myWords = (
-        urllib.request.urlopen(
-            "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
-        )
-        .read()
-        .decode("utf-8")
-        .strip("\n")
-        .split("\n")
-    )
-except (ConnectionError, urllib.error.HTTPError) as E:
-    # logger.warning(f"读取言·论信息发生 互联网连接 错误：\n{E}")
-    myWords = ["以梦想为驱使 创造属于自己的未来"]
-# noinspection PyBroadException
-except BaseException as E:
-    # logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
-    myWords = ["灵光焕发 深艺献心"]
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 0.0.2"
+__version__ = "WXGUI 0.0.3"
+__zhver__ = "WX图形界面 预代预版第三次修订"
+
+osc.project_name = __appname__
+osc.version = __version__
+
+
+# osc = object_constants.ObjectStateConstant(
+#     logging_project_name=__appname__,
+#     logging_project_version=__version__,
+#     logging_exit_exec=lambda x: None,
+# )
+
 
 
 yanlun_length = len(myWords)
 
+logger.info("加载窗口布局……")
 
 # 创建应用程序类
 class LinglunConverterApp(wx.App):
@@ -82,7 +80,7 @@ class LingLunMainFrame(wx.Frame):
             self,
             parent,
             id=wx.ID_ANY,
-            title="{} {}".format(__appname__, __version__),
+            title="{} {}".format(__appname__, __zhver__),
             pos=wx.DefaultPosition,
             size=wx.Size(660, 780),
             style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL,
@@ -955,9 +953,14 @@ class LingLunMainFrame(wx.Frame):
                 ).ShowModal()
 
 
+logger.info("执行应用。")
+
 # 启动应用程序
 if __name__ == "__main__":
     app = LinglunConverterApp()
+
+    check_update(__appname__,"https://gitee.com/TriM-Organization/Linglun-Converter/raw/master/llc_win_wxPython.py",__version__,lambda text:wx.MessageDialog(None,text,"软件更新",wx.ICON_INFORMATION | wx.YES_DEFAULT,).ShowModal(),logger,__zhver__)
+
     app.MainLoop()
 
     # input("按下回车退出……")
