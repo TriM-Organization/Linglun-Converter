@@ -14,20 +14,30 @@ Terms & Conditions: ./Lisense.md
 
 import urllib.error
 import urllib.request
-from typing import Any, Callable, Dict, List, Literal, Optional, Set, TextIO, Tuple, Iterable, Sequence
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Set,
+    TextIO,
+    Tuple,
+    Iterable,
+    Sequence,
+)
 
 import TrimLog
-from TrimLog import Console, object_constants
+from TrimLog import object_constants, logger
 
 is_logging: bool = True
 
-MainConsole = Console()
-osc = object_constants.ObjectStateConstant()
-logger = TrimLog.Logger(
-    is_logging=is_logging,
-    # printing=not osc.is_release,
-    in_suffix=".llc",
-)
+MainConsole = logger.console
+
+logger.is_logging = True
+logger.suffix = ".llc"
+logger.is_tips = True
 
 
 try:

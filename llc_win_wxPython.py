@@ -13,13 +13,17 @@ Terms & Conditions: ./Lisense.md
 
 
 # 导入所需库
-import datetime
 import os
 import random
 import sys
-import urllib.error
-import urllib.request
 
+if sys.argv:
+    if "-l" in sys.argv:
+        pass # 更换语言
+    elif "--edit-lang" in sys.argv:
+        from utils.localize import main
+        main()
+        exit()
 
 import Musicreater
 from Musicreater.constants import DEFAULT_PROGRESSBAR_STYLE
@@ -33,7 +37,7 @@ from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_scor
 
 import wx
 
-from utils.io import myWords, osc, logger, object_constants, TrimLog, is_logging
+from utils.io import myWords, logger, object_constants  # , TrimLog, is_logging
 from utils.update_check import check_update
 
 
@@ -45,21 +49,19 @@ __appname__ = "伶伦转换器"
 __version__ = "WXGUI 0.0.3"
 __zhver__ = "WX图形界面 预代预版第三次修订"
 
-osc.project_name = __appname__
-osc.version = __version__
 
-
-# osc = object_constants.ObjectStateConstant(
-#     logging_project_name=__appname__,
-#     logging_project_version=__version__,
-#     logging_exit_exec=lambda x: None,
-# )
-
+osc = object_constants.ObjectStateConstant(
+    logging_project_name=__appname__,
+    logging_project_version=__version__,
+    logging_exit_exec=lambda x: None,
+)
+logger.printing = not osc.is_release
 
 
 yanlun_length = len(myWords)
 
 logger.info("加载窗口布局……")
+
 
 # 创建应用程序类
 class LinglunConverterApp(wx.App):
@@ -959,7 +961,19 @@ logger.info("执行应用。")
 if __name__ == "__main__":
     app = LinglunConverterApp()
 
-    check_update(__appname__,"https://gitee.com/TriM-Organization/Linglun-Converter/raw/master/llc_win_wxPython.py",__version__,lambda text:wx.MessageDialog(None,text,"软件更新",wx.ICON_INFORMATION | wx.YES_DEFAULT,).ShowModal(),logger,__zhver__)
+    check_update(
+        __appname__,
+        "https://gitee.com/TriM-Organization/Linglun-Converter/raw/master/llc_win_wxPython.py",
+        __version__,
+        lambda text: wx.MessageDialog(
+            None,
+            text,
+            "软件更新",
+            wx.ICON_INFORMATION | wx.YES_DEFAULT,
+        ).ShowModal(),
+        logger,
+        __zhver__,
+    )
 
     app.MainLoop()
 
