@@ -19,9 +19,10 @@ import sys
 
 if sys.argv:
     if "-l" in sys.argv:
-        pass # 更换语言
+        pass  # 更换语言
     elif "--edit-lang" in sys.argv:
         from utils.localize import main
+
         main()
         exit()
 
@@ -36,6 +37,8 @@ from Musicreater.plugin.addonpack import (
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
 
 import wx
+import wx.xrc
+import wx.propgrid as pg
 
 from utils.io import myWords, logger, object_constants  # , TrimLog, is_logging
 from utils.update_check import check_update
@@ -46,8 +49,8 @@ BLACK = (18, 17, 16)  # 121110
 
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 0.0.3"
-__zhver__ = "WX图形界面 预代预版第三次修订"
+__version__ = "WXGUI 1.0.0"
+__zhver__ = "WX图形界面 初代预版第〇次修订"
 
 
 osc = object_constants.ObjectStateConstant(
@@ -76,6 +79,9 @@ class LinglunConverterApp(wx.App):
         return True
 
 
+logger.info("加载主框架……")
+
+
 class LingLunMainFrame(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(
@@ -101,9 +107,30 @@ class LingLunMainFrame(wx.Frame):
         )
         self.SetForegroundColour(BLACK)
         self.SetBackgroundColour(WHITE)
-
         self.m_statusBar2 = self.CreateStatusBar(1, wx.STB_SIZEGRIP, wx.ID_ANY)
+        self.m_statusBar2.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
         self.m_menubar1 = wx.MenuBar(0)
+        self.m_menubar1.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
         self.FileMenu = wx.Menu()
         self.m_Exit_menuItem1 = wx.MenuItem(
             self.FileMenu, wx.ID_ANY, "退出", "这是退出按钮", wx.ITEM_NORMAL
@@ -120,11 +147,10 @@ class LingLunMainFrame(wx.Frame):
             wx.StaticBox(self, wx.ID_ANY, "言·论"), wx.VERTICAL
         )
 
-        self.yanlun_now = random.randrange(0, yanlun_length)
         self.m_LinglunWords_staticText1 = wx.StaticText(
             s_yanLunbarSizer.GetStaticBox(),
             wx.ID_ANY,
-            myWords[self.yanlun_now] + "\r",
+            "灵光焕发 深艺献心",
             wx.DefaultPosition,
             wx.DefaultSize,
             wx.ALIGN_CENTER_HORIZONTAL | wx.ST_ELLIPSIZE_MIDDLE | wx.ST_NO_AUTORESIZE,
@@ -152,10 +178,106 @@ class LingLunMainFrame(wx.Frame):
 
         m_mainBoxSizer.Add(
             s_yanLunbarSizer,
-            1,
+            0,
             wx.ALL | wx.EXPAND | wx.RESERVE_SPACE_EVEN_IF_HIDDEN | wx.TOP,
             2,
         )
+
+        self.mian_notebook = wx.Notebook(
+            self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        self.mian_notebook.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
+        self.convert_page = ConvertPagePanel(
+            self.mian_notebook,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TAB_TRAVERSAL,
+        )
+        self.mian_notebook.AddPage(self.convert_page, "开始转换", True)
+        self.setting_page = SettingPagePannel(
+            self.mian_notebook,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TAB_TRAVERSAL,
+        )
+        self.mian_notebook.AddPage(self.setting_page, "数据设置", False)
+
+        m_mainBoxSizer.Add(self.mian_notebook, 1, wx.EXPAND | wx.ALL, 5)
+
+        self.SetSizer(m_mainBoxSizer)
+        self.Layout()
+
+        self.Centre(wx.BOTH)
+
+        # Connect Events
+        self.Bind(
+            wx.EVT_MENU, self.onExitButtonPressed, id=self.m_Exit_menuItem1.GetId()
+        )
+        self.m_LinglunWords_staticText1.Bind(wx.EVT_LEFT_DCLICK, self.onYanlunDClicked)
+        self.m_LinglunWords_staticText1.Bind(wx.EVT_MOUSEWHEEL, self.onYanlunWheeled)
+
+
+    def __del__(self):
+        pass
+
+    # Virtual event handlers, override them in your derived class
+    def onExitButtonPressed(self, event):
+        self.Destroy()
+
+    def onYanlunDClicked(self, event):
+        self.yanlun_now = random.randrange(0, yanlun_length)
+        self.m_LinglunWords_staticText1.SetLabelText(myWords[self.yanlun_now] + "\r")
+
+    def onYanlunWheeled(self, event):
+        if event.GetWheelRotation() < 0:
+            self.yanlun_now += 1
+        else:
+            self.yanlun_now -= 1
+        self.yanlun_now += (
+            -yanlun_length
+            if self.yanlun_now >= yanlun_length
+            else (yanlun_length if self.yanlun_now < 0 else 0)
+        )
+        self.m_LinglunWords_staticText1.SetLabelText(myWords[self.yanlun_now] + "\r")
+
+
+
+logger.info("加载分页……")
+
+###########################################################################
+## Class convert_page_panel
+###########################################################################
+
+
+class ConvertPagePanel(wx.Panel):
+    def __init__(
+        self,
+        parent,
+        id=wx.ID_ANY,
+        pos=wx.DefaultPosition,
+        size=wx.Size(565, 540),
+        style=wx.TAB_TRAVERSAL,
+        name=wx.EmptyString,
+    ):
+        wx.Panel.__init__(
+            self, parent, id=id, pos=pos, size=size, style=style, name=name
+        )
+
+        self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+
+        main_page_sizer = wx.BoxSizer(wx.VERTICAL)
 
         s_midiChooseSizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -169,7 +291,6 @@ class LingLunMainFrame(wx.Frame):
         )
 
         ss_MidiChooserSizer_bSizer9 = wx.BoxSizer(wx.VERTICAL)
-
         self.midiFilesList = set()
         self.m_midiFilesList_listBox2 = wx.ListBox(
             self,
@@ -190,7 +311,7 @@ class LingLunMainFrame(wx.Frame):
             self.m_midiBroseButton_button21, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5
         )
 
-        m_mainBoxSizer.Add(s_midiChooseSizer, 1, wx.EXPAND, 5)
+        main_page_sizer.Add(s_midiChooseSizer, 0, wx.EXPAND, 5)
 
         s_formatChooseSizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -205,6 +326,7 @@ class LingLunMainFrame(wx.Frame):
             wx.DefaultPosition,
             wx.DefaultSize,
             m_outformatChoice_choice1Choices,
+            0,
         )
         self.m_outformatChoice_choice1.SetSelection(0)
         ss_outputFormatChooseSizer.Add(
@@ -226,12 +348,12 @@ class LingLunMainFrame(wx.Frame):
             m_playerChoice_choice2Choices,
             0,
         )
-        self.m_playerChoice_choice2.SetSelection(0)
+        self.m_playerChoice_choice2.SetSelection(2)
         ss_playerChooseSizer.Add(self.m_playerChoice_choice2, 0, wx.ALL | wx.EXPAND, 5)
 
         s_formatChooseSizer.Add(ss_playerChooseSizer, 1, wx.ALL | wx.EXPAND, 5)
 
-        m_mainBoxSizer.Add(s_formatChooseSizer, 1, wx.EXPAND, 5)
+        main_page_sizer.Add(s_formatChooseSizer, 0, wx.EXPAND, 5)
 
         s_promptSizer = wx.StaticBoxSizer(
             wx.StaticBox(self, wx.ID_ANY, "转换参数"), wx.VERTICAL
@@ -273,7 +395,10 @@ class LingLunMainFrame(wx.Frame):
         )
 
         ss_regularPromoptsEnteringSizer1.Add(
-            sss_VolumnPersentageEnteringSizer, 1, wx.ALL | wx.EXPAND, 5
+            sss_VolumnPersentageEnteringSizer,
+            0,
+            wx.ALL | wx.EXPAND | wx.SHAPED | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
         sss_SpeedEnteringSizer = wx.StaticBoxSizer(
@@ -308,121 +433,50 @@ class LingLunMainFrame(wx.Frame):
         sss_SpeedEnteringSizer.Add(self.m_speed_spinCtrlDouble, 0, wx.ALL, 5)
 
         ss_regularPromoptsEnteringSizer1.Add(
-            sss_SpeedEnteringSizer, 1, wx.ALL | wx.EXPAND, 5
-        )
-
-        self.m_oldExeFormatChecker_checkBox3 = wx.CheckBox(
-            s_promptSizer.GetStaticBox(),
-            wx.ID_ANY,
-            "启用\n旧版\n执行\n指令\n格式",
-            wx.DefaultPosition,
-            wx.DefaultSize,
+            sss_SpeedEnteringSizer,
             0,
+            wx.ALL | wx.EXPAND | wx.SHAPED | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
-        ss_regularPromoptsEnteringSizer1.Add(
-            self.m_oldExeFormatChecker_checkBox3, 0, wx.SHAPED, 0
-        )
-        s_promptSizer.Add(ss_regularPromoptsEnteringSizer1, 1, wx.EXPAND | wx.SHAPED, 5)
 
-        ss_progressbarCheckingSizer = wx.StaticBoxSizer(
-            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "进度条"), wx.HORIZONTAL
+        s_promptSizer.Add(ss_regularPromoptsEnteringSizer1, 0, wx.EXPAND, 5)
+
+        ss_commandCheckingSizer = wx.StaticBoxSizer(
+            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "指令设置"), wx.HORIZONTAL
         )
 
         self.m_progressBarEnablingCheckBox1 = wx.CheckBox(
-            ss_progressbarCheckingSizer.GetStaticBox(),
+            ss_commandCheckingSizer.GetStaticBox(),
             wx.ID_ANY,
             "启用进度条",
             wx.DefaultPosition,
             wx.DefaultSize,
-            wx.ALIGN_RIGHT,
+            0,
         )
-        self.m_progressBarEnablingCheckBox1.SetValue(True)
-        ss_progressbarCheckingSizer.Add(
-            self.m_progressBarEnablingCheckBox1, 0, wx.ALL, 5
-        )
-
-        sss_customProgressBarSizer_wSizer6 = wx.WrapSizer(
-            wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS
+        ss_commandCheckingSizer.Add(
+            self.m_progressBarEnablingCheckBox1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5
         )
 
-        ssss_basicProgressStylePattle_sbSizer9 = wx.StaticBoxSizer(
-            wx.StaticBox(
-                ss_progressbarCheckingSizer.GetStaticBox(), wx.ID_ANY, "基本样式组"
-            ),
-            wx.VERTICAL,
-        )
-
-        self.m_BasicProgressBarStyleEntering_textCtrl4 = wx.TextCtrl(
-            ssss_basicProgressStylePattle_sbSizer9.GetStaticBox(),
+        self.m_oldExeFormatChecker_checkBox3 = wx.CheckBox(
+            ss_commandCheckingSizer.GetStaticBox(),
             wx.ID_ANY,
-            DEFAULT_PROGRESSBAR_STYLE[0],
+            "启用旧版执行指令格式",
             wx.DefaultPosition,
             wx.DefaultSize,
-            wx.TE_LEFT | wx.TE_NO_VSCROLL,
+            0,
         )
-        ssss_basicProgressStylePattle_sbSizer9.Add(
-            self.m_BasicProgressBarStyleEntering_textCtrl4, 0, wx.ALL | wx.EXPAND, 5
-        )
-
-        sss_customProgressBarSizer_wSizer6.Add(
-            ssss_basicProgressStylePattle_sbSizer9, 1, wx.EXPAND, 5
-        )
-
-        ssss_UnplayedPartProgressbarPattle_sbSizer10 = wx.StaticBoxSizer(
-            wx.StaticBox(
-                ss_progressbarCheckingSizer.GetStaticBox(), wx.ID_ANY, "未播放之样式"
-            ),
-            wx.VERTICAL,
+        ss_commandCheckingSizer.Add(
+            self.m_oldExeFormatChecker_checkBox3,
+            0,
+            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
-        self.m_unplayedProgressbarStyleEntering_textCtrl5 = wx.TextCtrl(
-            ssss_UnplayedPartProgressbarPattle_sbSizer10.GetStaticBox(),
-            wx.ID_ANY,
-            DEFAULT_PROGRESSBAR_STYLE[1][1],
-            wx.DefaultPosition,
-            wx.DefaultSize,
-            wx.TE_LEFT | wx.TE_NO_VSCROLL,
-        )
-        ssss_UnplayedPartProgressbarPattle_sbSizer10.Add(
-            self.m_unplayedProgressbarStyleEntering_textCtrl5, 0, wx.ALL, 5
-        )
+        s_promptSizer.Add(ss_commandCheckingSizer, 0, wx.EXPAND, 5)
 
-        sss_customProgressBarSizer_wSizer6.Add(
-            ssss_UnplayedPartProgressbarPattle_sbSizer10, 1, wx.EXPAND, 5
-        )
+        ss_HideAndSeekSizer_bSizer15 = wx.BoxSizer(wx.VERTICAL)
 
-        ssss_PlayedPartProgressbarPattle_sbSizer11 = wx.StaticBoxSizer(
-            wx.StaticBox(
-                ss_progressbarCheckingSizer.GetStaticBox(), wx.ID_ANY, "已播放之样式"
-            ),
-            wx.VERTICAL,
-        )
-
-        self.m_playedProgressbarStyleEntering_textCtrl5 = wx.TextCtrl(
-            ssss_PlayedPartProgressbarPattle_sbSizer11.GetStaticBox(),
-            wx.ID_ANY,
-            DEFAULT_PROGRESSBAR_STYLE[1][0],
-            wx.DefaultPosition,
-            wx.DefaultSize,
-            wx.TE_LEFT | wx.TE_NO_VSCROLL,
-        )
-        ssss_PlayedPartProgressbarPattle_sbSizer11.Add(
-            self.m_playedProgressbarStyleEntering_textCtrl5, 0, wx.ALL, 5
-        )
-
-        sss_customProgressBarSizer_wSizer6.Add(
-            ssss_PlayedPartProgressbarPattle_sbSizer11, 1, wx.EXPAND, 5
-        )
-
-        ss_progressbarCheckingSizer.Add(
-            sss_customProgressBarSizer_wSizer6, 1, wx.EXPAND, 5
-        )
-
-        s_promptSizer.Add(ss_progressbarCheckingSizer, 1, wx.EXPAND, 5)
-
-        self.ss_HideAndSeekSizer_bSizer15 = wx.BoxSizer(wx.VERTICAL)
-
-        self.sss_ScoreboardPlayerPromptsSizer_bSizer7 = wx.BoxSizer(wx.HORIZONTAL)
+        sss_ScoreboardPlayerPromptsSizer_bSizer7 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.m_EnterScoreboardNameTip_staticText4 = wx.StaticText(
             s_promptSizer.GetStaticBox(),
@@ -434,8 +488,11 @@ class LingLunMainFrame(wx.Frame):
         )
         self.m_EnterScoreboardNameTip_staticText4.Wrap(-1)
 
-        self.sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
-            self.m_EnterScoreboardNameTip_staticText4, 0, wx.ALL, 5
+        sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
+            self.m_EnterScoreboardNameTip_staticText4,
+            0,
+            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
         self.m_ScoreboardNameEntering_textCtrl9 = wx.TextCtrl(
@@ -447,7 +504,7 @@ class LingLunMainFrame(wx.Frame):
             0,
         )
         self.m_ScoreboardNameEntering_textCtrl9.SetMaxLength(10)
-        self.sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
+        sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
             self.m_ScoreboardNameEntering_textCtrl9, 0, wx.ALL, 5
         )
 
@@ -460,7 +517,7 @@ class LingLunMainFrame(wx.Frame):
         )
         self.m_staticline1.SetMinSize(wx.Size(2, -1))
 
-        self.sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
+        sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
             self.m_staticline1, 0, wx.ALL | wx.EXPAND, 5
         )
 
@@ -472,15 +529,18 @@ class LingLunMainFrame(wx.Frame):
             wx.DefaultSize,
             wx.ALIGN_RIGHT,
         )
-        self.sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
-            self.m_IsAutoResetScoreboard_checkBox2, 0, wx.ALL, 5
+        sss_ScoreboardPlayerPromptsSizer_bSizer7.Add(
+            self.m_IsAutoResetScoreboard_checkBox2,
+            0,
+            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
-        self.ss_HideAndSeekSizer_bSizer15.Add(
-            self.sss_ScoreboardPlayerPromptsSizer_bSizer7, 1, wx.SHAPED, 5
+        ss_HideAndSeekSizer_bSizer15.Add(
+            sss_ScoreboardPlayerPromptsSizer_bSizer7, 0, wx.SHAPED | wx.EXPAND, 5
         )
 
-        self.sss_StructurePlayerPromptsSizer_bSizer8 = wx.BoxSizer(wx.HORIZONTAL)
+        sss_StructurePlayerPromptsSizer_bSizer8 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.m_PlayerSelectorEnteringTips_staticText41 = wx.StaticText(
             s_promptSizer.GetStaticBox(),
@@ -492,8 +552,11 @@ class LingLunMainFrame(wx.Frame):
         )
         self.m_PlayerSelectorEnteringTips_staticText41.Wrap(-1)
 
-        self.sss_StructurePlayerPromptsSizer_bSizer8.Add(
-            self.m_PlayerSelectorEnteringTips_staticText41, 0, wx.ALL, 5
+        sss_StructurePlayerPromptsSizer_bSizer8.Add(
+            self.m_PlayerSelectorEnteringTips_staticText41,
+            0,
+            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
         m_PlayerSelectorEntering_comboBox1Choices = ["@a", "@p", "@e[type=player]"]
@@ -507,8 +570,11 @@ class LingLunMainFrame(wx.Frame):
             wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER,
         )
         self.m_PlayerSelectorEntering_comboBox1.SetSelection(0)
-        self.sss_StructurePlayerPromptsSizer_bSizer8.Add(
-            self.m_PlayerSelectorEntering_comboBox1, 0, wx.ALL, 5
+        sss_StructurePlayerPromptsSizer_bSizer8.Add(
+            self.m_PlayerSelectorEntering_comboBox1,
+            0,
+            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
         self.m_staticline2 = wx.StaticLine(
@@ -520,7 +586,7 @@ class LingLunMainFrame(wx.Frame):
         )
         self.m_staticline2.SetMinSize(wx.Size(2, -1))
 
-        self.sss_StructurePlayerPromptsSizer_bSizer8.Add(
+        sss_StructurePlayerPromptsSizer_bSizer8.Add(
             self.m_staticline2, 0, wx.ALL | wx.EXPAND, 5
         )
 
@@ -534,8 +600,8 @@ class LingLunMainFrame(wx.Frame):
         )
         self.StructureMaxHeoghtTips_.Wrap(-1)
 
-        self.sss_StructurePlayerPromptsSizer_bSizer8.Add(
-            self.StructureMaxHeoghtTips_, 0, wx.ALL, 5
+        sss_StructurePlayerPromptsSizer_bSizer8.Add(
+            self.StructureMaxHeoghtTips_, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5
         )
 
         self.m_StructureHeight_slider7 = wx.Slider(
@@ -548,7 +614,7 @@ class LingLunMainFrame(wx.Frame):
             wx.DefaultSize,
             wx.SL_HORIZONTAL,
         )
-        self.sss_StructurePlayerPromptsSizer_bSizer8.Add(
+        sss_StructurePlayerPromptsSizer_bSizer8.Add(
             self.m_StructureHeight_slider7, 0, wx.ALL, 5
         )
 
@@ -563,15 +629,18 @@ class LingLunMainFrame(wx.Frame):
             1024,
             50,
         )
-        self.sss_StructurePlayerPromptsSizer_bSizer8.Add(
-            self.m_enteringStructureMaxHeight_spinCtrl1, 0, wx.ALL, 5
+        sss_StructurePlayerPromptsSizer_bSizer8.Add(
+            self.m_enteringStructureMaxHeight_spinCtrl1,
+            0,
+            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
-        self.ss_HideAndSeekSizer_bSizer15.Add(
-            self.sss_StructurePlayerPromptsSizer_bSizer8, 1, wx.SHAPED, 5
+        ss_HideAndSeekSizer_bSizer15.Add(
+            sss_StructurePlayerPromptsSizer_bSizer8, 0, wx.SHAPED | wx.EXPAND, 5
         )
 
-        self.sss_BDXfileSignNameSizer_bSizer13 = wx.BoxSizer(wx.HORIZONTAL)
+        sss_BDXfileSignNameSizer_bSizer13 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.m_BDXfileSignNameTips_staticText8 = wx.StaticText(
             s_promptSizer.GetStaticBox(),
@@ -583,8 +652,11 @@ class LingLunMainFrame(wx.Frame):
         )
         self.m_BDXfileSignNameTips_staticText8.Wrap(-1)
 
-        self.sss_BDXfileSignNameSizer_bSizer13.Add(
-            self.m_BDXfileSignNameTips_staticText8, 0, wx.ALL, 5
+        sss_BDXfileSignNameSizer_bSizer13.Add(
+            self.m_BDXfileSignNameTips_staticText8,
+            0,
+            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
+            5,
         )
 
         self.m_EnteringBDXfileSignName_textCtrl12 = wx.TextCtrl(
@@ -595,17 +667,19 @@ class LingLunMainFrame(wx.Frame):
             wx.DefaultSize,
             0,
         )
-        self.sss_BDXfileSignNameSizer_bSizer13.Add(
+        sss_BDXfileSignNameSizer_bSizer13.Add(
             self.m_EnteringBDXfileSignName_textCtrl12, 0, wx.ALL, 5
         )
 
-        self.ss_HideAndSeekSizer_bSizer15.Add(
-            self.sss_BDXfileSignNameSizer_bSizer13, 1, wx.SHAPED, 5
+        ss_HideAndSeekSizer_bSizer15.Add(
+            sss_BDXfileSignNameSizer_bSizer13, 0, wx.SHAPED | wx.EXPAND, 5
         )
 
-        s_promptSizer.Add(self.ss_HideAndSeekSizer_bSizer15, 1, wx.EXPAND, 5)
+        s_promptSizer.Add(ss_HideAndSeekSizer_bSizer15, 0, wx.EXPAND, 5)
 
-        m_mainBoxSizer.Add(s_promptSizer, 1, wx.EXPAND, 5)
+        main_page_sizer.Add(
+            s_promptSizer, 0, wx.SHAPED | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL, 5
+        )
 
         s_StartSizer_sbSizer18 = wx.StaticBoxSizer(
             wx.StaticBox(self, wx.ID_ANY, "开始转换"), wx.HORIZONTAL
@@ -615,7 +689,7 @@ class LingLunMainFrame(wx.Frame):
 
         s_StartSizer_sbSizer18.Add((0, 0), 1, wx.EXPAND, 5)
 
-        self.m_button2 = wx.Button(
+        self.m_start_button2 = wx.Button(
             s_StartSizer_sbSizer18.GetStaticBox(),
             wx.ID_ANY,
             "开始转换",
@@ -623,34 +697,25 @@ class LingLunMainFrame(wx.Frame):
             wx.DefaultSize,
             0,
         )
-        s_StartSizer_sbSizer18.Add(self.m_button2, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+        s_StartSizer_sbSizer18.Add(self.m_start_button2, 0, wx.ALIGN_CENTER | wx.ALL, 5)
 
-        m_mainBoxSizer.Add(
+        main_page_sizer.Add(
             s_StartSizer_sbSizer18,
             1,
             wx.ALL | wx.EXPAND | wx.RESERVE_SPACE_EVEN_IF_HIDDEN,
             5,
         )
 
-        self.SetSizer(m_mainBoxSizer)
+        self.SetSizer(main_page_sizer)
         self.Layout()
 
-        self.Centre(wx.BOTH)
-
         # Connect Events
-        self.Bind(
-            wx.EVT_MENU, self.onExitButtonPressed, id=self.m_Exit_menuItem1.GetId()
-        )
-        self.m_LinglunWords_staticText1.Bind(wx.EVT_LEFT_DCLICK, self.onYanlunDClicked)
-        self.m_LinglunWords_staticText1.Bind(wx.EVT_MOUSEWHEEL, self.onYanlunWheeled)
         self.m_ChooseMidiTips_staticText3.Bind(wx.EVT_LEFT_DCLICK, self.MidiEasterEgg)
-
         self.m_midiFilesList_listBox2.Bind(wx.EVT_LISTBOX, self.onFileListUpdated)
         self.m_midiFilesList_listBox2.Bind(
             wx.EVT_LISTBOX_DCLICK, self.onFileDoubleClicked
         )
         self.m_midiBroseButton_button21.Bind(wx.EVT_BUTTON, self.openFile)
-
         self.m_outformatChoice_choice1.Bind(wx.EVT_CHOICE, self.onOutputFormatChosen)
         self.m_playerChoice_choice2.Bind(wx.EVT_CHOICE, self.onPlayerChosen)
         self.m_volumn_slider.Bind(wx.EVT_SCROLL, self.onVolumeScrolling)
@@ -661,15 +726,6 @@ class LingLunMainFrame(wx.Frame):
         self.m_speed_spinCtrlDouble.Bind(wx.EVT_SPINCTRLDOUBLE, self.onSpeedSpinChanged)
         self.m_progressBarEnablingCheckBox1.Bind(
             wx.EVT_CHECKBOX, self.onProgressbarChecked
-        )
-        self.m_BasicProgressBarStyleEntering_textCtrl4.Bind(
-            wx.EVT_TEXT, self.onProgressbarBasicStyleUpdating
-        )
-        self.m_unplayedProgressbarStyleEntering_textCtrl5.Bind(
-            wx.EVT_TEXT, self.onProgressbarUnplayedStyleUpdating
-        )
-        self.m_playedProgressbarStyleEntering_textCtrl5.Bind(
-            wx.EVT_TEXT, self.onProgressbarPlayedStyleUpdating
         )
         self.m_ScoreboardNameEntering_textCtrl9.Bind(
             wx.EVT_TEXT, self.onScoreboredNameUpdating
@@ -689,15 +745,9 @@ class LingLunMainFrame(wx.Frame):
         self.m_EnteringBDXfileSignName_textCtrl12.Bind(
             wx.EVT_TEXT, self.onBDXfileSignNameUpdating
         )
-        self.m_button2.Bind(wx.EVT_BUTTON, self.onStartButtonPressed)
+        self.m_start_button2.Bind(wx.EVT_BUTTON, self.onStartButtonPressed)
 
-        # self.ss_HideAndSeekSizer_bSizer15.Hide(
-        #     self.sss_BDXfileSignNameSizer_bSizer13
-        # )
-        # self.ss_HideAndSeekSizer_bSizer15.Hide(
-        #     self.sss_StructurePlayerPromptsSizer_bSizer8
-        # )
-
+        
         self.m_EnteringBDXfileSignName_textCtrl12.Enable(False)
 
         self.m_PlayerSelectorEntering_comboBox1.Enable(False)
@@ -708,25 +758,6 @@ class LingLunMainFrame(wx.Frame):
         pass
 
     # Virtual event handlers, override them in your derived class
-    def onExitButtonPressed(self, event):
-        self.Destroy()
-
-    def onYanlunDClicked(self, event):
-        self.yanlun_now = random.randrange(0, yanlun_length)
-        self.m_LinglunWords_staticText1.SetLabelText(myWords[self.yanlun_now] + "\r")
-
-    def onYanlunWheeled(self, event):
-        if event.GetWheelRotation() < 0:
-            self.yanlun_now += 1
-        else:
-            self.yanlun_now -= 1
-        self.yanlun_now += (
-            -yanlun_length
-            if self.yanlun_now >= yanlun_length
-            else (yanlun_length if self.yanlun_now < 0 else 0)
-        )
-        self.m_LinglunWords_staticText1.SetLabelText(myWords[self.yanlun_now] + "\r")
-
     def MidiEasterEgg(self, event):
         if "诸葛亮与八卦阵-山水千年" not in self.midiFilesList:
             self.midiFilesList.add("诸葛亮与八卦阵-山水千年")
@@ -820,23 +851,15 @@ class LingLunMainFrame(wx.Frame):
             )
 
     def onProgressbarChecked(self, event):
-        if self.m_progressBarEnablingCheckBox1.GetValue():
-            self.m_BasicProgressBarStyleEntering_textCtrl4.Enable(True)
-            self.m_unplayedProgressbarStyleEntering_textCtrl5.Enable(True)
-            self.m_playedProgressbarStyleEntering_textCtrl5.Enable(True)
-        else:
-            self.m_BasicProgressBarStyleEntering_textCtrl4.Enable(False)
-            self.m_unplayedProgressbarStyleEntering_textCtrl5.Enable(False)
-            self.m_playedProgressbarStyleEntering_textCtrl5.Enable(False)
-
-    def onProgressbarBasicStyleUpdating(self, event):
-        event.Skip()
-
-    def onProgressbarUnplayedStyleUpdating(self, event):
-        event.Skip()
-
-    def onProgressbarPlayedStyleUpdating(self, event):
-        event.Skip()
+        pass
+        # if self.m_progressBarEnablingCheckBox1.GetValue():
+        #     self.m_BasicProgressBarStyleEntering_textCtrl4.Enable(True)
+        #     self.m_unplayedProgressbarStyleEntering_textCtrl5.Enable(True)
+        #     self.m_playedProgressbarStyleEntering_textCtrl5.Enable(True)
+        # else:
+        #     self.m_BasicProgressBarStyleEntering_textCtrl4.Enable(False)
+        #     self.m_unplayedProgressbarStyleEntering_textCtrl5.Enable(False)
+        #     self.m_playedProgressbarStyleEntering_textCtrl5.Enable(False)
 
     def onScoreboredNameUpdating(self, event):
         event.Skip()
@@ -953,6 +976,399 @@ class LingLunMainFrame(wx.Frame):
                     "转换成功",
                     wx.YES_DEFAULT | wx.ICON_INFORMATION,
                 ).ShowModal()
+
+
+
+###########################################################################
+## Class setting_page_pannel
+###########################################################################
+
+
+class SettingPagePannel(wx.Panel):
+    def __init__(
+        self,
+        parent,
+        id=wx.ID_ANY,
+        pos=wx.DefaultPosition,
+        size=wx.Size(565, 540),
+        style=wx.TAB_TRAVERSAL,
+        name=wx.EmptyString,
+    ):
+        wx.Panel.__init__(
+            self, parent, id=id, pos=pos, size=size, style=style, name=name
+        )
+
+        setting_page_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.setting_notebook = wx.Notebook(
+            self,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.NB_FIXEDWIDTH | wx.NB_MULTILINE | wx.NB_RIGHT,
+        )
+        self.setting_notebook.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "@OPPOSans R",
+            )
+        )
+        self.setting_notebook.SetBackgroundColour(
+            wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
+        )
+
+        self.setting_page1 = wx.Panel(
+            self.setting_notebook,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TAB_TRAVERSAL,
+        )
+        self.setting_page1.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
+        setting_page1_box_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        sss_customProgressBarSizer_wSizer6 = wx.WrapSizer(
+            wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS
+        )
+
+        setting_page1_progressbar_style = wx.StaticBoxSizer(
+            wx.StaticBox(self.setting_page1, wx.ID_ANY, "进度条"), wx.HORIZONTAL
+        )
+
+        ssss_basicProgressStylePattle_sbSizer9 = wx.StaticBoxSizer(
+            wx.StaticBox(
+                setting_page1_progressbar_style.GetStaticBox(), wx.ID_ANY, "基本样式组"
+            ),
+            wx.VERTICAL,
+        )
+
+        self.m_BasicProgressBarStyleEntering_textCtrl4 = wx.TextCtrl(
+            ssss_basicProgressStylePattle_sbSizer9.GetStaticBox(),
+            wx.ID_ANY,
+            "▶ %%N [ %%s/%^s %%% __________ %%t|%^t ]",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TE_LEFT | wx.TE_NO_VSCROLL,
+        )
+        ssss_basicProgressStylePattle_sbSizer9.Add(
+            self.m_BasicProgressBarStyleEntering_textCtrl4, 0, wx.ALL | wx.EXPAND, 5
+        )
+
+        setting_page1_progressbar_style.Add(
+            ssss_basicProgressStylePattle_sbSizer9, 1, wx.ALL | wx.EXPAND, 5
+        )
+
+        ssss_UnplayedPartProgressbarPattle_sbSizer10 = wx.StaticBoxSizer(
+            wx.StaticBox(
+                setting_page1_progressbar_style.GetStaticBox(), wx.ID_ANY, "未播放之样式"
+            ),
+            wx.VERTICAL,
+        )
+
+        self.m_unplayedProgressbarStyleEntering_textCtrl5 = wx.TextCtrl(
+            ssss_UnplayedPartProgressbarPattle_sbSizer10.GetStaticBox(),
+            wx.ID_ANY,
+            "§7=§r",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TE_LEFT | wx.TE_NO_VSCROLL,
+        )
+        ssss_UnplayedPartProgressbarPattle_sbSizer10.Add(
+            self.m_unplayedProgressbarStyleEntering_textCtrl5, 0, wx.ALL, 5
+        )
+
+        setting_page1_progressbar_style.Add(
+            ssss_UnplayedPartProgressbarPattle_sbSizer10, 1, wx.ALL | wx.EXPAND, 5
+        )
+
+        ssss_PlayedPartProgressbarPattle_sbSizer11 = wx.StaticBoxSizer(
+            wx.StaticBox(
+                setting_page1_progressbar_style.GetStaticBox(), wx.ID_ANY, "已播放之样式"
+            ),
+            wx.VERTICAL,
+        )
+
+        self.m_playedProgressbarStyleEntering_textCtrl5 = wx.TextCtrl(
+            ssss_PlayedPartProgressbarPattle_sbSizer11.GetStaticBox(),
+            wx.ID_ANY,
+            "§e=§r",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TE_LEFT | wx.TE_NO_VSCROLL,
+        )
+        ssss_PlayedPartProgressbarPattle_sbSizer11.Add(
+            self.m_playedProgressbarStyleEntering_textCtrl5, 0, wx.ALL, 5
+        )
+
+        setting_page1_progressbar_style.Add(
+            ssss_PlayedPartProgressbarPattle_sbSizer11, 1, wx.ALL | wx.EXPAND, 5
+        )
+
+        sss_customProgressBarSizer_wSizer6.Add(
+            setting_page1_progressbar_style, 1, wx.ALL | wx.EXPAND, 5
+        )
+
+        setting_page1_experiment_style = wx.StaticBoxSizer(
+            wx.StaticBox(self.setting_page1, wx.ID_ANY, "实验性功能"), wx.HORIZONTAL
+        )
+
+        self.m_enable_experiment_checkBox = wx.CheckBox(
+            setting_page1_experiment_style.GetStaticBox(),
+            wx.ID_ANY,
+            "启用实验性功能",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
+        )
+        setting_page1_experiment_style.Add(
+            self.m_enable_experiment_checkBox,
+            1,
+            wx.ALL | wx.EXPAND,
+            5,
+        )
+
+        experiment_type_choiceChoices = ["常规转换", "长音插值", "同刻偏移"]
+        self.experiment_type_choice = wx.Choice(
+            setting_page1_experiment_style.GetStaticBox(),
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            experiment_type_choiceChoices,
+            0,
+        )
+        self.experiment_type_choice.SetSelection(0)
+        setting_page1_experiment_style.Add(
+            self.experiment_type_choice,
+            2,
+            wx.ALL | wx.EXPAND,
+            5,
+        )
+
+        self.m_ignore_midi_error_checkBox = wx.CheckBox(
+            setting_page1_experiment_style.GetStaticBox(),
+            wx.ID_ANY,
+            "忽略MIDI错误",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
+        )
+        self.m_ignore_midi_error_checkBox.SetValue(True)
+        setting_page1_experiment_style.Add(
+            self.m_ignore_midi_error_checkBox, 1, wx.ALL, 5
+        )
+
+        sss_customProgressBarSizer_wSizer6.Add(
+            setting_page1_experiment_style, 1, wx.ALL | wx.EXPAND, 5
+        )
+
+        setting_page1_box_sizer.Add(
+            sss_customProgressBarSizer_wSizer6, 1, wx.ALL | wx.EXPAND, 5
+        )
+
+        self.setting_page1.SetSizer(setting_page1_box_sizer)
+        self.setting_page1.Layout()
+        setting_page1_box_sizer.Fit(self.setting_page1)
+        self.setting_notebook.AddPage(self.setting_page1, "基本信息", True)
+        self.setting_page2 = wx.Panel(
+            self.setting_notebook,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TAB_TRAVERSAL,
+        )
+        self.setting_page2.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                wx.EmptyString,
+            )
+        )
+
+        setting_page2_box_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        m_pitched_instrument_table_choiceChoices = ["“偷吃”的对照表", "“经典”对照表"]
+        self.m_pitched_instrument_table_choice = wx.Choice(
+            self.setting_page2,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            m_pitched_instrument_table_choiceChoices,
+            0,
+        )
+        self.m_pitched_instrument_table_choice.SetSelection(0)
+        self.m_pitched_instrument_table_choice.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
+        setting_page2_box_sizer.Add(
+            self.m_pitched_instrument_table_choice,
+            0,
+            wx.ALL | wx.EXPAND,
+            5,
+        )
+
+        self.m_pitched_notes_table_propertyGrid1 = pg.PropertyGrid(
+            self.setting_page2,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            pg.PG_BOLD_MODIFIED | pg.PG_DEFAULT_STYLE,
+        )
+        self.m_pitched_notes_table_propertyGrid1.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
+        self.m_propertyGridItem1 = self.m_pitched_notes_table_propertyGrid1.Append(
+            pg.StringProperty("乐音乐器1", "乐音乐器1")
+        )
+        self.m_propertyGridItem2 = self.m_pitched_notes_table_propertyGrid1.Append(
+            pg.StringProperty("乐音乐器2", "乐音乐器2")
+        )
+        setting_page2_box_sizer.Add(
+            self.m_pitched_notes_table_propertyGrid1,
+            1,
+            wx.ALL | wx.EXPAND,
+            5,
+        )
+
+        self.setting_page2.SetSizer(setting_page2_box_sizer)
+        self.setting_page2.Layout()
+        setting_page2_box_sizer.Fit(self.setting_page2)
+        self.setting_notebook.AddPage(self.setting_page2, "乐音乐器对照表", False)
+        self.setting_page3 = wx.Panel(
+            self.setting_notebook,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.TAB_TRAVERSAL,
+        )
+        setting_page3_box_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        m_percussion_instrument_table_choice1Choices = ["“偷吃”的对照表", "“经典”对照表"]
+        self.m_percussion_instrument_table_choice1 = wx.Choice(
+            self.setting_page3,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            m_percussion_instrument_table_choice1Choices,
+            0,
+        )
+        self.m_percussion_instrument_table_choice1.SetSelection(0)
+        self.m_percussion_instrument_table_choice1.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
+        setting_page3_box_sizer.Add(
+            self.m_percussion_instrument_table_choice1,
+            0,
+            wx.ALL | wx.EXPAND,
+            5,
+        )
+
+        self.m_percussion_notes_table_propertyGrid11 = pg.PropertyGrid(
+            self.setting_page3,
+            wx.ID_ANY,
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            pg.PG_BOLD_MODIFIED | pg.PG_DEFAULT_STYLE,
+        )
+        self.m_percussion_notes_table_propertyGrid11.SetFont(
+            wx.Font(
+                wx.NORMAL_FONT.GetPointSize(),
+                wx.FONTFAMILY_DEFAULT,
+                wx.FONTSTYLE_NORMAL,
+                wx.FONTWEIGHT_NORMAL,
+                False,
+                "OPPOSans R",
+            )
+        )
+
+        self.m_propertyGridItem11 = self.m_percussion_notes_table_propertyGrid11.Append(
+            pg.StringProperty("打击乐器1", "打击乐器1")
+        )
+        self.m_propertyGridItem21 = self.m_percussion_notes_table_propertyGrid11.Append(
+            pg.StringProperty("打击乐器2", "打击乐器2")
+        )
+        setting_page3_box_sizer.Add(
+            self.m_percussion_notes_table_propertyGrid11,
+            1,
+            wx.ALL | wx.EXPAND,
+            5,
+        )
+
+        self.setting_page3.SetSizer(setting_page3_box_sizer)
+        self.setting_page3.Layout()
+        setting_page3_box_sizer.Fit(self.setting_page3)
+        self.setting_notebook.AddPage(self.setting_page3, "打击乐器对照表", False)
+
+        setting_page_sizer.Add(self.setting_notebook, 1, wx.EXPAND | wx.ALL, 5)
+
+        self.SetSizer(setting_page_sizer)
+        self.Layout()
+
+        # Connect Events
+        self.m_BasicProgressBarStyleEntering_textCtrl4.Bind(
+            wx.EVT_TEXT, self.onProgressbarBasicStyleUpdating
+        )
+        self.m_unplayedProgressbarStyleEntering_textCtrl5.Bind(
+            wx.EVT_TEXT, self.onProgressbarUnplayedStyleUpdating
+        )
+        self.m_playedProgressbarStyleEntering_textCtrl5.Bind(
+            wx.EVT_TEXT, self.onProgressbarPlayedStyleUpdating
+        )
+
+    def __del__(self):
+        pass
+
+    # Virtual event handlers, override them in your derived class
+
+
+    def onProgressbarBasicStyleUpdating(self, event):
+        event.Skip()
+
+    def onProgressbarUnplayedStyleUpdating(self, event):
+        event.Skip()
+
+    def onProgressbarPlayedStyleUpdating(self, event):
+        event.Skip()
 
 
 logger.info("执行应用。")
