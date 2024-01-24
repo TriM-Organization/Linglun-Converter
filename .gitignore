@@ -13,6 +13,9 @@ __pycache__/
 /Musicreater
 /TrimLog
 /logs
+*.llc.config
+
+salt.py
 
 # C extensions
 *.so
