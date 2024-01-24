@@ -80,7 +80,7 @@
                 <property name="window_name"></property>
                 <property name="window_style"></property>
             </object>
-            <object class="wxMenuBar" expanded="0">
+            <object class="wxMenuBar" expanded="1">
                 <property name="bg"></property>
                 <property name="context_help"></property>
                 <property name="context_menu">1</property>
@@ -101,10 +101,24 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <object class="wxMenu" expanded="0">
+                <object class="wxMenu" expanded="1">
                     <property name="label">文件</property>
                     <property name="name">FileMenu</property>
                     <property name="permission">protected</property>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help">将全部数据设置重置为默认值（下次启动时生效）</property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_CHECK</property>
+                        <property name="label">重置设置</property>
+                        <property name="name">m_ClearSetting_menuItem2</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut"></property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">onResetSettingButtonSelection</event>
+                    </object>
                     <object class="wxMenuItem" expanded="0">
                         <property name="bitmap"></property>
                         <property name="checked">0</property>
@@ -263,7 +277,7 @@
                         <object class="notebookpage" expanded="1">
                             <property name="bitmap"></property>
                             <property name="label">开始转换</property>
-                            <property name="select">0</property>
+                            <property name="select">1</property>
                             <object class="wxPanel" expanded="1">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
@@ -320,7 +334,7 @@
                         <object class="notebookpage" expanded="1">
                             <property name="bitmap"></property>
                             <property name="label">数据设置</property>
-                            <property name="select">1</property>
+                            <property name="select">0</property>
                             <object class="wxPanel" expanded="1">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
@@ -2630,6 +2644,7 @@
                                                             <property name="window_extra_style"></property>
                                                             <property name="window_name"></property>
                                                             <property name="window_style"></property>
+                                                            <event name="OnCheckBox">onExperimentEnableUpdating</event>
                                                         </object>
                                                     </object>
                                                     <object class="sizeritem" expanded="0">
@@ -2694,6 +2709,7 @@
                                                             <property name="window_extra_style"></property>
                                                             <property name="window_name"></property>
                                                             <property name="window_style"></property>
+                                                            <event name="OnChoice">onConvertMethodUpdating</event>
                                                         </object>
                                                     </object>
                                                     <object class="sizeritem" expanded="0">
@@ -2758,6 +2774,7 @@
                                                             <property name="window_extra_style"></property>
                                                             <property name="window_name"></property>
                                                             <property name="window_style"></property>
+                                                            <event name="OnCheckBox">onMidiFaultIgnoranceChecking</event>
                                                         </object>
                                                     </object>
                                                 </object>
@@ -2889,6 +2906,7 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
+                                            <event name="OnChoice">onPitchedInstListChanging</event>
                                         </object>
                                     </object>
                                     <object class="sizeritem" expanded="1">
@@ -2950,6 +2968,8 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
+                                            <event name="OnPropertyGridChanged">onPitchedInstTableChanged</event>
+                                            <event name="OnPropertyGridChanging">onPitchedInstTableChanging</event>
                                             <object class="propGridItem" expanded="0">
                                                 <property name="help"></property>
                                                 <property name="label">乐音乐器1</property>
@@ -3091,6 +3111,7 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
+                                            <event name="OnChoice">onPercussionInstListChanging</event>
                                         </object>
                                     </object>
                                     <object class="sizeritem" expanded="0">
@@ -3152,6 +3173,8 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
+                                            <event name="OnPropertyGridChanged">onPercussionInstTableChanged</event>
+                                            <event name="OnPropertyGridChanging">onPercussionInstTableChanging</event>
                                             <object class="propGridItem" expanded="0">
                                                 <property name="help"></property>
                                                 <property name="label">打击乐器1</property>

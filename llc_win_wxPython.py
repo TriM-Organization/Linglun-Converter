@@ -27,7 +27,7 @@ if sys.argv:
         exit()
 
 import Musicreater
-from Musicreater.constants import DEFAULT_PROGRESSBAR_STYLE
+import Musicreater.experiment
 from Musicreater.plugin import ConvertConfig
 from Musicreater.plugin.addonpack import (
     to_addon_pack_in_delay,
@@ -42,6 +42,9 @@ import wx.propgrid as pg
 
 from utils.io import myWords, logger, object_constants  # , TrimLog, is_logging
 from utils.update_check import check_update
+from utils.packdata import enpack_llc_pack, unpack_llc_pack
+
+logger.info("注册全局变量……")
 
 
 WHITE = (242, 244, 246)  # F2F4F6
@@ -53,15 +56,59 @@ __version__ = "WXGUI 1.0.0"
 __zhver__ = "WX图形界面 初代预版第〇次修订"
 
 
+yanlun_length = len(myWords)
+
+
+# global pgb_style
+# global on_exit_saving
+# global ignore_midi_mismatch_error
+# global convert_tables
+# global convert_table_selection
+# global ConvertClass
+
+pgb_style: Musicreater.ProgressBarStyle = Musicreater.DEFAULT_PROGRESSBAR_STYLE.copy()
+on_exit_saving: bool = True
+ignore_midi_mismatch_error: bool = True
+convert_tables = {
+    "PITCHED": {
+        "“偷吃”的对照表": Musicreater.MM_TOUCH_PITCHED_INSTRUMENT_TABLE,
+        "“经典”对照表": Musicreater.MM_CLASSIC_PITCHED_INSTRUMENT_TABLE,
+    },
+    "PERCUSSION": {
+        "“偷吃”的对照表": Musicreater.MM_TOUCH_PERCUSSION_INSTRUMENT_TABLE,
+        "“经典”对照表": Musicreater.MM_CLASSIC_PERCUSSION_INSTRUMENT_TABLE,
+    },
+}
+convert_table_selection = {
+    "PITCHED": "“偷吃”的对照表",
+    "PERCUSSION": "“偷吃”的对照表",
+}
+ConvertClass = (Musicreater.MidiConvert, "常规转换")
+
+if os.path.isfile("save.llc.config"):
+    unpacked_data = unpack_llc_pack("save.llc.config", False)
+    if isinstance(unpacked_data, Exception):
+        logger.warning("读取设置文件失败：{}；使用默认设置信息。")
+    else:
+        (
+            pgb_style,
+            on_exit_saving,
+            ignore_midi_mismatch_error,
+            convert_tables,
+            convert_table_selection,
+            ConvertClass,
+        ) = unpacked_data
+
+
 osc = object_constants.ObjectStateConstant(
     logging_project_name=__appname__,
     logging_project_version=__version__,
-    logging_exit_exec=lambda x: None,
+    logging_exit_exec=lambda sth: wx.MessageDialog(
+        None, sth, "崩溃", wx.YES_DEFAULT | wx.ICON_STOP
+    ).ShowModal(),
 )
 logger.printing = not osc.is_release
 
-
-yanlun_length = len(myWords)
 
 logger.info("加载窗口布局……")
 
@@ -132,6 +179,11 @@ class LingLunMainFrame(wx.Frame):
         )
 
         self.FileMenu = wx.Menu()
+        self.m_ClearSetting_menuItem2 = wx.MenuItem(
+            self.FileMenu, wx.ID_ANY, "重置设置", "将全部数据设置重置为默认值（下次启动时生效）", wx.ITEM_CHECK
+        )
+        self.FileMenu.Append(self.m_ClearSetting_menuItem2)
+
         self.m_Exit_menuItem1 = wx.MenuItem(
             self.FileMenu, wx.ID_ANY, "退出", "这是退出按钮", wx.ITEM_NORMAL
         )
@@ -223,16 +275,27 @@ class LingLunMainFrame(wx.Frame):
 
         # Connect Events
         self.Bind(
+            wx.EVT_MENU,
+            self.onResetSettingButtonSelection,
+            id=self.m_ClearSetting_menuItem2.GetId(),
+        )
+        self.Bind(
             wx.EVT_MENU, self.onExitButtonPressed, id=self.m_Exit_menuItem1.GetId()
         )
         self.m_LinglunWords_staticText1.Bind(wx.EVT_LEFT_DCLICK, self.onYanlunDClicked)
         self.m_LinglunWords_staticText1.Bind(wx.EVT_MOUSEWHEEL, self.onYanlunWheeled)
 
-
     def __del__(self):
         pass
 
     # Virtual event handlers, override them in your derived class
+    def onResetSettingButtonSelection(self, event):
+        global on_exit_saving
+        if self.m_ClearSetting_menuItem2.IsChecked():
+            on_exit_saving = False
+        else:
+            on_exit_saving = True
+
     def onExitButtonPressed(self, event):
         self.Destroy()
 
@@ -251,7 +314,6 @@ class LingLunMainFrame(wx.Frame):
             else (yanlun_length if self.yanlun_now < 0 else 0)
         )
         self.m_LinglunWords_staticText1.SetLabelText(myWords[self.yanlun_now] + "\r")
-
 
 
 logger.info("加载分页……")
@@ -348,7 +410,7 @@ class ConvertPagePanel(wx.Panel):
             m_playerChoice_choice2Choices,
             0,
         )
-        self.m_playerChoice_choice2.SetSelection(2)
+        self.m_playerChoice_choice2.SetSelection(0)
         ss_playerChooseSizer.Add(self.m_playerChoice_choice2, 0, wx.ALL | wx.EXPAND, 5)
 
         s_formatChooseSizer.Add(ss_playerChooseSizer, 1, wx.ALL | wx.EXPAND, 5)
@@ -747,7 +809,6 @@ class ConvertPagePanel(wx.Panel):
         )
         self.m_start_button2.Bind(wx.EVT_BUTTON, self.onStartButtonPressed)
 
-        
         self.m_EnteringBDXfileSignName_textCtrl12.Enable(False)
 
         self.m_PlayerSelectorEntering_comboBox1.Enable(False)
@@ -811,13 +872,20 @@ class ConvertPagePanel(wx.Panel):
         if self.m_playerChoice_choice2.GetSelection() == 0:
             self.m_PlayerSelectorEntering_comboBox1.Enable(False)
             self.m_StructureHeight_slider7.Enable(False)
-            self.m_enteringStructureMaxHeight_spinCtrl1.Enable(False)
+
+            if self.m_outformatChoice_choice1.GetSelection() == 0:
+                self.m_enteringStructureMaxHeight_spinCtrl1.Enable(False)
+            elif self.m_outformatChoice_choice1.GetSelection() == 1:
+                self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
+
             self.m_ScoreboardNameEntering_textCtrl9.Enable(True)
             self.m_IsAutoResetScoreboard_checkBox2.Enable(True)
         else:
             self.m_PlayerSelectorEntering_comboBox1.Enable(True)
             self.m_StructureHeight_slider7.Enable(True)
+
             self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
+
             self.m_ScoreboardNameEntering_textCtrl9.Enable(False)
             self.m_IsAutoResetScoreboard_checkBox2.Enable(False)
 
@@ -884,28 +952,29 @@ class ConvertPagePanel(wx.Panel):
         event.Skip()
 
     def onStartButtonPressed(self, event):
+        global pgb_style
         for file_name in self.m_midiFilesList_listBox2.GetStrings():
             if file_name == "诸葛亮与八卦阵-山水千年":
-                mid_cvt = Musicreater.MidiConvert(
-                    None, "山水千年", self.m_oldExeFormatChecker_checkBox3.GetValue()
+                mid_cvt = ConvertClass[0](
+                    None,
+                    "山水千年",
+                    self.m_oldExeFormatChecker_checkBox3.GetValue(),
+                    convert_tables["PITCHED"][convert_table_selection["PITCHED"]],
+                    convert_tables["PERCUSSION"][convert_table_selection["PERCUSSION"]],
                 )
             else:
-                mid_cvt = Musicreater.MidiConvert.from_midi_file(
+                mid_cvt = ConvertClass[0].from_midi_file(
                     file_name,
                     self.m_oldExeFormatChecker_checkBox3.GetValue(),
+                    convert_tables["PITCHED"][convert_table_selection["PITCHED"]],
+                    convert_tables["PERCUSSION"][convert_table_selection["PERCUSSION"]],
                 )
 
             cvt_cfg = ConvertConfig(
                 os.path.split(file_name)[0],
                 self.m_volumn_spinCtrlDouble1.GetValue() / 100,
                 self.m_speed_spinCtrlDouble.GetValue(),
-                progressbar=(
-                    self.m_BasicProgressBarStyleEntering_textCtrl4.GetValue(),
-                    (
-                        self.m_playedProgressbarStyleEntering_textCtrl5.GetValue(),
-                        self.m_unplayedProgressbarStyleEntering_textCtrl5.GetValue(),
-                    ),
-                ),
+                progressbar=pgb_style,
             )
 
             # 0: 附加包
@@ -976,7 +1045,11 @@ class ConvertPagePanel(wx.Panel):
                     "转换成功",
                     wx.YES_DEFAULT | wx.ICON_INFORMATION,
                 ).ShowModal()
-
+            else:
+                wx.MessageDialog(
+                    None, "你输入的输出格式有误!", "错误", wx.YES_DEFAULT | wx.ICON_ERROR
+                ).ShowModal()
+                return
 
 
 ###########################################################################
@@ -1059,7 +1132,7 @@ class SettingPagePannel(wx.Panel):
         self.m_BasicProgressBarStyleEntering_textCtrl4 = wx.TextCtrl(
             ssss_basicProgressStylePattle_sbSizer9.GetStaticBox(),
             wx.ID_ANY,
-            "▶ %%N [ %%s/%^s %%% __________ %%t|%^t ]",
+            pgb_style.base_style,
             wx.DefaultPosition,
             wx.DefaultSize,
             wx.TE_LEFT | wx.TE_NO_VSCROLL,
@@ -1082,7 +1155,7 @@ class SettingPagePannel(wx.Panel):
         self.m_unplayedProgressbarStyleEntering_textCtrl5 = wx.TextCtrl(
             ssss_UnplayedPartProgressbarPattle_sbSizer10.GetStaticBox(),
             wx.ID_ANY,
-            "§7=§r",
+            pgb_style.to_play_style,
             wx.DefaultPosition,
             wx.DefaultSize,
             wx.TE_LEFT | wx.TE_NO_VSCROLL,
@@ -1105,7 +1178,7 @@ class SettingPagePannel(wx.Panel):
         self.m_playedProgressbarStyleEntering_textCtrl5 = wx.TextCtrl(
             ssss_PlayedPartProgressbarPattle_sbSizer11.GetStaticBox(),
             wx.ID_ANY,
-            "§e=§r",
+            pgb_style.played_style,
             wx.DefaultPosition,
             wx.DefaultSize,
             wx.TE_LEFT | wx.TE_NO_VSCROLL,
@@ -1150,7 +1223,9 @@ class SettingPagePannel(wx.Panel):
             experiment_type_choiceChoices,
             0,
         )
-        self.experiment_type_choice.SetSelection(0)
+        self.experiment_type_choice.SetSelection(
+            experiment_type_choiceChoices.index(ConvertClass[1])
+        )
         setting_page1_experiment_style.Add(
             self.experiment_type_choice,
             2,
@@ -1166,7 +1241,7 @@ class SettingPagePannel(wx.Panel):
             wx.DefaultSize,
             0,
         )
-        self.m_ignore_midi_error_checkBox.SetValue(True)
+        self.m_ignore_midi_error_checkBox.SetValue(ignore_midi_mismatch_error)
         setting_page1_experiment_style.Add(
             self.m_ignore_midi_error_checkBox, 1, wx.ALL, 5
         )
@@ -1203,16 +1278,20 @@ class SettingPagePannel(wx.Panel):
 
         setting_page2_box_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        m_pitched_instrument_table_choiceChoices = ["“偷吃”的对照表", "“经典”对照表"]
         self.m_pitched_instrument_table_choice = wx.Choice(
             self.setting_page2,
             wx.ID_ANY,
             wx.DefaultPosition,
             wx.DefaultSize,
-            m_pitched_instrument_table_choiceChoices,
+            list(convert_tables["PITCHED"].keys()),
             0,
         )
-        self.m_pitched_instrument_table_choice.SetSelection(0)
+        self.m_pitched_instrument_table_choice.SetSelection(
+            list(convert_tables["PITCHED"].keys()).index(
+                convert_table_selection["PITCHED"]
+            )
+        )
+
         self.m_pitched_instrument_table_choice.SetFont(
             wx.Font(
                 wx.NORMAL_FONT.GetPointSize(),
@@ -1249,12 +1328,17 @@ class SettingPagePannel(wx.Panel):
             )
         )
 
-        self.m_propertyGridItem1 = self.m_pitched_notes_table_propertyGrid1.Append(
-            pg.StringProperty("乐音乐器1", "乐音乐器1")
-        )
-        self.m_propertyGridItem2 = self.m_pitched_notes_table_propertyGrid1.Append(
-            pg.StringProperty("乐音乐器2", "乐音乐器2")
-        )
+        for midi_inst, mc_inst_patern in convert_tables["PITCHED"][
+            convert_table_selection["PITCHED"]
+        ].items():
+            self.m_pitched_notes_table_propertyGrid1.Append(
+                pg.StringProperty(
+                    Musicreater.MIDI_PITCHED_NOTE_NAME_TABLE[midi_inst + 1][0],
+                    "pitched_inst_{}".format(midi_inst),
+                    mc_inst_patern[0],
+                )
+            )
+
         setting_page2_box_sizer.Add(
             self.m_pitched_notes_table_propertyGrid1,
             1,
@@ -1275,16 +1359,19 @@ class SettingPagePannel(wx.Panel):
         )
         setting_page3_box_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        m_percussion_instrument_table_choice1Choices = ["“偷吃”的对照表", "“经典”对照表"]
         self.m_percussion_instrument_table_choice1 = wx.Choice(
             self.setting_page3,
             wx.ID_ANY,
             wx.DefaultPosition,
             wx.DefaultSize,
-            m_percussion_instrument_table_choice1Choices,
+            list(convert_tables["PERCUSSION"].keys()),
             0,
         )
-        self.m_percussion_instrument_table_choice1.SetSelection(0)
+        self.m_percussion_instrument_table_choice1.SetSelection(
+            list(convert_tables["PERCUSSION"].keys()).index(
+                convert_table_selection["PERCUSSION"]
+            )
+        )
         self.m_percussion_instrument_table_choice1.SetFont(
             wx.Font(
                 wx.NORMAL_FONT.GetPointSize(),
@@ -1321,12 +1408,17 @@ class SettingPagePannel(wx.Panel):
             )
         )
 
-        self.m_propertyGridItem11 = self.m_percussion_notes_table_propertyGrid11.Append(
-            pg.StringProperty("打击乐器1", "打击乐器1")
-        )
-        self.m_propertyGridItem21 = self.m_percussion_notes_table_propertyGrid11.Append(
-            pg.StringProperty("打击乐器2", "打击乐器2")
-        )
+        for midi_inst, mc_inst_patern in convert_tables["PERCUSSION"][
+            convert_table_selection["PERCUSSION"]
+        ].items():
+            self.m_percussion_notes_table_propertyGrid11.Append(
+                pg.StringProperty(
+                    Musicreater.MIDI_PERCUSSION_NOTE_NAME_TABLE[midi_inst + 1][0],
+                    "percussion_inst_{}".format(midi_inst),
+                    mc_inst_patern[0],
+                )
+            )
+
         setting_page3_box_sizer.Add(
             self.m_percussion_notes_table_propertyGrid11,
             1,
@@ -1345,6 +1437,7 @@ class SettingPagePannel(wx.Panel):
         self.Layout()
 
         # Connect Events
+
         self.m_BasicProgressBarStyleEntering_textCtrl4.Bind(
             wx.EVT_TEXT, self.onProgressbarBasicStyleUpdating
         )
@@ -1354,20 +1447,166 @@ class SettingPagePannel(wx.Panel):
         self.m_playedProgressbarStyleEntering_textCtrl5.Bind(
             wx.EVT_TEXT, self.onProgressbarPlayedStyleUpdating
         )
+        self.m_enable_experiment_checkBox.Bind(
+            wx.EVT_CHECKBOX, self.onExperimentEnableUpdating
+        )
+        self.experiment_type_choice.Bind(wx.EVT_CHOICE, self.onConvertMethodUpdating)
+        self.m_ignore_midi_error_checkBox.Bind(
+            wx.EVT_CHECKBOX, self.onMidiFaultIgnoranceChecking
+        )
+        self.m_pitched_instrument_table_choice.Bind(
+            wx.EVT_CHOICE, self.onPitchedInstListChanging
+        )
+        self.m_pitched_notes_table_propertyGrid1.Bind(
+            pg.EVT_PG_CHANGED, self.onPitchedInstTableChanged
+        )
+        self.m_pitched_notes_table_propertyGrid1.Bind(
+            pg.EVT_PG_CHANGING, self.onPitchedInstTableChanging
+        )
+        self.m_percussion_instrument_table_choice1.Bind(
+            wx.EVT_CHOICE, self.onPercussionInstListChanging
+        )
+        self.m_percussion_notes_table_propertyGrid11.Bind(
+            pg.EVT_PG_CHANGED, self.onPercussionInstTableChanged
+        )
+        self.m_percussion_notes_table_propertyGrid11.Bind(
+            pg.EVT_PG_CHANGING, self.onPercussionInstTableChanging
+        )
+
+        # 设置初始状态
+
+        self.m_ignore_midi_error_checkBox.Enable(False)
+        self.experiment_type_choice.Enable(False)
 
     def __del__(self):
         pass
 
     # Virtual event handlers, override them in your derived class
-
-
     def onProgressbarBasicStyleUpdating(self, event):
-        event.Skip()
+        pgb_style.set_base_style(
+            self.m_BasicProgressBarStyleEntering_textCtrl4.GetValue()
+        )
 
     def onProgressbarUnplayedStyleUpdating(self, event):
-        event.Skip()
+        pgb_style.set_to_play_style(
+            self.m_unplayedProgressbarStyleEntering_textCtrl5.GetValue()
+        )
 
     def onProgressbarPlayedStyleUpdating(self, event):
+        pgb_style.set_played_style(
+            self.m_playedProgressbarStyleEntering_textCtrl5.GetValue()
+        )
+
+    def onExperimentEnableUpdating(self, event):
+        if self.m_enable_experiment_checkBox.GetValue():
+            self.m_ignore_midi_error_checkBox.Enable(True)
+            self.experiment_type_choice.Enable(True)
+        else:
+            self.m_ignore_midi_error_checkBox.Enable(False)
+            self.experiment_type_choice.Enable(False)
+
+    def onConvertMethodUpdating(self, event):
+        global ConvertClass
+        #  0  "常规转换",  1 "长音插值",  2 "同刻偏移"
+        match self.experiment_type_choice.GetSelection():
+            case 0:
+                ConvertClass = (Musicreater.MidiConvert, "常规转换")
+            case 1:
+                ConvertClass = (Musicreater.experiment.FutureMidiConvertM4, "长音插值")
+            case 2:
+                ConvertClass = (Musicreater.experiment.FutureMidiConvertM5, "同刻偏移")
+
+    def onMidiFaultIgnoranceChecking(self, event):
+        global ignore_midi_mismatch_error
+        ignore_midi_mismatch_error = self.m_ignore_midi_error_checkBox.GetValue()
+
+    def onPitchedInstListChanging(self, event):
+        global convert_table_selection
+        convert_table_selection[
+            "PITCHED"
+        ] = self.m_pitched_instrument_table_choice.GetStringSelection()
+        self.m_pitched_notes_table_propertyGrid1.SetPropertyValues(
+            dict(
+                [
+                    ("pitched_inst_{}".format(midi_inst), mc_inst_patern[0])
+                    for midi_inst, mc_inst_patern in convert_tables["PITCHED"][
+                        convert_table_selection["PITCHED"]
+                    ].items()
+                ]
+            )
+        )
+        # logger.info()
+
+    def onPitchedInstTableChanged(self, event):
+        global convert_table_selection, convert_tables
+        convert_tables["PITCHED"]["自定义对照表"] = dict(
+            [
+                (i, j)
+                for i, j in convert_tables["PITCHED"][
+                    convert_table_selection["PITCHED"]
+                ].items()
+            ]
+        )
+        convert_table_selection["PITCHED"] = "自定义对照表"
+        to_change_id = int(event.GetProperty().GetName().split("_")[-1])
+        to_change_value = (
+            event.GetProperty().GetValue(),
+            Musicreater.MM_INSTRUMENT_DEVIATION_TABLE.get(
+                event.GetProperty().GetValue(), -1
+            ),
+        )
+        convert_tables["PITCHED"]["自定义对照表"][to_change_id] = to_change_value
+        logger.info("自定义乐音乐器对照表第 {} 项已更新为：{}".format(to_change_id, to_change_value))
+        if "自定义对照表" not in self.m_pitched_instrument_table_choice.Items:
+            self.m_pitched_instrument_table_choice.Append("自定义对照表")
+            self.m_pitched_instrument_table_choice.SetSelection(2)
+
+    def onPitchedInstTableChanging(self, event):
+        event.Skip()
+        # event.GetPropertyName()
+        # self.m_pitched_notes_table_propertyGrid1
+
+    def onPercussionInstListChanging(self, event):
+        global convert_table_selection
+        convert_table_selection[
+            "PERCUSSION"
+        ] = self.m_percussion_instrument_table_choice1.GetStringSelection()
+        self.m_percussion_notes_table_propertyGrid11.SetPropertyValues(
+            dict(
+                [
+                    ("percussion_inst_{}".format(midi_inst), mc_inst_patern[0])
+                    for midi_inst, mc_inst_patern in convert_tables["PERCUSSION"][
+                        convert_table_selection["PERCUSSION"]
+                    ].items()
+                ]
+            )
+        )
+
+    def onPercussionInstTableChanged(self, event):
+        global convert_table_selection, convert_tables
+        convert_tables["PERCUSSION"]["自定义对照表"] = dict(
+            [
+                (i, j)
+                for i, j in convert_tables["PERCUSSION"][
+                    convert_table_selection["PERCUSSION"]
+                ].items()
+            ]
+        )
+        convert_table_selection["PERCUSSION"] = "自定义对照表"
+        to_change_id = int(event.GetProperty().GetName().split("_")[-1])
+        to_change_value = (
+            event.GetProperty().GetValue(),
+            Musicreater.MM_INSTRUMENT_DEVIATION_TABLE.get(
+                event.GetProperty().GetValue(), -1
+            ),
+        )
+        convert_tables["PERCUSSION"]["自定义对照表"][to_change_id] = to_change_value
+        logger.info("自定义打击乐器对照表第 {} 项已更新为：{}".format(to_change_id, to_change_value))
+        if "自定义对照表" not in self.m_percussion_instrument_table_choice1.Items:
+            self.m_percussion_instrument_table_choice1.Append("自定义对照表")
+            self.m_percussion_instrument_table_choice1.SetSelection(2)
+
+    def onPercussionInstTableChanging(self, event):
         event.Skip()
 
 
@@ -1375,7 +1614,7 @@ logger.info("执行应用。")
 
 # 启动应用程序
 if __name__ == "__main__":
-    app = LinglunConverterApp()
+    logger.info("检查更新：")
 
     check_update(
         __appname__,
@@ -1391,6 +1630,29 @@ if __name__ == "__main__":
         __zhver__,
     )
 
+    logger.info("开启窗口")
+
+    app = LinglunConverterApp()
+
     app.MainLoop()
 
+    if on_exit_saving:
+        enpack_llc_pack(
+            (
+                pgb_style,
+                on_exit_saving,
+                ignore_midi_mismatch_error,
+                convert_tables,
+                convert_table_selection,
+                ConvertClass,
+            ),
+            "save.llc.config",
+        )
+    else:
+        for path, dir_list, file_list in os.walk(r"./"):
+            for file_name in file_list:
+                if file_name.endswith(".llc.config"):
+                    os.remove(
+                        os.path.join(path, file_name),
+                    )
     # input("按下回车退出……")
