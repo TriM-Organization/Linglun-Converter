@@ -7,8 +7,8 @@
 伶伦转换器暨模组特用奇巧
 Linglun Converter for Special Use with addons
 
-版权所有 © 2023 金羿 & 睿穆开发组
-Copyright © 2023 EillesWan & TriM Org.
+版权所有 © 2024 金羿 & 睿穆开发组
+Copyright © 2024 EillesWan & TriM Org.
 
 开源相关声明请见 ./License.md
 Terms & Conditions: ./Lisense.md

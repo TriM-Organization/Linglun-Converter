@@ -4,8 +4,8 @@
 伶伦转换器 版本检查组件
 Linglun Converter Version Checking Component
 
-版权所有 © 2023 金羿 & 睿穆开发组
-Copyright © 2023 EillesWan & TriM Org.
+版权所有 © 2024 金羿 & 睿穆开发组
+Copyright © 2024 EillesWan & TriM Org.
 
 开源相关声明请见 ./License.md
 Terms & Conditions: ./Lisense.md
