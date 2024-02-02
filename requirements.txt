@@ -1,2 +1,2 @@
-Musicreater>=1.7.1
+Musicreater>=1.7.2
 TrimLog>=0.8.3

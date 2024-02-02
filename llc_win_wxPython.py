@@ -180,7 +180,11 @@ class LingLunMainFrame(wx.Frame):
 
         self.FileMenu = wx.Menu()
         self.m_ClearSetting_menuItem2 = wx.MenuItem(
-            self.FileMenu, wx.ID_ANY, "重置设置", "将全部数据设置重置为默认值（下次启动时生效）", wx.ITEM_CHECK
+            self.FileMenu,
+            wx.ID_ANY,
+            "重置设置",
+            "将全部数据设置重置为默认值（下次启动时生效）",
+            wx.ITEM_CHECK,
         )
         self.FileMenu.Append(self.m_ClearSetting_menuItem2)
 
@@ -344,7 +348,12 @@ class ConvertPagePanel(wx.Panel):
         s_midiChooseSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.m_ChooseMidiTips_staticText3 = wx.StaticText(
-            self, wx.ID_ANY, "选择MIDI文件\n（双击移除）", wx.DefaultPosition, wx.DefaultSize, 0
+            self,
+            wx.ID_ANY,
+            "选择MIDI文件\n（双击移除）",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.m_ChooseMidiTips_staticText3.Wrap(-1)
 
@@ -424,7 +433,8 @@ class ConvertPagePanel(wx.Panel):
         ss_regularPromoptsEnteringSizer1 = wx.BoxSizer(wx.HORIZONTAL)
 
         sss_VolumnPersentageEnteringSizer = wx.StaticBoxSizer(
-            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "音量大小"), wx.HORIZONTAL
+            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "音量大小"),
+            wx.HORIZONTAL,
         )
 
         self.m_volumn_slider = wx.Slider(
@@ -464,7 +474,8 @@ class ConvertPagePanel(wx.Panel):
         )
 
         sss_SpeedEnteringSizer = wx.StaticBoxSizer(
-            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "播放倍速"), wx.HORIZONTAL
+            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "播放倍速"),
+            wx.HORIZONTAL,
         )
 
         self.m_speed_slider = wx.Slider(
@@ -504,7 +515,8 @@ class ConvertPagePanel(wx.Panel):
         s_promptSizer.Add(ss_regularPromoptsEnteringSizer1, 0, wx.EXPAND, 5)
 
         ss_commandCheckingSizer = wx.StaticBoxSizer(
-            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "指令设置"), wx.HORIZONTAL
+            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "指令设置"),
+            wx.HORIZONTAL,
         )
 
         self.m_progressBarEnablingCheckBox1 = wx.CheckBox(
@@ -1005,7 +1017,10 @@ class ConvertPagePanel(wx.Panel):
                     )
                 else:
                     wx.MessageDialog(
-                        None, "你输入的播放器有误!", "错误", wx.YES_DEFAULT | wx.ICON_ERROR
+                        None,
+                        "你输入的播放器有误!",
+                        "错误",
+                        wx.YES_DEFAULT | wx.ICON_ERROR,
                     ).ShowModal()
                     return
                 wx.MessageDialog(
@@ -1034,7 +1049,10 @@ class ConvertPagePanel(wx.Panel):
                     )
                 else:
                     wx.MessageDialog(
-                        None, "你输入的播放器有误!", "错误", wx.YES_DEFAULT | wx.ICON_ERROR
+                        None,
+                        "你输入的播放器有误!",
+                        "错误",
+                        wx.YES_DEFAULT | wx.ICON_ERROR,
                     ).ShowModal()
                     return
                 wx.MessageDialog(
@@ -1047,7 +1065,10 @@ class ConvertPagePanel(wx.Panel):
                 ).ShowModal()
             else:
                 wx.MessageDialog(
-                    None, "你输入的输出格式有误!", "错误", wx.YES_DEFAULT | wx.ICON_ERROR
+                    None,
+                    "你输入的输出格式有误!",
+                    "错误",
+                    wx.YES_DEFAULT | wx.ICON_ERROR,
                 ).ShowModal()
                 return
 
@@ -1147,7 +1168,9 @@ class SettingPagePannel(wx.Panel):
 
         ssss_UnplayedPartProgressbarPattle_sbSizer10 = wx.StaticBoxSizer(
             wx.StaticBox(
-                setting_page1_progressbar_style.GetStaticBox(), wx.ID_ANY, "未播放之样式"
+                setting_page1_progressbar_style.GetStaticBox(),
+                wx.ID_ANY,
+                "未播放之样式",
             ),
             wx.VERTICAL,
         )
@@ -1170,7 +1193,9 @@ class SettingPagePannel(wx.Panel):
 
         ssss_PlayedPartProgressbarPattle_sbSizer11 = wx.StaticBoxSizer(
             wx.StaticBox(
-                setting_page1_progressbar_style.GetStaticBox(), wx.ID_ANY, "已播放之样式"
+                setting_page1_progressbar_style.GetStaticBox(),
+                wx.ID_ANY,
+                "已播放之样式",
             ),
             wx.VERTICAL,
         )
@@ -1522,9 +1547,9 @@ class SettingPagePannel(wx.Panel):
 
     def onPitchedInstListChanging(self, event):
         global convert_table_selection
-        convert_table_selection[
-            "PITCHED"
-        ] = self.m_pitched_instrument_table_choice.GetStringSelection()
+        convert_table_selection["PITCHED"] = (
+            self.m_pitched_instrument_table_choice.GetStringSelection()
+        )
         self.m_pitched_notes_table_propertyGrid1.SetPropertyValues(
             dict(
                 [
@@ -1556,7 +1581,11 @@ class SettingPagePannel(wx.Panel):
             ),
         )
         convert_tables["PITCHED"]["自定义对照表"][to_change_id] = to_change_value
-        logger.info("自定义乐音乐器对照表第 {} 项已更新为：{}".format(to_change_id, to_change_value))
+        logger.info(
+            "自定义乐音乐器对照表第 {} 项已更新为：{}".format(
+                to_change_id, to_change_value
+            )
+        )
         if "自定义对照表" not in self.m_pitched_instrument_table_choice.Items:
             self.m_pitched_instrument_table_choice.Append("自定义对照表")
             self.m_pitched_instrument_table_choice.SetSelection(2)
@@ -1568,9 +1597,9 @@ class SettingPagePannel(wx.Panel):
 
     def onPercussionInstListChanging(self, event):
         global convert_table_selection
-        convert_table_selection[
-            "PERCUSSION"
-        ] = self.m_percussion_instrument_table_choice1.GetStringSelection()
+        convert_table_selection["PERCUSSION"] = (
+            self.m_percussion_instrument_table_choice1.GetStringSelection()
+        )
         self.m_percussion_notes_table_propertyGrid11.SetPropertyValues(
             dict(
                 [
@@ -1601,7 +1630,11 @@ class SettingPagePannel(wx.Panel):
             ),
         )
         convert_tables["PERCUSSION"]["自定义对照表"][to_change_id] = to_change_value
-        logger.info("自定义打击乐器对照表第 {} 项已更新为：{}".format(to_change_id, to_change_value))
+        logger.info(
+            "自定义打击乐器对照表第 {} 项已更新为：{}".format(
+                to_change_id, to_change_value
+            )
+        )
         if "自定义对照表" not in self.m_percussion_instrument_table_choice1.Items:
             self.m_percussion_instrument_table_choice1.Append("自定义对照表")
             self.m_percussion_instrument_table_choice1.SetSelection(2)

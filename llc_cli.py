@@ -19,7 +19,7 @@ __version__ = "0.0.6"
 import datetime
 import os
 import random
-import sys
+# import sys
 
 import Musicreater
 from Musicreater.constants import DEFAULT_PROGRESSBAR_STYLE
@@ -30,7 +30,7 @@ from Musicreater.plugin.addonpack import (
     to_addon_pack_in_score,
 )
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
-from utils.io import *
+from utils.io import MainConsole, prt, ipt, myWords, isin, bool_str, float_str
 
 # from Musicreater.plugin.mcstructure import commands_to_structure, commands_to_redstone_delay_structure
 
@@ -41,19 +41,19 @@ MainConsole.print(
     justify="center",
 )
 
-osc.project_name = "伶伦转换器"
-osc.version = __version__
+# osc.project_name = "伶伦转换器"
+# osc.version = __version__
 
 
-if len(sys.argv) > 0:
+# if len(sys.argv) > 0:
 
-    def go_for_args(debugMode: str = "False", logfile: str = "True"):
-        global logger
-        osc.isRelease = False if debugMode.lower() in ("true", "1") else True
-        logger.printing = not osc.isRelease
-        logger.writing = True if logfile.lower() in ("true", "1") else False
+#     def go_for_args(debugMode: str = "False", logfile: str = "True"):
+#         global logger
+#         osc.isRelease = False if debugMode.lower() in ("true", "1") else True
+#         logger.printing = not osc.isRelease
+#         logger.writing = True if logfile.lower() in ("true", "1") else False
 
-    go_for_args(*sys.argv)
+#     go_for_args(*sys.argv)
 
 
 # 显示大标题
