@@ -4,13 +4,12 @@
 伶伦转换器 打包存档组件
 Linglun Converter Language Localization Component
 
-版权所有 © 2024 金羿 & 睿穆开发组
+版权所有 © 2024 金羿 & 睿乐开发组
 Copyright © 2024 EillesWan & TriM Org.
 
 开源相关声明请见 ./License.md
 Terms & Conditions: ./Lisense.md
 """
-
 
 
 import hashlib
@@ -62,3 +61,60 @@ def enpack_llc_pack(sth: Any, to_dist: str):
         f.write(md5_value)
         f.write(b" | \n")
         f.write(packing_bytes)
+
+
+def enpack_msct_pack(sth, to_dist: str):
+    packing_bytes = brotli.compress(
+        dill.dumps(
+            sth,
+        )
+    )
+    with open(
+        to_dist,
+        "wb",
+    ) as f:
+        f.write(packing_bytes)
+
+    return hashlib.sha256(packing_bytes)
+
+
+def unpack_msct_pack(from_dist: str, hash_value: str, raise_error: bool = True):
+    with open(from_dist, "rb") as f:
+        packed_data = f.read()
+    now_hash = hashlib.sha256(packed_data).hexdigest()
+    if now_hash == hash_value:
+        return dill.loads(brotli.decompress(packed_data))
+    else:
+        if raise_error:
+            raise ValueError(
+                "文件读取失败：\n传入：{}\n需求：{}\n签名不一致，可能存在注入风险。".format(
+                    now_hash, hash_value
+                )
+            )
+        else:
+            return ValueError(
+                "文件读取失败：\n传入：{}\n需求：{}\n签名不一致，可能存在注入风险。".format(
+                    now_hash, hash_value
+                )
+            )
+
+
+def load_msct_packed_data(
+    packed_data: bytes, hash_value: str, raise_error: bool = True
+):
+    now_hash = hashlib.sha256(packed_data).hexdigest()
+    if now_hash == hash_value:
+        return dill.loads(brotli.decompress(packed_data))
+    else:
+        if raise_error:
+            raise ValueError(
+                "文件读取失败：\n传入：{}\n需求：{}\n签名不一致，可能存在注入风险。".format(
+                    now_hash, hash_value
+                )
+            )
+        else:
+            return ValueError(
+                "文件读取失败：\n传入：{}\n需求：{}\n签名不一致，可能存在注入风险。".format(
+                    now_hash, hash_value
+                )
+            )

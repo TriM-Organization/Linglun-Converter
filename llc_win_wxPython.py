@@ -4,7 +4,7 @@
 伶伦转换器 WXGUI
 Linglun Converter WxPython GUI
 
-版权所有 © 2024 金羿 & 睿穆开发组
+版权所有 © 2024 金羿 & 睿乐开发组
 Copyright © 2024 EillesWan & TriM Org.
 
 开源相关声明请见 ./License.md
@@ -16,6 +16,9 @@ Terms & Conditions: ./Lisense.md
 import os
 import random
 import sys
+from types import ModuleType
+
+import requests
 
 if sys.argv:
     if "-l" in sys.argv:
@@ -27,7 +30,8 @@ if sys.argv:
         exit()
 
 import Musicreater
-import Musicreater.experiment
+import Musicreater.experiment as Musicreater_experiment
+import Musicreater.plugin as Musicreater_plugin
 from Musicreater.plugin import ConvertConfig
 from Musicreater.plugin.addonpack import (
     to_addon_pack_in_delay,
@@ -40,33 +44,221 @@ import wx
 import wx.xrc
 import wx.propgrid as pg
 
-from utils.io import myWords, logger, object_constants  # , TrimLog, is_logging
-from utils.update_check import check_update
-from utils.packdata import enpack_llc_pack, unpack_llc_pack
+from utils.io import (
+    myWords,
+    logger,
+    object_constants,
+    log__init__,
+    TrimLog,
+    Tuple,
+    Any,
+    Union,
+    Callable,
+    Literal,
+)
+from utils.update_check import check_update_repo, check_update_release
+from utils.packdata import enpack_llc_pack, unpack_llc_pack, load_msct_packed_data
+from utils.webview import go_update_tip
 
-logger.info("注册全局变量……")
+logger.info("注册变量并读取内容……")
 
 
 WHITE = (242, 244, 246)  # F2F4F6
+WHITE2 = (248, 252, 255)
+# WHITE3 = (233, 236, 240)
 BLACK = (18, 17, 16)  # 121110
+BLACK2 = (9, 12, 14)
+# BLACK3 = (0, 2, 6)
+
+# WHITE = (18, 17, 16)  # F2F4F6
+# WHITE2 = (9, 12, 14)
+# BLACK = (242, 244, 246)  # 121110
+# BLACK2 = (248, 252, 255)
 
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.0.0"
-__zhver__ = "WX图形界面 初代预版第〇次修订"
+__version__ = "WXGUI 1.1.0"
+__zhver__ = "WX图形界面 初代首版第〇次修订"
 
 
 yanlun_length = len(myWords)
 
+msct_main = msct_plugin = msct_plugin_function = None
 
-# global pgb_style
-# global on_exit_saving
-# global ignore_midi_mismatch_error
-# global convert_tables
-# global convert_table_selection
-# global ConvertClass
+if os.path.exists("./MSCT/Musicreater.llc.pack"):
+    logger.info("已发现音·创本地包，读取中")
+    # unpacked_data_msct: Union[
+    #     Any,
+    #     Tuple[
+    #         Tuple[ModuleType, ModuleType, ModuleType],
+    #         Tuple[ModuleType],
+    #         Tuple[
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     int,
+    #                 ],
+    #                 Tuple[int, int],
+    #             ],
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     int,
+    #                 ],
+    #                 Tuple[int, int],
+    #             ],
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     bool,
+    #                 ],
+    #                 Tuple[int, int],
+    #             ],
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     int,
+    #                 ],
+    #                 Tuple[Tuple[int, int, int], int],
+    #             ],
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     Literal["z+", "z-", "Z+", "Z-", "x+", "x-", "X+", "X-"],
+    #                     str,
+    #                 ],
+    #                 Tuple[Tuple[int, int, int], int],
+    #             ],
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     bool,
+    #                     int,
+    #                 ],
+    #                 Tuple[Tuple[int, int, int], int, int],
+    #             ],
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     str,
+    #                     int,
+    #                 ],
+    #                 Tuple[int, int, Tuple[int, int, int], Tuple[int, int, int]],
+    #             ],
+    #             Callable[
+    #                 [
+    #                     Musicreater.MidiConvert,
+    #                     Musicreater_plugin.ConvertConfig,
+    #                     str,
+    #                     bool,
+    #                     str,
+    #                     int,
+    #                 ],
+    #                 Tuple[int, int, Tuple[int, int, int], Tuple[int, int, int]],
+    #             ],
+    #         ],
+    #     ],
+    # ] = unpack_llc_pack("./MSCT/Musicreater.llc.pack", False)
+    unpacked_data_msct = unpack_llc_pack("./MSCT/Musicreater.llc.pack", False)
+    if isinstance(unpacked_data_msct, Exception):
+        logger.warning("读取内核文件失败：{}；即将从互联网下载 音·创。")
+    else:
+        (msct_main, msct_plugin, msct_plugin_function) = unpacked_data_msct
+        (
+            Musicreater,
+            Musicreater_experiment,
+            Musicreater_previous,
+        ) = msct_main
+        Musicreater_plugin = msct_plugin
+        (
+            to_addon_pack_in_delay,
+            to_addon_pack_in_repeater,
+            to_addon_pack_in_score,
+            to_mcstructure_file_in_delay,
+            to_mcstructure_file_in_repeater,
+            to_mcstructure_file_in_score,
+            to_BDX_file_in_delay,
+            to_BDX_file_in_score,
+        ) = msct_plugin_function
+    # with open(, "rb") as f:
+    #     f.write("MSCT_MAIN:\n")
+    #     f.write(enpack_msct_pack(MSCT_MAIN, "./Packer/MSCT_MAIN.MPK").hexdigest())
+    #     f.write("\nMSCT_PLUGIN:\n")
+    #     f.write(enpack_msct_pack(MSCT_PLUGIN, "./Packer/MSCT_PLUGIN.MPK").hexdigest())
+    #     f.write("\nMSCT_PLUGIN_FUNCTION:\n")
+    #     f.write(
+    #         enpack_msct_pack(
+    #             MSCT_PLUGIN_FUNCTION, "./Packer/MSCT_PLUGIN_FUNCTION.MPK"
+    #         ).hexdigest()
+    #     )
 
-pgb_style: Musicreater.ProgressBarStyle = Musicreater.DEFAULT_PROGRESSBAR_STYLE.copy()
+
+logger.info("启用音·创更新检查")
+
+down_paths = check_update_release(
+    "音·创",
+    "https://gitee.com/TriM-Organization/Musicreater/releases/latest",
+    Musicreater.__version__,
+    go_update_tip,
+    logger,
+    "！转换器内核已经更新！\n新版本 {app} {latest} 可用，当前仍是 {current}\n是否更新？",
+)
+
+logger.info("获取到版本检查信息：{}".format(down_paths))
+
+if down_paths:
+
+    os.remove("save.llc.config")
+
+    unpacked_data_msct = []
+    if not os.path.exists("./MSCT/"):
+        os.makedirs("./MSCT/")
+    chk_md5 = requests.get("https://gitee.com" + down_paths["checksum.txt"]).text.split(
+        "\r\n"
+    )
+    for fn, lk in down_paths.items():
+        if fn == "checksum.txt":
+            continue
+        unpacked_data_msct.append(
+            load_msct_packed_data(
+                requests.get("https://gitee.com" + lk).content,
+                chk_md5[chk_md5.index("{}:".format(os.path.splitext(fn)[0])) + 1],
+            )
+        )
+    enpack_llc_pack(tuple(unpacked_data_msct), "./MSCT/Musicreater.llc.pack")
+    (msct_main, msct_plugin, msct_plugin_function) = unpacked_data_msct
+    (
+        Musicreater,
+        Musicreater_experiment,
+        Musicreater_previous,
+    ) = msct_main
+    Musicreater_plugin = msct_plugin
+    (
+        to_addon_pack_in_delay,
+        to_addon_pack_in_repeater,
+        to_addon_pack_in_score,
+        to_mcstructure_file_in_delay,
+        to_mcstructure_file_in_repeater,
+        to_mcstructure_file_in_score,
+        to_BDX_file_in_delay,
+        to_BDX_file_in_score,
+    ) = msct_plugin_function
+
+pgb_style: Musicreater.ProgressBarStyle = Musicreater.DEFAULT_PROGRESSBAR_STYLE.copy()  # type: ignore
 on_exit_saving: bool = True
 ignore_midi_mismatch_error: bool = True
 convert_tables = {
@@ -104,9 +296,19 @@ osc = object_constants.ObjectStateConstant(
     logging_project_name=__appname__,
     logging_project_version=__version__,
     logging_exit_exec=lambda sth: wx.MessageDialog(
-        None, sth, "崩溃", wx.YES_DEFAULT | wx.ICON_STOP
+        None,
+        sth + "\n问题不大吧？有问题拜托请报给开发者！谢谢！",
+        "崩溃",
+        wx.YES_DEFAULT | wx.ICON_STOP,
     ).ShowModal(),
+    # is_this_a_release=True,
 )
+# print(osc.exit_execution)
+osc.set_console(logger.console)
+
+log__init__(osc, TrimLog.PipManage(True, True, 40), True)
+
+
 logger.printing = not osc.is_release
 
 
@@ -253,6 +455,9 @@ class LingLunMainFrame(wx.Frame):
             )
         )
 
+        self.mian_notebook.SetForegroundColour(BLACK)
+        self.mian_notebook.SetBackgroundColour(WHITE)
+
         self.convert_page = ConvertPagePanel(
             self.mian_notebook,
             wx.ID_ANY,
@@ -328,12 +533,13 @@ logger.info("加载分页……")
 
 
 class ConvertPagePanel(wx.Panel):
+
     def __init__(
         self,
         parent,
         id=wx.ID_ANY,
         pos=wx.DefaultPosition,
-        size=wx.Size(565, 540),
+        size=wx.Size(652, 588),
         style=wx.TAB_TRAVERSAL,
         name=wx.EmptyString,
     ):
@@ -341,11 +547,14 @@ class ConvertPagePanel(wx.Panel):
             self, parent, id=id, pos=pos, size=size, style=style, name=name
         )
 
-        self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+        self.SetBackgroundColour(WHITE2)
+        self.SetForegroundColour(BLACK2)
 
         main_page_sizer = wx.BoxSizer(wx.VERTICAL)
 
         s_midiChooseSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        MidiChooser_Delete_and_Tips_bSizer15 = wx.BoxSizer(wx.VERTICAL)
 
         self.m_ChooseMidiTips_staticText3 = wx.StaticText(
             self,
@@ -357,30 +566,53 @@ class ConvertPagePanel(wx.Panel):
         )
         self.m_ChooseMidiTips_staticText3.Wrap(-1)
 
+        MidiChooser_Delete_and_Tips_bSizer15.Add(
+            self.m_ChooseMidiTips_staticText3, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5
+        )
+
+        self.m_done_then_remove_checkBox6 = wx.CheckBox(
+            self, wx.ID_ANY, "完成后移除", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        MidiChooser_Delete_and_Tips_bSizer15.Add(
+            self.m_done_then_remove_checkBox6, 0, wx.ALL, 5
+        )
+
         s_midiChooseSizer.Add(
-            self.m_ChooseMidiTips_staticText3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5
+            MidiChooser_Delete_and_Tips_bSizer15, 0, wx.SHAPED | wx.EXPAND, 0
         )
 
         ss_MidiChooserSizer_bSizer9 = wx.BoxSizer(wx.VERTICAL)
+
         self.midiFilesList = set()
         self.m_midiFilesList_listBox2 = wx.ListBox(
             self,
             wx.ID_ANY,
             wx.DefaultPosition,
             wx.DefaultSize,
-            [],
+            list(self.midiFilesList),
             wx.LB_HSCROLL | wx.LB_SORT,
         )
-        ss_MidiChooserSizer_bSizer9.Add(self.m_midiFilesList_listBox2, 0, wx.EXPAND, 0)
+        ss_MidiChooserSizer_bSizer9.Add(self.m_midiFilesList_listBox2, 1, wx.EXPAND, 0)
 
         s_midiChooseSizer.Add(ss_MidiChooserSizer_bSizer9, 1, wx.EXPAND, 5)
+
+        MidiChooser_Open_and_Clear_Buttons_bSizer16 = wx.BoxSizer(wx.VERTICAL)
 
         self.m_midiBroseButton_button21 = wx.Button(
             self, wx.ID_ANY, "打开…", wx.DefaultPosition, wx.DefaultSize, 0
         )
-        s_midiChooseSizer.Add(
-            self.m_midiBroseButton_button21, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5
+        MidiChooser_Open_and_Clear_Buttons_bSizer16.Add(
+            self.m_midiBroseButton_button21, 0, wx.ALL | wx.EXPAND, 5
         )
+
+        self.m_midiChooser_Clear_button3 = wx.Button(
+            self, wx.ID_ANY, "清空文件", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        MidiChooser_Open_and_Clear_Buttons_bSizer16.Add(
+            self.m_midiChooser_Clear_button3, 0, wx.ALL | wx.EXPAND, 5
+        )
+
+        s_midiChooseSizer.Add(MidiChooser_Open_and_Clear_Buttons_bSizer16, 0, wx.ALL, 5)
 
         main_page_sizer.Add(s_midiChooseSizer, 0, wx.EXPAND, 5)
 
@@ -419,7 +651,7 @@ class ConvertPagePanel(wx.Panel):
             m_playerChoice_choice2Choices,
             0,
         )
-        self.m_playerChoice_choice2.SetSelection(0)
+        self.m_playerChoice_choice2.SetSelection(2)
         ss_playerChooseSizer.Add(self.m_playerChoice_choice2, 0, wx.ALL | wx.EXPAND, 5)
 
         s_formatChooseSizer.Add(ss_playerChooseSizer, 1, wx.ALL | wx.EXPAND, 5)
@@ -467,10 +699,7 @@ class ConvertPagePanel(wx.Panel):
         )
 
         ss_regularPromoptsEnteringSizer1.Add(
-            sss_VolumnPersentageEnteringSizer,
-            0,
-            wx.ALL | wx.EXPAND | wx.SHAPED | wx.ALIGN_CENTER_VERTICAL,
-            5,
+            sss_VolumnPersentageEnteringSizer, 0, wx.ALL | wx.EXPAND, 5
         )
 
         sss_SpeedEnteringSizer = wx.StaticBoxSizer(
@@ -506,10 +735,7 @@ class ConvertPagePanel(wx.Panel):
         sss_SpeedEnteringSizer.Add(self.m_speed_spinCtrlDouble, 0, wx.ALL, 5)
 
         ss_regularPromoptsEnteringSizer1.Add(
-            sss_SpeedEnteringSizer,
-            0,
-            wx.ALL | wx.EXPAND | wx.SHAPED | wx.ALIGN_CENTER_VERTICAL,
-            5,
+            sss_SpeedEnteringSizer, 0, wx.ALL | wx.EXPAND, 5
         )
 
         s_promptSizer.Add(ss_regularPromoptsEnteringSizer1, 0, wx.EXPAND, 5)
@@ -751,17 +977,62 @@ class ConvertPagePanel(wx.Panel):
 
         s_promptSizer.Add(ss_HideAndSeekSizer_bSizer15, 0, wx.EXPAND, 5)
 
-        main_page_sizer.Add(
-            s_promptSizer, 0, wx.SHAPED | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL, 5
-        )
+        main_page_sizer.Add(s_promptSizer, 0, wx.ALL | wx.EXPAND | wx.SHAPED, 5)
 
         s_StartSizer_sbSizer18 = wx.StaticBoxSizer(
             wx.StaticBox(self, wx.ID_ANY, "开始转换"), wx.HORIZONTAL
         )
 
         s_StartSizer_sbSizer18.SetMinSize(wx.Size(-1, 100))
+        ss_Midi_Convert_distPath_bSizer17 = wx.BoxSizer(wx.VERTICAL)
 
-        s_StartSizer_sbSizer18.Add((0, 0), 1, wx.EXPAND, 5)
+        ss_Dest_chooser_Sizer_in_bSizer18 = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.m_tip_Change_Dest_staticText7 = wx.StaticText(
+            s_StartSizer_sbSizer18.GetStaticBox(),
+            wx.ID_ANY,
+            "指定输出路径",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
+        )
+        self.m_tip_Change_Dest_staticText7.Wrap(-1)
+
+        ss_Dest_chooser_Sizer_in_bSizer18.Add(
+            self.m_tip_Change_Dest_staticText7, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5
+        )
+
+        self.m_Convertion_Destination_Picker_dirPicker1 = wx.DirPickerCtrl(
+            s_StartSizer_sbSizer18.GetStaticBox(),
+            wx.ID_ANY,
+            "./",
+            "选择目标目录",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            wx.DIRP_DEFAULT_STYLE,
+        )
+        ss_Dest_chooser_Sizer_in_bSizer18.Add(
+            self.m_Convertion_Destination_Picker_dirPicker1, 1, wx.ALL | wx.EXPAND, 5
+        )
+
+        ss_Midi_Convert_distPath_bSizer17.Add(
+            ss_Dest_chooser_Sizer_in_bSizer18, 0, wx.ALL | wx.EXPAND, 5
+        )
+
+        self.m_Check_Every_Their_Path_checkBox7 = wx.CheckBox(
+            s_StartSizer_sbSizer18.GetStaticBox(),
+            wx.ID_ANY,
+            "输出到每个文件所在目录",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
+        )
+        self.m_Check_Every_Their_Path_checkBox7.SetValue(True)
+        ss_Midi_Convert_distPath_bSizer17.Add(
+            self.m_Check_Every_Their_Path_checkBox7, 0, wx.ALL, 5
+        )
+
+        s_StartSizer_sbSizer18.Add(ss_Midi_Convert_distPath_bSizer17, 1, wx.EXPAND, 5)
 
         self.m_start_button2 = wx.Button(
             s_StartSizer_sbSizer18.GetStaticBox(),
@@ -773,23 +1044,24 @@ class ConvertPagePanel(wx.Panel):
         )
         s_StartSizer_sbSizer18.Add(self.m_start_button2, 0, wx.ALIGN_CENTER | wx.ALL, 5)
 
-        main_page_sizer.Add(
-            s_StartSizer_sbSizer18,
-            1,
-            wx.ALL | wx.EXPAND | wx.RESERVE_SPACE_EVEN_IF_HIDDEN,
-            5,
-        )
+        main_page_sizer.Add(s_StartSizer_sbSizer18, 1, wx.ALL | wx.EXPAND, 5)
 
         self.SetSizer(main_page_sizer)
         self.Layout()
 
         # Connect Events
         self.m_ChooseMidiTips_staticText3.Bind(wx.EVT_LEFT_DCLICK, self.MidiEasterEgg)
+        self.m_done_then_remove_checkBox6.Bind(
+            wx.EVT_CHECKBOX, self.on_Done_Then_Remove_Clicked
+        )
         self.m_midiFilesList_listBox2.Bind(wx.EVT_LISTBOX, self.onFileListUpdated)
         self.m_midiFilesList_listBox2.Bind(
             wx.EVT_LISTBOX_DCLICK, self.onFileDoubleClicked
         )
         self.m_midiBroseButton_button21.Bind(wx.EVT_BUTTON, self.openFile)
+        self.m_midiChooser_Clear_button3.Bind(
+            wx.EVT_BUTTON, self.on_Chooer_Clear_Button_Pressed
+        )
         self.m_outformatChoice_choice1.Bind(wx.EVT_CHOICE, self.onOutputFormatChosen)
         self.m_playerChoice_choice2.Bind(wx.EVT_CHOICE, self.onPlayerChosen)
         self.m_volumn_slider.Bind(wx.EVT_SCROLL, self.onVolumeScrolling)
@@ -819,13 +1091,18 @@ class ConvertPagePanel(wx.Panel):
         self.m_EnteringBDXfileSignName_textCtrl12.Bind(
             wx.EVT_TEXT, self.onBDXfileSignNameUpdating
         )
+        self.m_tip_Change_Dest_staticText7.Bind(
+            wx.EVT_LEFT_DCLICK, self.on_Change_to_Default_Path
+        )
+        self.m_Convertion_Destination_Picker_dirPicker1.Bind(
+            wx.EVT_DIRPICKER_CHANGED, self.on_Convert_Dest_Changed
+        )
+        self.m_Check_Every_Their_Path_checkBox7.Bind(
+            wx.EVT_CHECKBOX, self.On_Their_Path_Checked
+        )
         self.m_start_button2.Bind(wx.EVT_BUTTON, self.onStartButtonPressed)
 
-        self.m_EnteringBDXfileSignName_textCtrl12.Enable(False)
-
-        self.m_PlayerSelectorEntering_comboBox1.Enable(False)
-        self.m_StructureHeight_slider7.Enable(False)
-        self.m_enteringStructureMaxHeight_spinCtrl1.Enable(False)
+        self.m_Convertion_Destination_Picker_dirPicker1.Enable(False)
 
     def __del__(self):
         pass
@@ -835,6 +1112,9 @@ class ConvertPagePanel(wx.Panel):
         if "诸葛亮与八卦阵-山水千年" not in self.midiFilesList:
             self.midiFilesList.add("诸葛亮与八卦阵-山水千年")
             self.m_midiFilesList_listBox2.Append("诸葛亮与八卦阵-山水千年")
+
+    def on_Done_Then_Remove_Clicked(self, event):
+        event.Skip()
 
     def onFileListUpdated(self, event):
         # prt(self.m_ChooseMIDI_filePicker1.GetTextCtrl().Value)
@@ -861,6 +1141,10 @@ class ConvertPagePanel(wx.Panel):
             self.m_midiFilesList_listBox2.Set(list(self.midiFilesList))
 
         fileDialog.Destroy()
+
+    def on_Chooer_Clear_Button_Pressed(self, event):
+        self.midiFilesList.clear()
+        self.m_midiFilesList_listBox2.Clear()
 
     def onOutputFormatChosen(self, event):
         # 0: 附加包
@@ -963,6 +1247,18 @@ class ConvertPagePanel(wx.Panel):
     def onBDXfileSignNameUpdating(self, event):
         event.Skip()
 
+    def on_Change_to_Default_Path(self, event):
+        event.Skip()
+
+    def on_Convert_Dest_Changed(self, event):
+        event.Skip()
+
+    def On_Their_Path_Checked(self, event):
+        if self.m_Check_Every_Their_Path_checkBox7.GetValue():
+            self.m_Convertion_Destination_Picker_dirPicker1.Enable(False)
+        else:
+            self.m_Convertion_Destination_Picker_dirPicker1.Enable(True)
+
     def onStartButtonPressed(self, event):
         global pgb_style
         for file_name in self.m_midiFilesList_listBox2.GetStrings():
@@ -983,7 +1279,11 @@ class ConvertPagePanel(wx.Panel):
                 )
 
             cvt_cfg = ConvertConfig(
-                os.path.split(file_name)[0],
+                (
+                    os.path.split(file_name)[0]
+                    if self.m_Check_Every_Their_Path_checkBox7.GetValue()
+                    else self.m_Convertion_Destination_Picker_dirPicker1.GetTextCtrl().GetValue()
+                ),
                 self.m_volumn_spinCtrlDouble1.GetValue() / 100,
                 self.m_speed_spinCtrlDouble.GetValue(),
                 progressbar=pgb_style,
@@ -1072,6 +1372,11 @@ class ConvertPagePanel(wx.Panel):
                 ).ShowModal()
                 return
 
+            if self.m_done_then_remove_checkBox6.GetValue():
+                self.m_midiFilesList_listBox2.Delete(
+                    self.m_midiFilesList_listBox2.FindString(file_name)
+                )
+
 
 ###########################################################################
 ## Class setting_page_pannel
@@ -1092,6 +1397,9 @@ class SettingPagePannel(wx.Panel):
             self, parent, id=id, pos=pos, size=size, style=style, name=name
         )
 
+        self.SetBackgroundColour(WHITE2)
+        self.SetForegroundColour(BLACK2)
+
         setting_page_sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.setting_notebook = wx.Notebook(
@@ -1111,9 +1419,8 @@ class SettingPagePannel(wx.Panel):
                 "@OPPOSans R",
             )
         )
-        self.setting_notebook.SetBackgroundColour(
-            wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
-        )
+        self.setting_notebook.SetBackgroundColour(WHITE2)
+        self.setting_notebook.SetForegroundColour(BLACK2)
 
         self.setting_page1 = wx.Panel(
             self.setting_notebook,
@@ -1537,9 +1844,9 @@ class SettingPagePannel(wx.Panel):
             case 0:
                 ConvertClass = (Musicreater.MidiConvert, "常规转换")
             case 1:
-                ConvertClass = (Musicreater.experiment.FutureMidiConvertM4, "长音插值")
+                ConvertClass = (Musicreater_experiment.FutureMidiConvertM4, "长音插值")
             case 2:
-                ConvertClass = (Musicreater.experiment.FutureMidiConvertM5, "同刻偏移")
+                ConvertClass = (Musicreater_experiment.FutureMidiConvertM5, "同刻偏移")
 
     def onMidiFaultIgnoranceChecking(self, event):
         global ignore_midi_mismatch_error
@@ -1649,7 +1956,7 @@ logger.info("执行应用。")
 if __name__ == "__main__":
     logger.info("检查更新：")
 
-    check_update(
+    check_update_repo(
         __appname__,
         "https://gitee.com/TriM-Organization/Linglun-Converter/raw/master/llc_win_wxPython.py",
         __version__,

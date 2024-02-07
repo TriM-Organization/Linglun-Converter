@@ -4,7 +4,7 @@
 伶伦转换器 命令行组件
 Linglun Converter Command Line IO Component
 
-版权所有 © 2024 金羿 & 睿穆开发组
+版权所有 © 2024 金羿 & 睿乐开发组
 Copyright © 2024 EillesWan & TriM Org.
 
 开源相关声明请见 ./License.md
@@ -12,8 +12,7 @@ Terms & Conditions: ./Lisense.md
 """
 
 
-import urllib.error
-import urllib.request
+import requests
 from typing import (
     Any,
     Callable,
@@ -26,31 +25,28 @@ from typing import (
     Tuple,
     Iterable,
     Sequence,
+    Union,
 )
 
 import TrimLog
-from TrimLog import object_constants, logger
+from TrimLog import object_constants, logger, log__init__
 
-is_logging: bool = True
-
-MainConsole = logger.console
 
 logger.is_logging = True
 logger.suffix = ".llc"
 logger.is_tips = True
 
+logger.info("读取 言·论 信息……")
 
 try:
     myWords = (
-        urllib.request.urlopen(
-            "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt"
-        )
-        .read()
-        .decode("utf-8")
+        requests.get(
+            "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt",
+        ).text
         .strip("\n")
         .split("\n")
     )
-except (ConnectionError, urllib.error.HTTPError) as E:
+except (ConnectionError, requests.HTTPError, requests.RequestException) as E:
     logger.warning(f"读取言·论信息发生 互联网连接 错误：\n{E}")
     myWords = ["以梦想为驱使 创造属于自己的未来"]
 # noinspection PyBroadException
@@ -58,6 +54,9 @@ except BaseException as E:
     logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
     myWords = ["灵光焕发 深艺献心"]
 
+
+
+logger.info("注册出入方法……")
 
 JustifyMethod = Literal["default", "left", "center", "right", "full"]
 OverflowMethod = Literal["fold", "crop", "ellipsis", "ignore"]
@@ -98,7 +97,7 @@ def prt(
         soft_wrap (bool, 可选): 启用软包装模式，禁止文字包装和裁剪，或`None``用于 控制台默认值。默认为`None`。
         new_line_start (bool, False): 如果输出包含多行，在开始时插入一个新行。默认值为`False`。
     """
-    MainConsole.print(
+    logger.console.print(
         *objects,
         sep=sep,
         end=end,
@@ -159,7 +158,7 @@ def ipt(
     Returns:
         str: 从stdin读取的字符串
     """
-    MainConsole.print(
+    logger.console.print(
         *objects,
         sep=sep,
         end="",
@@ -177,7 +176,7 @@ def ipt(
         new_line_start=new_line_start,
     )
 
-    return MainConsole.input(password=password, stream=stream)
+    return logger.console.input(password=password, stream=stream)
 
 
 def format_ipt(
@@ -213,61 +212,57 @@ def isin(sth: str, range_list: dict):
     for bool_value, res_list in range_list.items():
         if sth in res_list:
             return bool_value
-    raise ValueError
+    raise ValueError(
+        "不在可选范围内：{}".format([j for i in range_list.values() for j in i])
+    )
 
 
 # 真假字符串判断
 def bool_str(sth: str):
     try:
         return bool(float(sth))
-    except:
+    except ValueError:
         if str(sth).lower() in ("true", "真", "是", "y", "t"):
             return True
         elif str(sth).lower() in ("false", "假", "否", "f", "n"):
             return False
         else:
-            raise ValueError
+            raise ValueError("非法逻辑字串")
 
 
 def float_str(sth: str):
     try:
         return float(sth)
     except ValueError:
-        try:
-            return float(
-                sth.replace("壹", "1")
-                .replace("贰", "2")
-                .replace("叁", "3")
-                .replace("肆", "4")
-                .replace("伍", "5")
-                .replace("陆", "6")
-                .replace("柒", "7")
-                .replace("捌", "8")
-                .replace("玖", "9")
-                .replace("零", "0")
-                .replace("一", "1")
-                .replace("二", "2")
-                .replace("三", "3")
-                .replace("四", "4")
-                .replace("五", "5")
-                .replace("六", "6")
-                .replace("七", "7")
-                .replace("八", "8")
-                .replace("九", "9")
-                .replace("〇", "0")
-                .replace("洞", "0")
-                .replace("幺", "1")
-                .replace("俩", "2")
-                .replace("两", "2")
-                .replace("拐", "7")
-                .replace("点", ".")
-            )
-        except:
-            raise ValueError
+        return float(
+            sth.replace("壹", "1")
+            .replace("贰", "2")
+            .replace("叁", "3")
+            .replace("肆", "4")
+            .replace("伍", "5")
+            .replace("陆", "6")
+            .replace("柒", "7")
+            .replace("捌", "8")
+            .replace("玖", "9")
+            .replace("零", "0")
+            .replace("一", "1")
+            .replace("二", "2")
+            .replace("三", "3")
+            .replace("四", "4")
+            .replace("五", "5")
+            .replace("六", "6")
+            .replace("七", "7")
+            .replace("八", "8")
+            .replace("九", "9")
+            .replace("〇", "0")
+            .replace("洞", "0")
+            .replace("幺", "1")
+            .replace("俩", "2")
+            .replace("两", "2")
+            .replace("拐", "7")
+            .replace("点", ".")
+        )
 
 
 def int_str(sth: str):
-    try:
-        return int(float_str(sth))
-    except ValueError:
-        raise ValueError
+    return int(float_str(sth))
