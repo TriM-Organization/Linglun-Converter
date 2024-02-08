@@ -16,7 +16,7 @@ Terms & Conditions: ./Lisense.md
 import os
 import random
 import sys
-from types import ModuleType
+# from types import ModuleType
 
 import requests
 
@@ -49,18 +49,12 @@ from utils.io import (
     logger,
     object_constants,
     log__init__,
-    TrimLog,
-    Tuple,
-    Any,
-    Union,
-    Callable,
-    Literal,
+    TrimLog
 )
-from utils.update_check import check_update_repo, check_update_release
+from utils.update_check import check_update_release
 from utils.packdata import enpack_llc_pack, unpack_llc_pack, load_msct_packed_data
 from utils.webview import go_update_tip
 
-logger.info("注册变量并读取内容……")
 
 
 WHITE = (242, 244, 246)  # F2F4F6
@@ -77,11 +71,27 @@ BLACK2 = (9, 12, 14)
 
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.1.0"
-__zhver__ = "WX图形界面 初代首版第〇次修订"
+__version__ = "WXGUI 1.1.1"
+__zhver__ = "WX图形界面 初代首版第一次修订"
 
 
-yanlun_length = len(myWords)
+logger.info("检查更新")
+
+down_paths = check_update_release(
+    "伶伦转换器",
+    "https://gitee.com/TriM-Organization/Linglun-Converter/releases/latest",
+    __version__,
+    go_update_tip,
+    logger,
+    "！有新版本！\n新版本 {app} {latest} 可用，当前仍是 {current}\n请前往下载地址更新\n",
+)
+
+
+if down_paths:
+    wx.LaunchDefaultBrowser("https://gitee.com{}".format([v for i,v in down_paths.items() if sys.platform in i][0]))
+    exit()
+    # go_update_tip("点击下方链接下载更新：",'<a href="https://gitee.com{}">点击此处下载</a>'.format(list(down_paths.values())[0]))
+
 
 msct_main = msct_plugin = msct_plugin_function = None
 
@@ -258,6 +268,10 @@ if down_paths:
         to_BDX_file_in_score,
     ) = msct_plugin_function
 
+logger.info("注册变量并读取内容……")
+
+
+
 pgb_style: Musicreater.ProgressBarStyle = Musicreater.DEFAULT_PROGRESSBAR_STYLE.copy()  # type: ignore
 on_exit_saving: bool = True
 ignore_midi_mismatch_error: bool = True
@@ -308,9 +322,13 @@ osc.set_console(logger.console)
 
 log__init__(osc, TrimLog.PipManage(True, True, 40), True)
 
-
+logger.is_logging = True
+logger.suffix = ".llc"
+logger.is_tips = True
 logger.printing = not osc.is_release
 
+
+yanlun_length = len(myWords)
 
 logger.info("加载窗口布局……")
 
@@ -1954,21 +1972,6 @@ logger.info("执行应用。")
 
 # 启动应用程序
 if __name__ == "__main__":
-    logger.info("检查更新：")
-
-    check_update_repo(
-        __appname__,
-        "https://gitee.com/TriM-Organization/Linglun-Converter/raw/master/llc_win_wxPython.py",
-        __version__,
-        lambda text: wx.MessageDialog(
-            None,
-            text,
-            "软件更新",
-            wx.ICON_INFORMATION | wx.YES_DEFAULT,
-        ).ShowModal(),
-        logger,
-        __zhver__,
-    )
 
     logger.info("开启窗口")
 
