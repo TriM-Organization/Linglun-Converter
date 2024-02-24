@@ -37,12 +37,12 @@ from Musicreater.plugin.mcstructfile import (
     # to_mcstructure_file_in_score,
 )
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
-from utils.io import MainConsole, int_str, prt, ipt, myWords, isin, bool_str, float_str
+from utils.io import logger, int_str, prt, ipt, myWords, isin, bool_str, float_str
 
 # from Musicreater.plugin.mcstructure import commands_to_structure, commands_to_redstone_delay_structure
 
 
-MainConsole.print(
+logger.console.print(
     "[#121110 on #F0F2F4]     ",
     style="#121110 on #F0F2F4",
     justify="center",
@@ -64,11 +64,11 @@ MainConsole.print(
 
 
 # 显示大标题
-MainConsole.rule(
+logger.console.rule(
     title="[bold #AB70FF]欢迎使用伶伦独立转换器", characters="=", style="#26E2FF"
 )
 # MainConsole.rule(title="[bold #AB70FF]Welcome to Linglun Converter", characters="-")
-MainConsole.rule(
+logger.console.rule(
     title="[#AB70FF]版本{} | 音·创内核版本{}".format(
         __version__, Musicreater.__version__
     ),
@@ -80,7 +80,7 @@ nowYang = datetime.datetime.now()
 
 if nowYang.month == 8 and nowYang.day == 6:
     # 诸葛八卦生日
-    MainConsole.print(
+    logger.console.print(
         "[#7DB5F0 on #121110]今天可不是催更的日子！\n诸葛亮与八卦阵{}岁生日快乐！".format(
             nowYang.year - 2008
         ),
@@ -89,7 +89,7 @@ if nowYang.month == 8 and nowYang.day == 6:
     )
 elif nowYang.month == 4 and nowYang.day == 3:
     # 金羿生日快乐
-    MainConsole.print(
+    logger.console.print(
         "[#0089F2 on #F0F2F4]今天就不要催更啦！\n金羿{}岁生日快乐！".format(
             nowYang.year - 2006
         ),
@@ -98,7 +98,7 @@ elif nowYang.month == 4 and nowYang.day == 3:
     )
 else:
     # 显示箴言部分
-    MainConsole.print(
+    logger.console.print(
         "[#121110 on #F0F2F4]{}".format(random.choice(myWords)),
         style="#121110 on #F0F2F4",
         justify="center",
