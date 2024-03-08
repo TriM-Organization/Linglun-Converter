@@ -180,7 +180,7 @@ def is_in_bdx_mcpack(sth: str):
     )
 
 
-def is_in_player(sth: str, in_ok: tuple):
+def is_in_player(sth: str, in_ok: tuple = (0,1,2)):
     return isin(
         sth,
         dict(
