@@ -11,7 +11,9 @@ Copyright © 2024 EillesWan & TriM Org.
 Terms & Conditions: ./Lisense.md
 """
 
-from .io import TrimLog, requests, Sequence, Iterable, Callable, Optional, Dict, Union
+import requests
+
+from .io import TrimLog, Sequence, Iterable, Callable, Optional, Dict, Union
 
 
 def is_ver_char(text: str) -> bool:

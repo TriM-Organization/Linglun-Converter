@@ -6,23 +6,22 @@
 4. 若存在对于伶伦包含的部分代码的特殊开源声明，则此部分代码依照其特定的开源方式授权，但若此部分代码经由此部分代码的主要开发者一致特殊授权后商用，则授权对象在商用时依照此部分的开发者所准许的方式（或条款）进行商用，或默认依照 Apache2.0 协议进行商业化使用
 5. Apache2.0 协议的英文原文副本可见下文
 
->  The English Translation of the TERMS AND CONDITIONS above is listed below
+> The English Translation of the TERMS AND CONDITIONS above is listed below
 >
->  This translated version is for reference only and has no legal effect.
+> This translated version is for reference only and has no legal effect.
 >
->  The version with legal effect is the Chinese version above.
+> The version with legal effect is the Chinese version above.
 
 **Note, The TERMS AND CONDITIONS below should and must be above all others in this repository**
 
-1. *Linglun Studio* is fully copyrighted by all its developers, the developers have the right to make *Linglun Studio* close sourced at any time. Operations are permitted under specific terms instructed by its developer(s).
-2. Non-commercial use of *Linglun Studio* and(or) its source code is permitted under Apache License 2.0.
-3. Commercial use of *Linglun Studio* is permitted under Apache License 2.0 with the unanimous permission of the steering developers of *Linglun Studio* (*bgArray*诸葛亮与八卦阵 and *Eilles*金羿). 
-4. *Linglun Studio* is open sourced under priority given:
+1. _Linglun Studio_ is fully copyrighted by all its developers, the developers have the right to make _Linglun Studio_ close sourced at any time. Operations are permitted under specific terms instructed by its developer(s).
+2. Non-commercial use of _Linglun Studio_ and(or) its source code is permitted under Apache License 2.0.
+3. Commercial use of _Linglun Studio_ is permitted under Apache License 2.0 with the unanimous permission of the steering developers of _Linglun Studio_ (*bgArray*诸葛亮与八卦阵 and *Eilles*金羿).
+4. _Linglun Studio_ is open sourced under priority given:
    1. License granted by the core developer(s) of a section after negotiation.
    2. Explicitly stated license.
    3. Apache 2.0 License.
 5. A copy of the original Apache Lisence 2.0 can be found below.
-
 
 ```text
                                  Apache License

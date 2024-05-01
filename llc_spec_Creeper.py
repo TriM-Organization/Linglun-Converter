@@ -55,7 +55,9 @@ MainConsole.rule(
 )
 # MainConsole.rule(title="[bold #AB70FF]Welcome to Linglun Converter", characters="-")
 MainConsole.rule(
-    title="[#AB70FF]版本{} | 音·创内核版本{}".format(__version__, Musicreater.__version__),
+    title="[#AB70FF]版本{} | 音·创内核版本{}".format(
+        __version__, Musicreater.__version__
+    ),
     characters="-",
     style="#26E2FF",
 )
@@ -95,7 +97,9 @@ while True:
 #     "仅处理打击乐器 (否/0|是/1)：", bool_str, "输入内容格式错误，应为 是/1/真/t/y 或 否/0/假/f/n"
 # )[1]
 
-speed: float = format_ipt("播放速度", float_str, "错误，需要浮点型数据；请重新输入。")[1]
+speed: float = format_ipt("播放速度", float_str, "错误，需要浮点型数据；请重新输入。")[
+    1
+]
 
 
 final_result: Dict[str, Dict[int, List[Tuple[str, int, str]]]] = {}

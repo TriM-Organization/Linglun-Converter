@@ -16,9 +16,12 @@ Terms & Conditions: ./Lisense.md
 import os
 import random
 import sys
+
+import threading
+
 # from types import ModuleType
 
-import requests
+# import requests
 
 if sys.argv:
     if "-l" in sys.argv:
@@ -31,37 +34,32 @@ if sys.argv:
 
 import Musicreater
 import Musicreater.experiment as Musicreater_experiment
-import Musicreater.plugin as Musicreater_plugin
-from Musicreater.plugin import ConvertConfig
+import Musicreater.plugin
 from Musicreater.plugin.addonpack import (
     to_addon_pack_in_delay,
     to_addon_pack_in_repeater,
     to_addon_pack_in_score,
 )
+from Musicreater.plugin.websocket import to_websocket_server
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
 
 import wx
 import wx.xrc
 import wx.propgrid as pg
 
-from utils.io import (
-    myWords,
-    logger,
-    object_constants,
-    log__init__,
-    TrimLog
-)
+from utils.io import logger, object_constants, log__init__, TrimLog
+from utils.yanlun import yanlun_texts, yanlun_fg_colour, yanlun_bg_colour
+from utils.authorp import go_author_page
 from utils.update_check import check_update_release
 from utils.packdata import enpack_llc_pack, unpack_llc_pack, load_msct_packed_data
 from utils.webview import go_update_tip
 
 
-
 WHITE = (242, 244, 246)  # F2F4F6
-WHITE2 = (248, 252, 255)
+# WHITE2 = (248, 252, 255)
 # WHITE3 = (233, 236, 240)
 BLACK = (18, 17, 16)  # 121110
-BLACK2 = (9, 12, 14)
+# BLACK2 = (9, 12, 14)
 # BLACK3 = (0, 2, 6)
 
 # WHITE = (18, 17, 16)  # F2F4F6
@@ -71,8 +69,8 @@ BLACK2 = (9, 12, 14)
 
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.1.1"
-__zhver__ = "WX图形界面 初代首版第一次修订"
+__version__ = "WXGUI 1.2.0"
+__zhver__ = "WX图形界面 初代次版"
 
 
 logger.info("检查更新")
@@ -88,11 +86,15 @@ down_paths = check_update_release(
 
 
 if down_paths:
-    wx.LaunchDefaultBrowser("https://gitee.com{}".format([v for i,v in down_paths.items() if sys.platform in i][0]))
+    wx.LaunchDefaultBrowser(
+        "https://gitee.com{}".format(
+            [v for i, v in down_paths.items() if sys.platform in i][0]
+        )
+    )
     exit()
     # go_update_tip("点击下方链接下载更新：",'<a href="https://gitee.com{}">点击此处下载</a>'.format(list(down_paths.values())[0]))
 
-
+"""
 msct_main = msct_plugin = msct_plugin_function = None
 
 if os.path.exists("./MSCT/Musicreater.llc.pack"):
@@ -267,9 +269,9 @@ if down_paths:
         to_BDX_file_in_delay,
         to_BDX_file_in_score,
     ) = msct_plugin_function
+"""
 
 logger.info("注册变量并读取内容……")
-
 
 
 pgb_style: Musicreater.ProgressBarStyle = Musicreater.DEFAULT_PROGRESSBAR_STYLE.copy()  # type: ignore
@@ -328,7 +330,7 @@ logger.is_tips = True
 logger.printing = not osc.is_release
 
 
-yanlun_length = len(myWords)
+yanlun_length = len(yanlun_texts)
 
 logger.info("加载窗口布局……")
 
@@ -374,6 +376,7 @@ class LingLunMainFrame(wx.Frame):
         )
         self.SetForegroundColour(BLACK)
         self.SetBackgroundColour(WHITE)
+
         self.m_statusBar2 = self.CreateStatusBar(1, wx.STB_SIZEGRIP, wx.ID_ANY)
         self.m_statusBar2.SetFont(
             wx.Font(
@@ -415,6 +418,26 @@ class LingLunMainFrame(wx.Frame):
 
         self.m_menubar1.Append(self.FileMenu, "文件")
 
+        self.EditMenu = wx.Menu()
+        self.play_via_websocket = wx.MenuItem(
+            self.EditMenu,
+            wx.ID_ANY,
+            "以WebSocket服务播放",
+            "在指定端口上开启WebSocket播放服务器",
+            wx.ITEM_NORMAL,
+        )
+        self.EditMenu.Append(self.play_via_websocket)
+
+        self.m_menubar1.Append(self.EditMenu, "编辑")
+
+        self.AboutMenu = wx.Menu()
+        self.m_author_info_menuItem4 = wx.MenuItem(
+            self.AboutMenu, wx.ID_ANY, "作者信息", "查看关于信息", wx.ITEM_NORMAL
+        )
+        self.AboutMenu.Append(self.m_author_info_menuItem4)
+
+        self.m_menubar1.Append(self.AboutMenu, "关于")
+
         self.SetMenuBar(self.m_menubar1)
 
         m_mainBoxSizer = wx.BoxSizer(wx.VERTICAL)
@@ -443,11 +466,12 @@ class LingLunMainFrame(wx.Frame):
                 "OPPOSans B",
             )
         )
+        # 设立言论颜色
         self.m_LinglunWords_staticText1.SetForegroundColour(
-            wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
+            yanlun_fg_colour,
         )
         self.m_LinglunWords_staticText1.SetBackgroundColour(
-            wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
+            yanlun_bg_colour,
         )
 
         s_yanLunbarSizer.Add(self.m_LinglunWords_staticText1, 0, wx.EXPAND, 5)
@@ -509,6 +533,16 @@ class LingLunMainFrame(wx.Frame):
         self.Bind(
             wx.EVT_MENU, self.onExitButtonPressed, id=self.m_Exit_menuItem1.GetId()
         )
+        self.Bind(
+            wx.EVT_MENU,
+            self.onWebSocketPlayButtonPressed,
+            id=self.play_via_websocket.GetId(),
+        )
+        self.Bind(
+            wx.EVT_MENU,
+            self.on_author_button_pressed,
+            id=self.m_author_info_menuItem4.GetId(),
+        )
         self.m_LinglunWords_staticText1.Bind(wx.EVT_LEFT_DCLICK, self.onYanlunDClicked)
         self.m_LinglunWords_staticText1.Bind(wx.EVT_MOUSEWHEEL, self.onYanlunWheeled)
 
@@ -526,9 +560,72 @@ class LingLunMainFrame(wx.Frame):
     def onExitButtonPressed(self, event):
         self.Destroy()
 
+    def onWebSocketPlayButtonPressed(self, event):
+        _th = threading.Thread(
+            target=to_websocket_server,
+            args=(
+                [
+                    (
+                        ConvertClass[0].from_mido_obj(
+                            midi_obj=None,
+                            midi_name="山水千年",
+                            ignore_mismatch_error=ignore_midi_mismatch_error,
+                            playment_speed=self.convert_page.m_speed_spinCtrlDouble.GetValue(),
+                            pitched_note_rtable=convert_tables["PITCHED"][
+                                convert_table_selection["PITCHED"]
+                            ],
+                            percussion_note_rtable=convert_tables["PERCUSSION"][
+                                convert_table_selection["PERCUSSION"]
+                            ],
+                            enable_old_exe_format=self.convert_page.m_oldExeFormatChecker_checkBox3.GetValue(),
+                            minimum_volume=self.convert_page.m_volumn_spinCtrlDouble1.GetValue()
+                            / 100,
+                        )
+                        if file_name == "诸葛亮与八卦阵-山水千年"
+                        else ConvertClass[0].from_midi_file(
+                            midi_file_path=file_name,
+                            mismatch_error_ignorance=ignore_midi_mismatch_error,
+                            pitched_note_table=convert_tables["PITCHED"][
+                                convert_table_selection["PITCHED"]
+                            ],
+                            percussion_note_table=convert_tables["PERCUSSION"][
+                                convert_table_selection["PERCUSSION"]
+                            ],
+                            old_exe_format=self.convert_page.m_oldExeFormatChecker_checkBox3.GetValue(),
+                        )
+                    )
+                    for file_name in self.convert_page.m_midiFilesList_listBox2.GetStrings()
+                ],
+                "127.0.0.1",
+                8001,
+                pgb_style,
+            ),
+        )
+        _th.start()
+
+        while (
+            wx.MessageDialog(
+                None,
+                "已在本地端口 8001 开启WebSocket播放服务器。\n在游戏内输入 /connect 127.0.0.1:8001 以连接之\n游戏内发送文本 .play乐曲名 以播放指定乐曲\n发送文本 .stopplay 以结束当前播放。\n发送文本 .terminate 以终止连接\n\n本功能尚处试验阶段，有所问题很正常。",
+                caption="提示信息",
+                style=wx.OK | wx.CANCEL,
+            ).ShowModal()
+            == wx.ID_OK
+        ):
+            pass
+
+        # _th.setDaemon(True)
+
+        del _th
+
+    def on_author_button_pressed(self, event):
+        go_author_page()
+
     def onYanlunDClicked(self, event):
         self.yanlun_now = random.randrange(0, yanlun_length)
-        self.m_LinglunWords_staticText1.SetLabelText(myWords[self.yanlun_now] + "\r")
+        self.m_LinglunWords_staticText1.SetLabelText(
+            yanlun_texts[self.yanlun_now] + "\r"
+        )
 
     def onYanlunWheeled(self, event):
         if event.GetWheelRotation() < 0:
@@ -540,7 +637,9 @@ class LingLunMainFrame(wx.Frame):
             if self.yanlun_now >= yanlun_length
             else (yanlun_length if self.yanlun_now < 0 else 0)
         )
-        self.m_LinglunWords_staticText1.SetLabelText(myWords[self.yanlun_now] + "\r")
+        self.m_LinglunWords_staticText1.SetLabelText(
+            yanlun_texts[self.yanlun_now] + "\r"
+        )
 
 
 logger.info("加载分页……")
@@ -565,8 +664,8 @@ class ConvertPagePanel(wx.Panel):
             self, parent, id=id, pos=pos, size=size, style=style, name=name
         )
 
-        self.SetBackgroundColour(WHITE2)
-        self.SetForegroundColour(BLACK2)
+        self.SetBackgroundColour(WHITE)
+        self.SetForegroundColour(BLACK)
 
         main_page_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -577,10 +676,10 @@ class ConvertPagePanel(wx.Panel):
         self.m_ChooseMidiTips_staticText3 = wx.StaticText(
             self,
             wx.ID_ANY,
-            "选择MIDI文件\n（双击移除）",
+            "MIDI文件列\n（双击移除）",
             wx.DefaultPosition,
             wx.DefaultSize,
-            0,
+            wx.ALIGN_CENTER_HORIZONTAL,
         )
         self.m_ChooseMidiTips_staticText3.Wrap(-1)
 
@@ -589,7 +688,7 @@ class ConvertPagePanel(wx.Panel):
         )
 
         self.m_done_then_remove_checkBox6 = wx.CheckBox(
-            self, wx.ID_ANY, "完成后移除", wx.DefaultPosition, wx.DefaultSize, 0
+            self, wx.ID_ANY, "完成后移出", wx.DefaultPosition, wx.DefaultSize, 0
         )
         MidiChooser_Delete_and_Tips_bSizer15.Add(
             self.m_done_then_remove_checkBox6, 0, wx.ALL, 5
@@ -624,7 +723,7 @@ class ConvertPagePanel(wx.Panel):
         )
 
         self.m_midiChooser_Clear_button3 = wx.Button(
-            self, wx.ID_ANY, "清空文件", wx.DefaultPosition, wx.DefaultSize, 0
+            self, wx.ID_ANY, "清空列表", wx.DefaultPosition, wx.DefaultSize, 0
         )
         MidiChooser_Open_and_Clear_Buttons_bSizer16.Add(
             self.m_midiChooser_Clear_button3, 0, wx.ALL | wx.EXPAND, 5
@@ -660,7 +759,7 @@ class ConvertPagePanel(wx.Panel):
             wx.StaticBox(self, wx.ID_ANY, "选择播放器"), wx.VERTICAL
         )
 
-        m_playerChoice_choice2Choices = ["计分板", "延时", "中继器"]
+        m_playerChoice_choice2Choices = ["计分控制", "命令延时", "红石中继"]
         self.m_playerChoice_choice2 = wx.Choice(
             ss_playerChooseSizer.GetStaticBox(),
             wx.ID_ANY,
@@ -683,14 +782,14 @@ class ConvertPagePanel(wx.Panel):
         ss_regularPromoptsEnteringSizer1 = wx.BoxSizer(wx.HORIZONTAL)
 
         sss_VolumnPersentageEnteringSizer = wx.StaticBoxSizer(
-            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "音量大小"),
+            wx.StaticBox(s_promptSizer.GetStaticBox(), wx.ID_ANY, "最小音量"),
             wx.HORIZONTAL,
         )
 
         self.m_volumn_slider = wx.Slider(
             sss_VolumnPersentageEnteringSizer.GetStaticBox(),
             wx.ID_ANY,
-            1000,
+            100,
             0,
             1000,
             wx.DefaultPosition,
@@ -702,16 +801,16 @@ class ConvertPagePanel(wx.Panel):
         self.m_volumn_spinCtrlDouble1 = wx.SpinCtrlDouble(
             sss_VolumnPersentageEnteringSizer.GetStaticBox(),
             wx.ID_ANY,
-            "100",
+            "0.1",
             wx.DefaultPosition,
             wx.DefaultSize,
             wx.ALIGN_CENTER_HORIZONTAL | wx.SP_ARROW_KEYS | wx.TE_PROCESS_ENTER,
             0,
-            100,
-            100.000000,
-            0.5,
+            1,
+            0.100000,
+            0.001,
         )
-        self.m_volumn_spinCtrlDouble1.SetDigits(2)
+        self.m_volumn_spinCtrlDouble1.SetDigits(3)
         sss_VolumnPersentageEnteringSizer.Add(
             self.m_volumn_spinCtrlDouble1, 0, wx.ALL, 5
         )
@@ -980,7 +1079,7 @@ class ConvertPagePanel(wx.Panel):
         self.m_EnteringBDXfileSignName_textCtrl12 = wx.TextCtrl(
             s_promptSizer.GetStaticBox(),
             wx.ID_ANY,
-            "UserYou",
+            "Yourself",
             wx.DefaultPosition,
             wx.DefaultSize,
             0,
@@ -1205,11 +1304,11 @@ class ConvertPagePanel(wx.Panel):
 
     def onVolumeScrolling(self, event):
         # prt(self.m_volumn_slider.Value)
-        self.m_volumn_spinCtrlDouble1.SetValue(self.m_volumn_slider.Value / 10)
+        self.m_volumn_spinCtrlDouble1.SetValue(self.m_volumn_slider.Value / 1000)
 
     def onVolumeSpinChanged(self, event):
         # prt(self.m_volumn_spinCtrlDouble1.Value)
-        self.m_volumn_slider.SetValue(int(self.m_volumn_spinCtrlDouble1.Value * 10))
+        self.m_volumn_slider.SetValue(int(self.m_volumn_spinCtrlDouble1.Value * 1000))
 
     def onSpeedScrolling(self, event):
         # prt(self.m_speed_slider.Value)
@@ -1281,30 +1380,37 @@ class ConvertPagePanel(wx.Panel):
         global pgb_style
         for file_name in self.m_midiFilesList_listBox2.GetStrings():
             if file_name == "诸葛亮与八卦阵-山水千年":
-                mid_cvt = ConvertClass[0](
-                    None,
-                    "山水千年",
-                    self.m_oldExeFormatChecker_checkBox3.GetValue(),
-                    convert_tables["PITCHED"][convert_table_selection["PITCHED"]],
-                    convert_tables["PERCUSSION"][convert_table_selection["PERCUSSION"]],
+                mid_cvt = ConvertClass[0].from_mido_obj(
+                    midi_obj=None,
+                    midi_name="山水千年",
+                    ignore_mismatch_error=ignore_midi_mismatch_error,
+                    playment_speed=self.m_speed_spinCtrlDouble.GetValue(),
+                    pitched_note_rtable=convert_tables["PITCHED"][
+                        convert_table_selection["PITCHED"]
+                    ],
+                    percussion_note_rtable=convert_tables["PERCUSSION"][
+                        convert_table_selection["PERCUSSION"]
+                    ],
+                    enable_old_exe_format=self.m_oldExeFormatChecker_checkBox3.GetValue(),
+                    minimum_volume=self.m_volumn_spinCtrlDouble1.GetValue() / 100,
                 )
             else:
                 mid_cvt = ConvertClass[0].from_midi_file(
-                    file_name,
-                    self.m_oldExeFormatChecker_checkBox3.GetValue(),
-                    convert_tables["PITCHED"][convert_table_selection["PITCHED"]],
-                    convert_tables["PERCUSSION"][convert_table_selection["PERCUSSION"]],
+                    midi_file_path=file_name,
+                    mismatch_error_ignorance=ignore_midi_mismatch_error,
+                    pitched_note_table=convert_tables["PITCHED"][
+                        convert_table_selection["PITCHED"]
+                    ],
+                    percussion_note_table=convert_tables["PERCUSSION"][
+                        convert_table_selection["PERCUSSION"]
+                    ],
+                    old_exe_format=self.m_oldExeFormatChecker_checkBox3.GetValue(),
                 )
 
-            cvt_cfg = ConvertConfig(
-                (
-                    os.path.split(file_name)[0]
-                    if self.m_Check_Every_Their_Path_checkBox7.GetValue()
-                    else self.m_Convertion_Destination_Picker_dirPicker1.GetTextCtrl().GetValue()
-                ),
-                self.m_volumn_spinCtrlDouble1.GetValue() / 100,
-                self.m_speed_spinCtrlDouble.GetValue(),
-                progressbar=pgb_style,
+            cvt_dist = (
+                os.path.split(file_name)[0]
+                if self.m_Check_Every_Their_Path_checkBox7.GetValue()
+                else self.m_Convertion_Destination_Picker_dirPicker1.GetTextCtrl().GetValue()
             )
 
             # 0: 附加包
@@ -1314,24 +1420,27 @@ class ConvertPagePanel(wx.Panel):
             if self.m_outformatChoice_choice1.GetSelection() == 0:
                 if self.m_playerChoice_choice2.GetSelection() == 0:
                     cmd_num, total_delay = to_addon_pack_in_score(
-                        mid_cvt,
-                        cvt_cfg,
-                        self.m_ScoreboardNameEntering_textCtrl9.GetValue(),
-                        self.m_IsAutoResetScoreboard_checkBox2.GetValue(),
+                        midi_cvt=mid_cvt,
+                        dist_path=cvt_dist,
+                        progressbar_style=pgb_style,
+                        scoreboard_name=self.m_ScoreboardNameEntering_textCtrl9.GetValue(),
+                        auto_reset=self.m_IsAutoResetScoreboard_checkBox2.GetValue(),
                     )
                 elif self.m_playerChoice_choice2.GetSelection() == 1:
                     cmd_num, total_delay = to_addon_pack_in_delay(
-                        mid_cvt,
-                        cvt_cfg,
-                        self.m_PlayerSelectorEntering_comboBox1.GetValue(),
-                        self.m_enteringStructureMaxHeight_spinCtrl1.GetValue(),
+                        midi_cvt=mid_cvt,
+                        dist_path=cvt_dist,
+                        progressbar_style=pgb_style,
+                        player=self.m_PlayerSelectorEntering_comboBox1.GetValue(),
+                        max_height=self.m_enteringStructureMaxHeight_spinCtrl1.GetValue(),
                     )
                 elif self.m_playerChoice_choice2.GetSelection() == 2:
                     cmd_num, total_delay = to_addon_pack_in_repeater(
-                        mid_cvt,
-                        cvt_cfg,
-                        self.m_PlayerSelectorEntering_comboBox1.GetValue(),
-                        self.m_enteringStructureMaxHeight_spinCtrl1.GetValue(),
+                        midi_cvt=mid_cvt,
+                        dist_path=cvt_dist,
+                        progressbar_style=pgb_style,
+                        player=self.m_PlayerSelectorEntering_comboBox1.GetValue(),
+                        max_height=self.m_enteringStructureMaxHeight_spinCtrl1.GetValue(),
                     )
                 else:
                     wx.MessageDialog(
@@ -1351,7 +1460,8 @@ class ConvertPagePanel(wx.Panel):
                 if self.m_playerChoice_choice2.GetSelection() == 0:
                     cmd_num, total_delay, size, final_pos = to_BDX_file_in_score(
                         midi_cvt=mid_cvt,
-                        data_cfg=cvt_cfg,
+                        dist_path=cvt_dist,
+                        progressbar_style=pgb_style,
                         scoreboard_name=self.m_ScoreboardNameEntering_textCtrl9.GetValue(),
                         auto_reset=self.m_IsAutoResetScoreboard_checkBox2.GetValue(),
                         author=self.m_EnteringBDXfileSignName_textCtrl12.GetValue(),
@@ -1360,7 +1470,8 @@ class ConvertPagePanel(wx.Panel):
                 elif self.m_playerChoice_choice2.GetSelection() == 1:
                     cmd_num, total_delay, size, final_pos = to_BDX_file_in_delay(
                         midi_cvt=mid_cvt,
-                        data_cfg=cvt_cfg,
+                        dist_path=cvt_dist,
+                        progressbar_style=pgb_style,
                         player=self.m_PlayerSelectorEntering_comboBox1.GetValue(),
                         author=self.m_EnteringBDXfileSignName_textCtrl12.GetValue(),
                         max_height=self.m_enteringStructureMaxHeight_spinCtrl1.GetValue(),
@@ -1415,8 +1526,8 @@ class SettingPagePannel(wx.Panel):
             self, parent, id=id, pos=pos, size=size, style=style, name=name
         )
 
-        self.SetBackgroundColour(WHITE2)
-        self.SetForegroundColour(BLACK2)
+        self.SetBackgroundColour(WHITE)
+        self.SetForegroundColour(BLACK)
 
         setting_page_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -1437,8 +1548,8 @@ class SettingPagePannel(wx.Panel):
                 "@OPPOSans R",
             )
         )
-        self.setting_notebook.SetBackgroundColour(WHITE2)
-        self.setting_notebook.SetForegroundColour(BLACK2)
+        self.setting_notebook.SetBackgroundColour(WHITE)
+        self.setting_notebook.SetForegroundColour(BLACK)
 
         self.setting_page1 = wx.Panel(
             self.setting_notebook,
@@ -1900,10 +2011,10 @@ class SettingPagePannel(wx.Panel):
         convert_table_selection["PITCHED"] = "自定义对照表"
         to_change_id = int(event.GetProperty().GetName().split("_")[-1])
         to_change_value = (
-            event.GetProperty().GetValue(),
-            Musicreater.MM_INSTRUMENT_DEVIATION_TABLE.get(
-                event.GetProperty().GetValue(), -1
-            ),
+            event.GetProperty().GetValue()
+            # Musicreater.MM_INSTRUMENT_DEVIATION_TABLE.get(
+            #     event.GetProperty().GetValue(), -1
+            # ),
         )
         convert_tables["PITCHED"]["自定义对照表"][to_change_id] = to_change_value
         logger.info(
@@ -1949,10 +2060,10 @@ class SettingPagePannel(wx.Panel):
         convert_table_selection["PERCUSSION"] = "自定义对照表"
         to_change_id = int(event.GetProperty().GetName().split("_")[-1])
         to_change_value = (
-            event.GetProperty().GetValue(),
-            Musicreater.MM_INSTRUMENT_DEVIATION_TABLE.get(
-                event.GetProperty().GetValue(), -1
-            ),
+            event.GetProperty().GetValue()
+            # Musicreater.MM_INSTRUMENT_DEVIATION_TABLE.get(
+            #     event.GetProperty().GetValue(), -1
+            # ),
         )
         convert_tables["PERCUSSION"]["自定义对照表"][to_change_id] = to_change_value
         logger.info(

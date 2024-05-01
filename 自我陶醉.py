@@ -1,18 +1,20 @@
-# -*- conding: utf8 -*- 
+# -*- conding: utf8 -*-
 
 import os
 
 m = 0
 
 for path, dir_list, file_list in os.walk(r"./"):
+    if (r".venv" in path) or (r"wxFB_Project" in path):
+        continue
     for file_name in file_list:
-        if file_name.endswith('.py'):
+        if file_name.endswith(".py"):
             file = os.path.join(path, file_name)
             print("得到文件名：" + str(file))
-            for i in open(file, 'r', encoding="utf-8"):
+            for i in open(file, "r", encoding="utf-8"):
                 code = i.strip()
-                
-                if code.startswith('#'):
+
+                if code.startswith("#"):
                     pass
                 elif code:
                     print("\t" + code)

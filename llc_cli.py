@@ -361,14 +361,14 @@ for singleMidi in midis:
         out_path,
         *prompts[:2],
         progressbar=(
-            ((style, (done_part, yet_part)) if costom_pgb_enabled else True)    # type: ignore
+            ((style, (done_part, yet_part)) if costom_pgb_enabled else True)  # type: ignore
             if prompts[2]
             else False
         ),
     )
 
     conversion_result = (
-        (cvt_method(cvt_mid, cvt_cfg, *prompts[3:]))    # type: ignore
+        (cvt_method(cvt_mid, cvt_cfg, *prompts[3:]))  # type: ignore
         if output_file_format == 0
         else (
             (
@@ -377,14 +377,14 @@ for singleMidi in midis:
                 else to_BDX_file_in_delay(cvt_mid, cvt_cfg, *prompts[3:])
             )
             if output_file_format == 1
-            else (cvt_method(cvt_mid, cvt_cfg, *prompts[3:]))   # type: ignore
+            else (cvt_method(cvt_mid, cvt_cfg, *prompts[3:]))  # type: ignore
         )
     )
 
     prt(
         f"	结构大小：{conversion_result[0]}，播放刻数：{conversion_result[1]}"
         if output_file_format == 2
-        else f"	指令总长：{conversion_result[0]}，播放刻数：{conversion_result[1]}{f'''，结构大小：{conversion_result[2]}，末点坐标：{conversion_result[3]}''' if output_file_format == 1 else ''}" # type: ignore
+        else f"	指令总长：{conversion_result[0]}，播放刻数：{conversion_result[1]}{f'''，结构大小：{conversion_result[2]}，末点坐标：{conversion_result[3]}''' if output_file_format == 1 else ''}"  # type: ignore
     )
 
 exitSth = ipt("结束。换行以退出程序。")

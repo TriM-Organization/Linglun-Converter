@@ -12,18 +12,16 @@ Terms & Conditions: ./Lisense.md
 """
 
 
-
 from .io import logger, Any
 
-    
 
 def _() -> str:
     return ""
 
+
 def main():
     pass
 
+
 if __name__ == "__main__":
     main()
-    
-

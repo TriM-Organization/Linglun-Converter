@@ -12,7 +12,6 @@ Terms & Conditions: ./Lisense.md
 """
 
 
-import requests
 from typing import (
     Any,
     Callable,
@@ -35,25 +34,6 @@ from TrimLog import object_constants, logger, log__init__
 logger.is_logging = True
 logger.suffix = ".llc"
 logger.is_tips = True
-
-logger.info("读取 言·论 信息……")
-
-try:
-    myWords = (
-        requests.get(
-            "https://gitee.com/TriM-Organization/LinglunStudio/raw/master/resources/myWords.txt",
-        ).text
-        .strip("\n")
-        .split("\n")
-    )
-except (ConnectionError, requests.HTTPError, requests.RequestException) as E:
-    logger.warning(f"读取言·论信息发生 互联网连接 错误：\n{E}")
-    myWords = ["以梦想为驱使 创造属于自己的未来"]
-# noinspection PyBroadException
-except BaseException as E:
-    logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
-    myWords = ["灵光焕发 深艺献心"]
-
 
 
 logger.info("注册出入方法……")
