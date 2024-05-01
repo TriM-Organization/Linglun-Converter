@@ -279,17 +279,17 @@ on_exit_saving: bool = True
 ignore_midi_mismatch_error: bool = True
 convert_tables = {
     "PITCHED": {
-        "“偷吃”的对照表": Musicreater.MM_TOUCH_PITCHED_INSTRUMENT_TABLE,
+        "“偷吃”对照表": Musicreater.MM_TOUCH_PITCHED_INSTRUMENT_TABLE,
         "“经典”对照表": Musicreater.MM_CLASSIC_PITCHED_INSTRUMENT_TABLE,
     },
     "PERCUSSION": {
-        "“偷吃”的对照表": Musicreater.MM_TOUCH_PERCUSSION_INSTRUMENT_TABLE,
+        "“偷吃”对照表": Musicreater.MM_TOUCH_PERCUSSION_INSTRUMENT_TABLE,
         "“经典”对照表": Musicreater.MM_CLASSIC_PERCUSSION_INSTRUMENT_TABLE,
     },
 }
 convert_table_selection = {
-    "PITCHED": "“偷吃”的对照表",
-    "PERCUSSION": "“偷吃”的对照表",
+    "PITCHED": "“偷吃”对照表",
+    "PERCUSSION": "“偷吃”对照表",
 }
 ConvertClass = (Musicreater.MidiConvert, "常规转换")
 
@@ -454,6 +454,7 @@ class LingLunMainFrame(wx.Frame):
             wx.DefaultSize,
             wx.ALIGN_CENTER_HORIZONTAL | wx.ST_ELLIPSIZE_MIDDLE | wx.ST_NO_AUTORESIZE,
         )
+        self.yanlun_now = random.randrange(0, yanlun_length)
         self.m_LinglunWords_staticText1.Wrap(-1)
 
         self.m_LinglunWords_staticText1.SetFont(
@@ -1776,8 +1777,11 @@ class SettingPagePannel(wx.Panel):
             wx.ID_ANY,
             wx.DefaultPosition,
             wx.DefaultSize,
-            pg.PG_BOLD_MODIFIED | pg.PG_DEFAULT_STYLE,
+            pg.PG_BOLD_MODIFIED
+            | pg.PG_HIDE_MARGIN
+            | pg.PG_SPLITTER_AUTO_CENTER,
         )
+
         self.m_pitched_notes_table_propertyGrid1.SetFont(
             wx.Font(
                 wx.NORMAL_FONT.GetPointSize(),
@@ -1789,6 +1793,8 @@ class SettingPagePannel(wx.Panel):
             )
         )
 
+        # self.m_pitched_notes_table_propertyGrid1.SetColumnProportion(0,1)
+
         for midi_inst, mc_inst_patern in convert_tables["PITCHED"][
             convert_table_selection["PITCHED"]
         ].items():
@@ -1796,7 +1802,7 @@ class SettingPagePannel(wx.Panel):
                 pg.StringProperty(
                     Musicreater.MIDI_PITCHED_NOTE_NAME_TABLE[midi_inst + 1][0],
                     "pitched_inst_{}".format(midi_inst),
-                    mc_inst_patern[0],
+                    mc_inst_patern,
                 )
             )
 
@@ -1856,8 +1862,11 @@ class SettingPagePannel(wx.Panel):
             wx.ID_ANY,
             wx.DefaultPosition,
             wx.DefaultSize,
-            pg.PG_BOLD_MODIFIED | pg.PG_DEFAULT_STYLE,
+            pg.PG_BOLD_MODIFIED
+            | pg.PG_HIDE_MARGIN
+            | pg.PG_SPLITTER_AUTO_CENTER,
         )
+
         self.m_percussion_notes_table_propertyGrid11.SetFont(
             wx.Font(
                 wx.NORMAL_FONT.GetPointSize(),
@@ -1876,7 +1885,7 @@ class SettingPagePannel(wx.Panel):
                 pg.StringProperty(
                     Musicreater.MIDI_PERCUSSION_NOTE_NAME_TABLE[midi_inst + 1][0],
                     "percussion_inst_{}".format(midi_inst),
-                    mc_inst_patern[0],
+                    mc_inst_patern,
                 )
             )
 
@@ -1989,7 +1998,7 @@ class SettingPagePannel(wx.Panel):
         self.m_pitched_notes_table_propertyGrid1.SetPropertyValues(
             dict(
                 [
-                    ("pitched_inst_{}".format(midi_inst), mc_inst_patern[0])
+                    ("pitched_inst_{}".format(midi_inst), mc_inst_patern)
                     for midi_inst, mc_inst_patern in convert_tables["PITCHED"][
                         convert_table_selection["PITCHED"]
                     ].items()
@@ -2039,7 +2048,7 @@ class SettingPagePannel(wx.Panel):
         self.m_percussion_notes_table_propertyGrid11.SetPropertyValues(
             dict(
                 [
-                    ("percussion_inst_{}".format(midi_inst), mc_inst_patern[0])
+                    ("percussion_inst_{}".format(midi_inst), mc_inst_patern)
                     for midi_inst, mc_inst_patern in convert_tables["PERCUSSION"][
                         convert_table_selection["PERCUSSION"]
                     ].items()

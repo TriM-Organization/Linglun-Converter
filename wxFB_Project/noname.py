@@ -1135,7 +1135,9 @@ class SettingPagePannel(wx.Panel):
             wx.ID_ANY,
             wx.DefaultPosition,
             wx.DefaultSize,
-            pg.PG_BOLD_MODIFIED | pg.PG_DEFAULT_STYLE,
+            pg.PG_BOLD_MODIFIED
+            | pg.PG_HIDE_MARGIN
+            | pg.PG_SPLITTER_AUTO_CENTER,
         )
         self.m_pitched_notes_table_propertyGrid1.SetFont(
             wx.Font(
@@ -1204,7 +1206,9 @@ class SettingPagePannel(wx.Panel):
             wx.ID_ANY,
             wx.DefaultPosition,
             wx.DefaultSize,
-            pg.PG_BOLD_MODIFIED | pg.PG_DEFAULT_STYLE,
+            pg.PG_BOLD_MODIFIED
+            | pg.PG_HIDE_MARGIN
+            | pg.PG_SPLITTER_AUTO_CENTER,
         )
         self.m_percussion_notes_table_propertyGrid11.SetFont(
             wx.Font(
