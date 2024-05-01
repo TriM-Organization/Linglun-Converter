@@ -180,19 +180,19 @@ def is_in_bdx_mcpack(sth: str):
     )
 
 
-def is_in_player(sth: str, in_ok: tuple):
+def is_in_player(sth: str, in_ok: tuple = (0,1,2)):
     return isin(
         sth,
         dict(
             [
                 (i, v)
                 for i, v in [
-                    0,
-                    ("delay", "0", "延迟", "帝蕾"),
-                    1,
-                    ("score", "1", "计分板", "积分", "积分板", "计分", "斯阔尔"),
-                    2,
-                    ("repeater", "2", "中继器", "瑞皮特"),
+                    (0,
+                    ("delay", "0", "延迟", "帝蕾"),),
+                    (1,
+                    ("score", "1", "计分板", "积分", "积分板", "计分", "斯阔尔"),),
+                    (2,
+                    ("repeater", "2", "中继器", "瑞皮特"),),
                 ]
                 if i in in_ok
             ]
