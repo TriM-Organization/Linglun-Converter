@@ -4,11 +4,16 @@
 伶伦转换器 WXGUI
 Linglun Converter WxPython GUI
 
-版权所有 © 2024 金羿 & 睿乐开发组
-Copyright © 2024 EillesWan & TriM Org.
+版权所有 © 2024 金羿
+Copyright © 2024 EillesWan
 
-开源相关声明请见 ./License.md
-Terms & Conditions: ./Lisense.md
+伶伦转换器WXGUI版本（“本项目”）的协议颁发者为 金羿
+The Licensor of _Linglun Converter WxPython GUI_("this project") is Eilles Wan.
+
+本项目根据 第一版 汉钰律许可协议（“本协议”）授权。
+任何人皆可从以下地址获得本协议副本：https://gitee.com/EillesWan/YulvLicenses。
+若非因法律要求或经过了特殊准许，此作品在根据本协议“原样”提供的基础上，不予提供任何形式的担保、任何明示、任何暗示或类似承诺。也就是说，用户将自行承担因此作品的质量或性能问题而产生的全部风险。
+详细的准许和限制条款请见原协议文本。
 """
 
 
@@ -1250,7 +1255,7 @@ class ConvertPagePanel(wx.Panel):
             None,
             message="选择MIDI文件",
             defaultDir="./",
-            wildcard="MIDI 序列 (*.mid;*.midi)|*.mid;*.midi",
+            wildcard="Midi数字乐谱 (*.mid;*.midi)|*.mid;*.midi",
             style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST,
         )
         dialogResult = fileDialog.ShowModal()

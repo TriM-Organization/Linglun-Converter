@@ -2,13 +2,13 @@
 
 """
 伶伦转换器 打包存档组件
-Linglun Converter Language Localization Component
+Linglun Converter Data Package Component
 
-版权所有 © 2024 金羿 & 睿乐开发组
-Copyright © 2024 EillesWan & TriM Org.
+版权所有 © 2024 金羿
+Copyright © 2024 EillesWan
 
-开源相关声明请见 ./License.md
-Terms & Conditions: ./Lisense.md
+开源相关声明请见 仓库根目录下的 License.md
+Terms & Conditions: License.md in the root directory
 """
 
 

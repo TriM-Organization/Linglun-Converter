@@ -4,11 +4,11 @@
 伶伦转换器 言论版组件
 Linglun Converter Yan Lun Component
 
-版权所有 © 2024 金羿 & 睿乐开发组
-Copyright © 2024 EillesWan & TriM Org.
+版权所有 © 2024 金羿
+Copyright © 2024 EillesWan
 
-开源相关声明请见 ./License.md
-Terms & Conditions: ./Lisense.md
+开源相关声明请见 仓库根目录下的 License.md
+Terms & Conditions: License.md in the root directory
 """
 
 import requests
@@ -30,9 +30,11 @@ solar_date = (solar_datetime.month, solar_datetime.day)
 lunar_date = (lunar_datetime.lunar_month, lunar_datetime.lunar_day)
 
 if solar_date == (4, 3):
-    yanlun_texts = ["金羿ELS 生日快乐~！"]
+    yanlun_texts = ["金羿ELS 生日快乐~！", "Happy Birthday, Eilles!"]
 elif solar_date == (8, 6):
-    yanlun_texts = ["诸葛八卦 生日快乐~！"]
+    yanlun_texts = ["诸葛亮与八卦阵 生日快乐~！", "Happy Birthday, bgArray~!"]
+elif solar_date == (8, 16):
+    yanlun_texts = ["鱼旧梦 生日快乐~！", "Happy Birthday, ElapsingDreams~!"]
 
 else:
     try:
