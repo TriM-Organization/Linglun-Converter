@@ -74,7 +74,7 @@ BLACK = (18, 17, 16)  # 121110
 
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.2.0"
+__version__ = "WXGUI 1.2.0.1"
 __zhver__ = "WX图形界面 初代次版"
 
 
