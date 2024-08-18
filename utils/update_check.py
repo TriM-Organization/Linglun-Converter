@@ -17,7 +17,7 @@ from .io import TrimLog, Sequence, Iterable, Callable, Optional, Dict, Union
 
 
 def is_ver_char(text: str) -> bool:
-    return text.isnumeric() or text == "."
+    return text.isnumeric() or text in ".-"
 
 
 def cut_ver_str(text: str) -> str:
@@ -30,8 +30,12 @@ def cut_ver_str(text: str) -> str:
             while is_ver_char(text[j]) and j < len_of_text:
                 j += 1
             temp_str = text[i:j].strip()
-            if ("." in temp_str) and (temp_str[0] != ".") and (temp_str[-1] != "."):
-                return temp_str
+            if (
+                ("." in temp_str or "-" in temp_str)
+                and (temp_str[0] not in ".-")
+                and (temp_str[-1] not in ".-")
+            ):
+                return temp_str.replace("-", ".")
             i = j
         i += 1
     return ""
@@ -48,8 +52,12 @@ def get_ver_str(text: str) -> Iterable[str]:
             while is_ver_char(text[j]) and j < len_of_text:
                 j += 1
             temp_str = text[i:j].strip()
-            if ("." in temp_str) and (temp_str[0] != ".") and (temp_str[-1] != "."):
-                all_ver_str.append(temp_str)
+            if (
+                ("." in temp_str or "-" in temp_str)
+                and (temp_str[0] not in ".-")
+                and (temp_str[-1] not in ".-")
+            ):
+                all_ver_str.append(temp_str.replace("-", "."))
             i = j
         i += 1
     return all_ver_str
@@ -78,7 +86,7 @@ def check_update_repo(
     if not version_disp:
         version_disp = version_now
 
-    logger.info("当前 {} 版本：{}".format(appname,version_now))
+    logger.info("当前 {} 版本：{}".format(appname, version_now))
     try:
         code_content: str = requests.get(get_text_url).text
     except Exception as E:  # noinspection PyBroadException
@@ -89,7 +97,7 @@ def check_update_repo(
     code_content = code_content[code_content.find('"') + 1 :]
     version_content = code_content[: code_content.find('"')]
 
-    logger.info("已获取 {} 新版本信息：{}".format(appname,version_content))
+    logger.info("已获取 {} 新版本信息：{}".format(appname, version_content))
 
     if is_ver_bigger(
         [int(v) for v in cut_ver_str(version_content).split(".")],
@@ -130,7 +138,7 @@ def check_update_release(
     version_renew_tip: str = "！有新版本！\n最新的 {app} 已经是 {latest} 版本，当前您正在使用的仍是 {current} 版本，是否更新？",
 ) -> Union[None, Dict[str, str]]:
 
-    logger.info("当前 {} 版本：{}".format(appname,version_now))
+    logger.info("当前 {} 版本：{}".format(appname, version_now))
     try:
         code_content: Dict = requests.get(get_release_url).json()
     except Exception as E:  # noinspection PyBroadException
@@ -139,7 +147,7 @@ def check_update_release(
 
     version_content = code_content["release"]["tag"]["name"]
 
-    logger.info("已获取 {} 新版本信息：{}".format(appname,version_content))
+    logger.info("已获取 {} 新版本信息：{}".format(appname, version_content))
 
     if is_ver_bigger(
         [int(v) for v in cut_ver_str(version_content).split(".")],
