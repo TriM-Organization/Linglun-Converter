@@ -7,25 +7,23 @@
 伶伦转换器 命令行
 Linglun Converter CLI
 
-版权所有 © 2024 金羿
-Copyright © 2024 EillesWan
+版权所有 © 2025 金羿
+Copyright © 2025 EillesWan
 
 伶伦转换器命令行版本（“本项目”）的协议颁发者为 金羿
 The Licensor of _Linglun Converter CLI_("this project") is Eilles Wan.
 
-本项目根据 第一版 汉钰律许可协议（“本协议”）授权。
+本项目根据 汉钰律许可协议，第一版（“本协议”）授权。
 任何人皆可从以下地址获得本协议副本：https://gitee.com/EillesWan/YulvLicenses。
 若非因法律要求或经过了特殊准许，此作品在根据本协议“原样”提供的基础上，不予提供任何形式的担保、任何明示、任何暗示或类似承诺。也就是说，用户将自行承担因此作品的质量或性能问题而产生的全部风险。
 详细的准许和限制条款请见原协议文本。
 """
 
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 
 
 import os
 import random
-
-# import sys
 
 import Musicreater
 from Musicreater import DEFAULT_PROGRESSBAR_STYLE
@@ -34,15 +32,19 @@ from Musicreater.plugin.addonpack import (
     to_addon_pack_in_repeater,
     to_addon_pack_in_score,
 )
-
+from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
 from Musicreater.plugin.mcstructfile import (
     to_mcstructure_file_in_delay,
     to_mcstructure_file_in_repeater,
     to_mcstructure_file_in_score,
 )
-from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
-from utils.io import logger, int_str, prt, ipt, isin, bool_str, float_str
-from utils.yanlun import yanlun_texts, solar_date
+
+from utils.io import bool_str, float_str, int_str, ipt, isin, logger, prt
+from utils.yanlun import solar_date, yanlun_texts
+
+# import sys
+
+
 
 # from Musicreater.plugin.mcstructure import commands_to_structure, commands_to_redstone_delay_structure
 
@@ -204,7 +206,7 @@ def is_in_player(sth: str, in_ok: tuple = (0, 1, 2)):
 
 
 output_file_format = format_ipt(
-    "输出文件类型 (mcpack/0|bdx/1|mcstructure/2)",
+    "输出文件类型 (mcpack/0|bdx/1|mcstructure/2)：",
     is_in_bdx_mcpack,
     "输入内容有误，请重新输入。",
 )[1]
@@ -348,6 +350,7 @@ if output_file_format == 0:
         cvt_method = to_addon_pack_in_delay
     elif player_format == 2:
         cvt_method = to_addon_pack_in_repeater
+
 elif output_file_format == 2:
     if player_format == 1:
         cvt_method = to_mcstructure_file_in_score

@@ -4,8 +4,8 @@
 伶伦转换器 言论版组件
 Linglun Converter Yan Lun Component
 
-版权所有 © 2024 金羿
-Copyright © 2024 EillesWan
+版权所有 © 2025 金羿
+Copyright © 2025 EillesWan
 
 开源相关声明请见 仓库根目录下的 License.md
 Terms & Conditions: License.md in the root directory
@@ -25,9 +25,12 @@ yanlun_bg_colour = STANDART_BLACK
 logger.info("获取 言·论 信息……")
 
 solar_datetime = zhDateTime.DateTime.now()
-lunar_datetime = solar_datetime.to_lunar()
+lunar_datetime = solar_datetime.to_chinese_format()
 solar_date = (solar_datetime.month, solar_datetime.day)
-lunar_date = (lunar_datetime.lunar_month, lunar_datetime.lunar_day)
+lunar_date = (
+    lunar_datetime.chinese_calendar_month,
+    lunar_datetime.chinese_calendar_day,
+)
 
 if solar_date == (4, 3):
     yanlun_texts = ["金羿ELS 生日快乐~！", "Happy Birthday, Eilles!"]

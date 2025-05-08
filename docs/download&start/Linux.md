@@ -69,9 +69,7 @@
 2.	确认完成之后，我们来安装一下依赖库：
 	
 	```bash
-	pip install mido -i https://mirrors.aliyun.com/pypi/simple/
-	pip install brotli -i https://mirrors.aliyun.com/pypi/simple/
-	pip install Musicreater -i https://mirrors.aliyun.com/pypi/simple/
+	pip install Musicreater[full] -i https://mirrors.aliyun.com/pypi/simple/
 	pip install TrimLog -i https://mirrors.aliyun.com/pypi/simple/
 	```
 

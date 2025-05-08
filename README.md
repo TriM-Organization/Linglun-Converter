@@ -45,6 +45,10 @@
 
 ## 致谢 🙏
 
+-   感谢由 **𝘼𝙪𝙤 “可白”**\<QQ2425476216\> 带来的 Dockerfile 文件参考；  
+    在此特别授予其利用本软件进行商业使用之权利：  
+    特别声明：依据《汉钰律许可协议，第一版》，准许**可白**\<QQ2425476216\>在中国大陆范围内非专有地对本作品进行商业性使用，包括但不限于：出售本作品之副本、将本作品嵌入云平台后租赁等。
+
 > 感谢广大群友为此软件提供的测试和建议
 
 ## 联系 📞
@@ -56,8 +60,8 @@ QQ 群 [861684859](https://jq.qq.com/?_wv=1027&k=hpeRxrYr)
 [Bilibili: 金羿ELS]: https://img.shields.io/badge/Bilibili-%E9%87%91%E7%BE%BFELS-00A1E7?style=for-the-badge
 [Bilibili: 诸葛亮与八卦阵]: https://img.shields.io/badge/Bilibili-%E8%AF%B8%E8%91%9B%E4%BA%AE%E4%B8%8E%E5%85%AB%E5%8D%A6%E9%98%B5-00A1E7?style=for-the-badge
 [CodeStyle: black]: https://img.shields.io/badge/code%20style-black-121110.svg?style=for-the-badge
-[python]: https://img.shields.io/badge/python-3.6-AB70FF?style=for-the-badge
+[python]: https://img.shields.io/badge/python-3.8-AB70FF?style=for-the-badge
 
 <!-- [release]: https://img.shields.io//TriM-Organization/Linglun-Converter?style=for-the-badge -->
 
-[license]: https://img.shields.io/badge/Licence-Apache-228B22?style=for-the-badge
+[license]: https://img.shields.io/badge/Licence-%E6%B1%89%E9%92%B0%E5%BE%8B%E8%AE%B8%E5%8F%AF%E5%8D%8F%E8%AE%AE-228B22?style=for-the-badge

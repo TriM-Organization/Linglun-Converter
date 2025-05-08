@@ -4,8 +4,8 @@
 伶伦转换器 版本检查组件
 Linglun Converter Version Checking Component
 
-版权所有 © 2024 金羿
-Copyright © 2024 EillesWan
+版权所有 © 2025 金羿
+Copyright © 2025 EillesWan
 
 开源相关声明请见 仓库根目录下的 License.md
 Terms & Conditions: License.md in the root directory
@@ -13,7 +13,7 @@ Terms & Conditions: License.md in the root directory
 
 import requests
 
-from .io import TrimLog, Sequence, Iterable, Callable, Optional, Dict, Union
+from .io import Callable, Dict, Iterable, Optional, Sequence, TrimLog, Union
 
 
 def is_ver_char(text: str) -> bool:

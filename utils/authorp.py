@@ -4,8 +4,8 @@
 伶伦转换器 作者信息组件
 Linglun Converter Author Page Component
 
-版权所有 © 2024 金羿
-Copyright © 2024 EillesWan
+版权所有 © 2025 金羿
+Copyright © 2025 EillesWan
 
 开源相关声明请见 仓库根目录下的 License.md
 Terms & Conditions: License.md in the root directory
@@ -13,9 +13,8 @@ Terms & Conditions: License.md in the root directory
 
 
 import wx
-import wx.xrc
 import wx.media
-
+import wx.xrc
 
 ###########################################################################
 ## Class LingLunAuthorPageFrame

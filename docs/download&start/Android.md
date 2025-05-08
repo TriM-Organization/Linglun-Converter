@@ -101,8 +101,7 @@
 	pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
 	# 然后安装（依次执行下面的指令）
     apt-get install python-numpy
-	pip install brotli TrimMCStruct
-	pip install Musicreater TrimLog
+	pip install Musicreater[full] TrimLog
 	python -m pip install --upgrade pip setuptools wheel
 	```
 
@@ -119,8 +118,7 @@
 		之后再来安装即可
 
 		```bash
-		pip install brotli TrimMCStruct
-	    pip install Musicreater TrimLog
+	    pip install Musicreater[full] TrimLog
 	    python -m pip install --upgrade pip setuptools wheel
 		```
 
@@ -133,7 +131,7 @@
 既然已经有了运行环境，那么我们就需要下载一个用来下载我们的**伶伦转换器**的工具，我非常推崇**Git**这种方便快捷好用还能下载仓库的代码管理器，这个世界上你也找不到第二个，所以我们来安装一下：
 
 ```bash
-pkg install git
+apt install git
 ```
 
 安装完成后记得测试一下：
@@ -148,7 +146,7 @@ pkg install git
 	git clone https://gitee.com/TriM-Organization/Linglun-Converter.git llc
 	```
 
-	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `llc` 的文件夹，其中包含的正是我们心心念念下载的本程序源代码。
+	当上述命令执行成功，你会在执行此命令的所在位置发现一个名为 `llc` 的文件夹，其中包含的正是我们心心念念下载的本程序源代码。  
 	本程序可以直接从源代码运行，因此，赶快进入下载到的文件夹：
 
 	```bash

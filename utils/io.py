@@ -4,8 +4,8 @@
 伶伦转换器 命令行组件
 Linglun Converter Command Line IO Component
 
-版权所有 © 2024 金羿
-Copyright © 2024 EillesWan
+版权所有 © 2025 金羿
+Copyright © 2025 EillesWan
 
 开源相关声明请见 仓库根目录下的 License.md
 Terms & Conditions: License.md in the root directory
@@ -16,20 +16,19 @@ from typing import (
     Any,
     Callable,
     Dict,
+    Iterable,
     List,
     Literal,
     Optional,
+    Sequence,
     Set,
     TextIO,
     Tuple,
-    Iterable,
-    Sequence,
     Union,
 )
 
 import TrimLog
-from TrimLog import object_constants, logger, log__init__
-
+from TrimLog import log__init__, logger, object_constants
 
 logger.is_logging = True
 logger.suffix = ".llc"

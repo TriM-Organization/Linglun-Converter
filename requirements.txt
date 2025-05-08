@@ -1,10 +1,7 @@
-Musicreater>=2.1.0.1
+Musicreater[full]>=2.1.0.1
 TrimLog>=0.8.3
 requests>=2.0.0
-TrimMCStruct>=1.0.0
-rich
 wxPython
 dill
-brotli
-fcwslib=3.0.1
-zhDateTime>=1.0.3
+# fcwslib=3.0.1
+zhDateTime>=2.0.0

@@ -4,8 +4,8 @@
 伶伦转换器 打包存档组件
 Linglun Converter Data Package Component
 
-版权所有 © 2024 金羿
-Copyright © 2024 EillesWan
+版权所有 © 2025 金羿
+Copyright © 2025 EillesWan
 
 开源相关声明请见 仓库根目录下的 License.md
 Terms & Conditions: License.md in the root directory
@@ -14,11 +14,11 @@ Terms & Conditions: License.md in the root directory
 
 import hashlib
 
-import dill
 import brotli
+import dill
 
-from .salt import salt
 from .io import Any
+from .salt import salt
 
 
 def unpack_llc_pack(from_dist: str, raise_error: bool = True):
@@ -27,7 +27,12 @@ def unpack_llc_pack(from_dist: str, raise_error: bool = True):
 
     if (md5_value == hashlib.md5(packed_bytes).digest()) and (
         salty_sha256_value
-        == hashlib.pbkdf2_hmac("sha256", md5_value + packed_bytes, salt, 16)
+        == hashlib.pbkdf2_hmac(
+            "sha256",
+            md5_value + packed_bytes,
+            salt(hashlib.sha256(brotli.__version__)),
+            16,
+        )
     ):
         return dill.loads(
             brotli.decompress(packed_bytes),
@@ -49,7 +54,10 @@ def enpack_llc_pack(sth: Any, to_dist: str):
     md5_value = hashlib.md5(packing_bytes).digest()  # 长度 16
 
     salty_sha256_value = hashlib.pbkdf2_hmac(
-        "sha256", md5_value + packing_bytes, salt, 16
+        "sha256",
+        md5_value + packing_bytes,
+        salt(hashlib.md5(salt(salt(brotli.__version__)))),
+        16,
     )  # 长度 32
 
     with open(

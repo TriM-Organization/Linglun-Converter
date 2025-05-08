@@ -4,13 +4,13 @@
 伶伦转换器 WXGUI
 Linglun Converter WxPython GUI
 
-版权所有 © 2024 金羿
-Copyright © 2024 EillesWan
+版权所有 © 2025 金羿
+Copyright © 2025 EillesWan
 
 伶伦转换器WXGUI版本（“本项目”）的协议颁发者为 金羿
 The Licensor of _Linglun Converter WxPython GUI_("this project") is Eilles Wan.
 
-本项目根据 第一版 汉钰律许可协议（“本协议”）授权。
+本项目根据 汉钰律许可协议，第一版（“本协议”）授权。
 任何人皆可从以下地址获得本协议副本：https://gitee.com/EillesWan/YulvLicenses。
 若非因法律要求或经过了特殊准许，此作品在根据本协议“原样”提供的基础上，不予提供任何形式的担保、任何明示、任何暗示或类似承诺。也就是说，用户将自行承担因此作品的质量或性能问题而产生的全部风险。
 详细的准许和限制条款请见原协议文本。
@@ -21,7 +21,6 @@ The Licensor of _Linglun Converter WxPython GUI_("this project") is Eilles Wan.
 import os
 import random
 import sys
-
 import threading
 
 # from types import ModuleType
@@ -40,25 +39,28 @@ if sys.argv:
 import Musicreater
 import Musicreater.experiment as Musicreater_experiment
 import Musicreater.plugin
+import wx
+import wx.propgrid as pg
+import wx.xrc
 from Musicreater.plugin.addonpack import (
     to_addon_pack_in_delay,
     to_addon_pack_in_repeater,
     to_addon_pack_in_score,
 )
-from Musicreater.plugin.websocket import to_websocket_server
 from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
+from Musicreater.plugin.mcstructfile import (
+    to_mcstructure_file_in_delay,
+    to_mcstructure_file_in_repeater,
+    to_mcstructure_file_in_score,
+)
+from Musicreater.plugin.websocket import to_websocket_server
 
-import wx
-import wx.xrc
-import wx.propgrid as pg
-
-from utils.io import logger, object_constants, log__init__, TrimLog
-from utils.yanlun import yanlun_texts, yanlun_fg_colour, yanlun_bg_colour
 from utils.authorp import go_author_page
+from utils.io import TrimLog, log__init__, logger, object_constants
+from utils.packdata import enpack_llc_pack, load_msct_packed_data, unpack_llc_pack
 from utils.update_check import check_update_release
-from utils.packdata import enpack_llc_pack, unpack_llc_pack, load_msct_packed_data
 from utils.webview import go_update_tip
-
+from utils.yanlun import yanlun_bg_colour, yanlun_fg_colour, yanlun_texts
 
 WHITE = (242, 244, 246)  # F2F4F6
 # WHITE2 = (248, 252, 255)
@@ -74,8 +76,8 @@ BLACK = (18, 17, 16)  # 121110
 
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.2.0.2"
-__zhver__ = "WX图形界面 初代次版"
+__version__ = "WXGUI 1.2.1"
+__zhver__ = "WX图形界面 初代次版一编"
 
 
 logger.info("检查更新")
@@ -286,10 +288,14 @@ convert_tables = {
     "PITCHED": {
         "“偷吃”对照表": Musicreater.MM_TOUCH_PITCHED_INSTRUMENT_TABLE,
         "“经典”对照表": Musicreater.MM_CLASSIC_PITCHED_INSTRUMENT_TABLE,
+        "“断联”对照表": Musicreater.MM_DISLINK_PITCHED_INSTRUMENT_TABLE,
+        "“NBS”对照表": Musicreater.MM_NBS_PITCHED_INSTRUMENT_TABLE,
     },
     "PERCUSSION": {
         "“偷吃”对照表": Musicreater.MM_TOUCH_PERCUSSION_INSTRUMENT_TABLE,
         "“经典”对照表": Musicreater.MM_CLASSIC_PERCUSSION_INSTRUMENT_TABLE,
+        "“断联”对照表": Musicreater.MM_DISLINK_PERCUSSION_INSTRUMENT_TABLE,
+        "“NBS”对照表": Musicreater.MM_NBS_PERCUSSION_INSTRUMENT_TABLE,
     },
 }
 convert_table_selection = {
@@ -745,7 +751,7 @@ class ConvertPagePanel(wx.Panel):
             wx.StaticBox(self, wx.ID_ANY, "选择输出格式"), wx.VERTICAL
         )
 
-        m_outformatChoice_choice1Choices = ["附加包", "BDX结构"]
+        m_outformatChoice_choice1Choices = ["附加包", "MCSTRUCTURE结构", "BDX结构"]
         self.m_outformatChoice_choice1 = wx.Choice(
             ss_outputFormatChooseSizer.GetStaticBox(),
             wx.ID_ANY,
@@ -774,7 +780,7 @@ class ConvertPagePanel(wx.Panel):
             m_playerChoice_choice2Choices,
             0,
         )
-        self.m_playerChoice_choice2.SetSelection(2)
+        self.m_playerChoice_choice2.SetSelection(1)
         ss_playerChooseSizer.Add(self.m_playerChoice_choice2, 0, wx.ALL | wx.EXPAND, 5)
 
         s_formatChooseSizer.Add(ss_playerChooseSizer, 1, wx.ALL | wx.EXPAND, 5)
@@ -1271,17 +1277,30 @@ class ConvertPagePanel(wx.Panel):
 
     def onOutputFormatChosen(self, event):
         # 0: 附加包
-        # 1: BDX
+        # 1: MCSTRUCTURE
+        # 2: BDX
         # prt("选择中：",self.m_outformatChoice_choice1.GetSelection())
         if self.m_outformatChoice_choice1.GetSelection() == 0:
             self.m_EnteringBDXfileSignName_textCtrl12.Enable(False)
+
             if self.m_playerChoice_choice2.GetSelection() == 0:
                 self.m_StructureHeight_slider7.Enable(False)
                 self.m_enteringStructureMaxHeight_spinCtrl1.Enable(False)
             else:
                 self.m_StructureHeight_slider7.Enable(True)
                 self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
-        elif self.m_outformatChoice_choice1.GetSelection() == 1:
+
+        if self.m_outformatChoice_choice1.GetSelection() == 1:
+            self.m_EnteringBDXfileSignName_textCtrl12.Enable(False)
+
+            if self.m_playerChoice_choice2.GetSelection() == 2:
+                self.m_StructureHeight_slider7.Enable(False)
+                self.m_enteringStructureMaxHeight_spinCtrl1.Enable(False)
+            else:
+                self.m_StructureHeight_slider7.Enable(True)
+                self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
+
+        elif self.m_outformatChoice_choice1.GetSelection() == 2:
             self.m_EnteringBDXfileSignName_textCtrl12.Enable(True)
             self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
             self.m_StructureHeight_slider7.Enable(True)
@@ -1290,20 +1309,27 @@ class ConvertPagePanel(wx.Panel):
         # 0 计分板    1 延时    2中继器
         if self.m_playerChoice_choice2.GetSelection() == 0:
             self.m_PlayerSelectorEntering_comboBox1.Enable(False)
-            self.m_StructureHeight_slider7.Enable(False)
 
             if self.m_outformatChoice_choice1.GetSelection() == 0:
                 self.m_enteringStructureMaxHeight_spinCtrl1.Enable(False)
-            elif self.m_outformatChoice_choice1.GetSelection() == 1:
+                self.m_StructureHeight_slider7.Enable(False)
+            else:
                 self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
+                self.m_StructureHeight_slider7.Enable(True)
 
             self.m_ScoreboardNameEntering_textCtrl9.Enable(True)
             self.m_IsAutoResetScoreboard_checkBox2.Enable(True)
         else:
             self.m_PlayerSelectorEntering_comboBox1.Enable(True)
-            self.m_StructureHeight_slider7.Enable(True)
 
-            self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
+            if (self.m_outformatChoice_choice1.GetSelection() == 1) and (
+                self.m_playerChoice_choice2.GetSelection() == 2
+            ):
+                self.m_enteringStructureMaxHeight_spinCtrl1.Enable(False)
+                self.m_StructureHeight_slider7.Enable(False)
+            else:
+                self.m_StructureHeight_slider7.Enable(True)
+                self.m_enteringStructureMaxHeight_spinCtrl1.Enable(True)
 
             self.m_ScoreboardNameEntering_textCtrl9.Enable(False)
             self.m_IsAutoResetScoreboard_checkBox2.Enable(False)
@@ -1420,7 +1446,8 @@ class ConvertPagePanel(wx.Panel):
             )
 
             # 0: 附加包
-            # 1: BDX
+            # 1: mcstructure
+            # 2: BDX
 
             # 0 计分板    1 延时    2中继器
             if self.m_outformatChoice_choice1.GetSelection() == 0:
@@ -1463,6 +1490,50 @@ class ConvertPagePanel(wx.Panel):
                     wx.YES_DEFAULT | wx.ICON_INFORMATION,
                 ).ShowModal()
             elif self.m_outformatChoice_choice1.GetSelection() == 1:
+                if self.m_playerChoice_choice2.GetSelection() == 0:
+                    size, total_delay, cmd_num = to_mcstructure_file_in_score(
+                        midi_cvt=mid_cvt,
+                        dist_path=cvt_dist,
+                        scoreboard_name=self.m_ScoreboardNameEntering_textCtrl9.GetValue(),
+                        auto_reset=self.m_IsAutoResetScoreboard_checkBox2.GetValue(),
+                        max_height=self.m_enteringStructureMaxHeight_spinCtrl1.GetValue(),
+                    )
+                elif self.m_playerChoice_choice2.GetSelection() == 1:
+                    size, total_delay = to_mcstructure_file_in_delay(
+                        midi_cvt=mid_cvt,
+                        dist_path=cvt_dist,
+                        player=self.m_PlayerSelectorEntering_comboBox1.GetValue(),
+                        max_height=self.m_enteringStructureMaxHeight_spinCtrl1.GetValue(),
+                    )
+                elif self.m_playerChoice_choice2.GetSelection() == 2:
+                    size, total_delay = to_mcstructure_file_in_repeater(
+                        midi_cvt=mid_cvt,
+                        dist_path=cvt_dist,
+                        player=self.m_PlayerSelectorEntering_comboBox1.GetValue(),
+                    )
+                else:
+                    wx.MessageDialog(
+                        None,
+                        "你输入的播放器有误!",
+                        "错误",
+                        wx.YES_DEFAULT | wx.ICON_ERROR,
+                    ).ShowModal()
+                    return
+                wx.MessageDialog(
+                    None,
+                    "完成！\n结构大小：{}\n延迟总长：{}{}".format(
+                        size,
+                        total_delay,
+                        (
+                            "\n指令数量：{}".format(cmd_num)
+                            if self.m_playerChoice_choice2.GetSelection() == 0
+                            else ""
+                        ),
+                    ),
+                    "转换成功",
+                    wx.YES_DEFAULT | wx.ICON_INFORMATION,
+                ).ShowModal()
+            elif self.m_outformatChoice_choice1.GetSelection() == 2:
                 if self.m_playerChoice_choice2.GetSelection() == 0:
                     cmd_num, total_delay, size, final_pos = to_BDX_file_in_score(
                         midi_cvt=mid_cvt,
@@ -2034,7 +2105,7 @@ class SettingPagePannel(wx.Panel):
         )
         if "自定义对照表" not in self.m_pitched_instrument_table_choice.Items:
             self.m_pitched_instrument_table_choice.Append("自定义对照表")
-            self.m_pitched_instrument_table_choice.SetSelection(2)
+            self.m_pitched_instrument_table_choice.SetSelection(4)
 
     def onPitchedInstTableChanging(self, event):
         event.Skip()
@@ -2083,7 +2154,7 @@ class SettingPagePannel(wx.Panel):
         )
         if "自定义对照表" not in self.m_percussion_instrument_table_choice1.Items:
             self.m_percussion_instrument_table_choice1.Append("自定义对照表")
-            self.m_percussion_instrument_table_choice1.SetSelection(2)
+            self.m_percussion_instrument_table_choice1.SetSelection(4)
 
     def onPercussionInstTableChanging(self, event):
         event.Skip()
