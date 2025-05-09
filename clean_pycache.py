@@ -26,6 +26,8 @@ def main():
     ):
         if os.path.isdir(file) and os.access(file, os.W_OK):
             shutil.rmtree(file)
+        elif os.path.isfile(file) and os.access(file, os.W_OK):
+            os.remove(file)
 
 
 if __name__ == "__main__":
