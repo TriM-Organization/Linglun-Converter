@@ -30,7 +30,7 @@ def unpack_llc_pack(from_dist: str, raise_error: bool = True):
         == hashlib.pbkdf2_hmac(
             "sha256",
             md5_value + packed_bytes,
-            salt(hashlib.sha256(brotli.__version__)),
+            salt(hashlib.sha256(str(brotli.__version__).encode("gb18030"))),
             16,
         )
     ):

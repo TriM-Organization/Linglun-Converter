@@ -76,7 +76,7 @@ BLACK = (18, 17, 16)  # 121110
 
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.2.1"
+__version__ = "WXGUI 1.2.1.1"
 __zhver__ = "WX图形界面 初代次版一编"
 
 
@@ -1525,7 +1525,7 @@ class ConvertPagePanel(wx.Panel):
                         size,
                         total_delay,
                         (
-                            "\n指令数量：{}".format(cmd_num)
+                            "\n指令数量：{}".format(cmd_num)  # type: ignore
                             if self.m_playerChoice_choice2.GetSelection() == 0
                             else ""
                         ),
