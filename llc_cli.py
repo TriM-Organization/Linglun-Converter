@@ -19,7 +19,7 @@ The Licensor of _Linglun Converter CLI_("this project") is Eilles Wan.
 详细的准许和限制条款请见原协议文本。
 """
 
-__version__ = "0.0.9"
+__version__ = "0.0.9.1"
 
 
 import os
@@ -43,7 +43,6 @@ from utils.io import bool_str, float_str, int_str, ipt, isin, logger, prt
 from utils.yanlun import solar_date, yanlun_texts
 
 # import sys
-
 
 
 # from Musicreater.plugin.mcstructure import commands_to_structure, commands_to_redstone_delay_structure
@@ -379,7 +378,7 @@ for singleMidi in midis:
                 else to_BDX_file_in_delay(cvt_mid, out_path, style, *prompts[3:])
             )
             if output_file_format == 1
-            else (cvt_method(cvt_mid, out_path, *prompts[2:]))
+            else (cvt_method(cvt_mid, out_path, *prompts[2:])) # type: ignore
         )
     )
 

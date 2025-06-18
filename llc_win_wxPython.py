@@ -60,12 +60,12 @@ from utils.io import TrimLog, log__init__, logger, object_constants
 from utils.packdata import enpack_llc_pack, load_msct_packed_data, unpack_llc_pack
 from utils.update_check import check_update_release
 from utils.webview import go_update_tip
-from utils.yanlun import yanlun_bg_colour, yanlun_fg_colour, yanlun_texts
+from utils.yanlun import STANDARD_WHITE, STANDART_BLACK, yanlun_texts
 
-WHITE = (242, 244, 246)  # F2F4F6
+WHITE = wx.Colour(242, 244, 246)  # F2F4F6
 # WHITE2 = (248, 252, 255)
 # WHITE3 = (233, 236, 240)
-BLACK = (18, 17, 16)  # 121110
+BLACK = wx.Colour(18, 17, 16)  # 121110
 # BLACK2 = (9, 12, 14)
 # BLACK3 = (0, 2, 6)
 
@@ -74,10 +74,12 @@ BLACK = (18, 17, 16)  # 121110
 # BLACK = (242, 244, 246)  # 121110
 # BLACK2 = (248, 252, 255)
 
+yanlun_fg_colour = wx.Colour(*STANDARD_WHITE)
+yanlun_bg_colour = wx.Colour(*STANDART_BLACK)
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.2.1.1"
-__zhver__ = "WX图形界面 初代次版一编"
+__version__ = "WXGUI 1.2.2"
+__zhver__ = "WX图形界面 初代次版二编"
 
 
 logger.info("检查更新")
@@ -342,6 +344,10 @@ logger.printing = not osc.is_release
 
 
 yanlun_length = len(yanlun_texts)
+
+
+logger.info("音·创内核版本：{}".format(Musicreater.__version__), mandatory_use=True)
+
 
 logger.info("加载窗口布局……")
 
@@ -1354,13 +1360,13 @@ class ConvertPagePanel(wx.Panel):
             )
 
     def onSpeedSpinChanged(self, event):
-        if self.m_speed_spinCtrlDouble.Value > 1:
+        if self.m_speed_spinCtrlDouble.GetValue() > 1:
             self.m_speed_slider.SetValue(
-                int((self.m_speed_spinCtrlDouble.Value + 8) * 50 / 9)
+                int((self.m_speed_spinCtrlDouble.GetValue() + 8) * 50 / 9)
             )
         else:
             self.m_speed_slider.SetValue(
-                int((self.m_speed_spinCtrlDouble.Value - 0.01) * 5000 / 99)
+                int((self.m_speed_spinCtrlDouble.GetValue() - 0.01) * 5000 / 99)
             )
 
     def onProgressbarChecked(self, event):
@@ -1430,6 +1436,7 @@ class ConvertPagePanel(wx.Panel):
                 mid_cvt = ConvertClass[0].from_midi_file(
                     midi_file_path=file_name,
                     mismatch_error_ignorance=ignore_midi_mismatch_error,
+                    play_speed=self.m_speed_spinCtrlDouble.GetValue(),
                     pitched_note_table=convert_tables["PITCHED"][
                         convert_table_selection["PITCHED"]
                     ],
@@ -1437,6 +1444,8 @@ class ConvertPagePanel(wx.Panel):
                         convert_table_selection["PERCUSSION"]
                     ],
                     old_exe_format=self.m_oldExeFormatChecker_checkBox3.GetValue(),
+                    min_volume=self.m_volumn_spinCtrlDouble1.GetValue() / 100,
+                    music_pitch_deviation=0,
                 )
 
             cvt_dist = (
@@ -2169,7 +2178,12 @@ if __name__ == "__main__":
 
     app = LinglunConverterApp()
 
-    app.MainLoop()
+    try:
+        app.MainLoop()
+    except Exception as e:
+        logger.error(f"程序异常退出：{e}")
+
+    logger.info("关闭窗口，收尾任务")
 
     if on_exit_saving:
         enpack_llc_pack(

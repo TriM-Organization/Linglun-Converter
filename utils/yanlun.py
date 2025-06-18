@@ -19,8 +19,6 @@ from .io import logger, prt
 STANDARD_WHITE = (242, 244, 246)
 STANDART_BLACK = (18, 17, 16)
 
-yanlun_fg_colour = STANDARD_WHITE
-yanlun_bg_colour = STANDART_BLACK
 
 logger.info("获取 言·论 信息……")
 
@@ -55,3 +53,5 @@ else:
     except BaseException as E:
         logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
         yanlun_texts = ["灵光焕发 深艺献心"]
+
+logger.info("已获取言·论 {} 条".format(len(yanlun_texts)))

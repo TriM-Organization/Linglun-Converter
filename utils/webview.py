@@ -25,7 +25,7 @@ class HTMLFrame(wx.Frame):
         tip_text,
         web_text,
         window_title: str = "新版本已发布",
-        bg_colour: tuple = (0, 0, 0),
+        bg_colour: tuple | wx.Colour = (0, 0, 0),
         window_size: tuple = (800, 480),
     ):
         """构造函数"""
@@ -36,12 +36,12 @@ class HTMLFrame(wx.Frame):
             id=wx.ID_ANY,
             title=window_title,
             pos=wx.DefaultPosition,
-            size=window_size,
+            size=wx.Size(*window_size),
             style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL,
         )
 
         # self.SetIcon(wx.Icon('', wx.BITMAP_TYPE_ICO))
-        self.SetBackgroundColour(bg_colour)
+        self.SetBackgroundColour(wx.Colour(bg_colour))
         self.Center()
 
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)

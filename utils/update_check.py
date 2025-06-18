@@ -158,7 +158,7 @@ def check_update_release(
             version_renew_tip.format(
                 app=appname, latest=version_content, current=version_now
             ),
-            code_content["release"]["release"]["description"],
+            code_content["release"]["release"]["description"].replace("\r\n", "\n"),
         ):
             return dict(
                 [

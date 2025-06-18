@@ -130,7 +130,7 @@ class LingLunAuthorPageFrame(wx.Frame):
         self.m_bitmap1 = wx.StaticBitmap(
             self.eilles_pannel,
             wx.ID_ANY,
-            wx.Bitmap(eilles_pic, wx.BITMAP_TYPE_ANY),
+            wx.BitmapBundle(wx.Image(eilles_pic, wx.BITMAP_TYPE_ANY)),
             wx.DefaultPosition,
             wx.DefaultSize,
             0,
@@ -183,7 +183,7 @@ class LingLunAuthorPageFrame(wx.Frame):
 
         bSizer41 = wx.BoxSizer(wx.VERTICAL)
 
-        bSizer41.Add((0, 0), 1, wx.EXPAND, 5)
+        bSizer41.Add(wx.Size(0, 0), 1, wx.EXPAND, 5)
 
         self.m_staticText211 = wx.StaticText(
             self.bgarray_pannel,
