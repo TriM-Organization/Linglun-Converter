@@ -82,26 +82,28 @@ __version__ = "WXGUI 1.2.2"
 __zhver__ = "WX图形界面 初代次版二编"
 
 
-logger.info("检查更新")
+if __name__ == "__main__":
 
-down_paths = check_update_release(
-    "伶伦转换器",
-    "https://gitee.com/TriM-Organization/Linglun-Converter/releases/latest",
-    __version__,
-    go_update_tip,
-    logger,
-    "！有新版本！\n新版本 {app} {latest} 可用，当前仍是 {current}\n请前往下载地址更新\n",
-)
+    logger.info("检查更新")
 
-
-if down_paths:
-    wx.LaunchDefaultBrowser(
-        "https://gitee.com{}".format(
-            [v for i, v in down_paths.items() if sys.platform in i][0]
-        )
+    down_paths = check_update_release(
+        "伶伦转换器",
+        "https://gitee.com/TriM-Organization/Linglun-Converter/releases/latest",
+        __version__,
+        go_update_tip,
+        logger,
+        "！有新版本！\n新版本 {app} {latest} 可用，当前仍是 {current}\n请前往下载地址更新\n",
     )
-    exit()
-    # go_update_tip("点击下方链接下载更新：",'<a href="https://gitee.com{}">点击此处下载</a>'.format(list(down_paths.values())[0]))
+
+
+    if down_paths:
+        wx.LaunchDefaultBrowser(
+            "https://gitee.com{}".format(
+                [v for i, v in down_paths.items() if sys.platform in i][0]
+            )
+        )
+        exit()
+        # go_update_tip("点击下方链接下载更新：",'<a href="https://gitee.com{}">点击此处下载</a>'.format(list(down_paths.values())[0]))
 
 """
 msct_main = msct_plugin = msct_plugin_function = None
@@ -279,6 +281,7 @@ if down_paths:
         to_BDX_file_in_score,
     ) = msct_plugin_function
 """
+
 
 logger.info("注册变量并读取内容……")
 
