@@ -378,7 +378,7 @@ for singleMidi in midis:
                 else to_BDX_file_in_delay(cvt_mid, out_path, style, *prompts[3:])
             )
             if output_file_format == 1
-            else (cvt_method(cvt_mid, out_path, *prompts[2:])) # type: ignore
+            else (cvt_method(cvt_mid, out_path, *prompts[2:]))  # type: ignore
         )
     )
 

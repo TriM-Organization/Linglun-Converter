@@ -1,0 +1,5 @@
+Musicreater[full]>=2.1.0.1
+TrimLog>=0.8.3
+setuptools < 81
+requests>=2.0.0
+zhDateTime>=2.0.0

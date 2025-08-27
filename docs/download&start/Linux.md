@@ -1,7 +1,20 @@
 
-##  运行环境安装
 
-### 检验Python运行环境
+## 1控制台 使用 Docker
+
+请使用根目录下的 `Dockerfile` 来构建镜像，并运行镜像。
+
+## 2图形化用户界面
+
+*未完待续*
+
+------
+
+## 3**不建议** 手动安装
+
+###  运行环境安装
+
+#### 检验Python运行环境
 
 0.	一般的Linux发行版都有安装Python环境，我们只需要保证其版本即可，理论上 ≥Python3.6 都可以运行我们的库
 
@@ -43,7 +56,7 @@
 
 		暂无
 
-### 检查并安装pip包管理器依赖
+#### 检查并安装pip包管理器依赖
 
 1.	我们在安装依赖库之前，应该确认一下，Python自带的包管理器pip是否安装到位：
 
@@ -69,8 +82,7 @@
 2.	确认完成之后，我们来安装一下依赖库：
 	
 	```bash
-	pip install Musicreater[full] -i https://mirrors.aliyun.com/pypi/simple/
-	pip install TrimLog -i https://mirrors.aliyun.com/pypi/simple/
+	pip install -r requirements_cli.txt -i https://mirrors.aliyun.com/pypi/simple/
 	```
 
 3.	安装成功后可能会见到类似下图的提示：
@@ -78,7 +90,7 @@
 	<img src="https://foruda.gitee.com/images/1662737676719454287/f61a70f7_9911226.png">
 
 
-## 本代码库的下载与使用
+### 本代码库的下载与使用
 
 1. 使用Git下载本库及其示例代码
 

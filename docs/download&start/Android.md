@@ -101,8 +101,7 @@
 	pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
 	# 然后安装（依次执行下面的指令）
     apt-get install python-numpy
-	pip install Musicreater[full] TrimLog
-	python -m pip install --upgrade pip setuptools wheel
+	pip install -r requirements_cli.txt
 	```
 
 	- 如果出现以下情况，真是死了鬼的，我们要来再搞个设置：
@@ -118,8 +117,7 @@
 		之后再来安装即可
 
 		```bash
-	    pip install Musicreater[full] TrimLog
-	    python -m pip install --upgrade pip setuptools wheel
+	    python -m pip install --upgrade -r requirements_cli.txt
 		```
 
 	安装成功后您可能会见到类似下图的提示：

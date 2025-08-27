@@ -41,7 +41,7 @@ else:
     try:
         yanlun_texts = (
             requests.get(
-                "https://nd.liteyuki.icu/api/v3/share/content/Xpue?path=null",
+                "https://nd.liteyuki.org/api/v3/share/content/Xpue?path=null",
             )
             .text.strip("\n")
             .split("\n")

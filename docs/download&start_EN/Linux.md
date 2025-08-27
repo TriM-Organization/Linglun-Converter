@@ -1,7 +1,21 @@
 
-## Install Runtime Environment
 
-### Install and Verify Python Runtime
+
+## 1 CLI - Docker
+
+Using the `Dockerfile` in the root directory to build a Docker image, and run it.
+
+## 2 GUI
+
+*to be written*
+
+------
+
+## 3 **Not Recommended** Manually Run the CLI code
+
+### Install Runtime Environment
+
+#### Install and Verify Python Runtime
 
 0.	Common Linux Distributions do include a Python Runtime Environment, what we should do is only to check whether it is a satisfied version to our program. If the version ≥Python3.6, theoretically our program can be run.
 
@@ -43,7 +57,7 @@
 
 		None yet.
 
-###	Install and Verify pip Package Manager
+####	Install and Verify pip Package Manager
 
 1.	Before installing, it is to be checked, wheather Python's pip is OK:
 
@@ -55,22 +69,21 @@
 	/usr/bin/python: No module named pip
 	# We can install pip via:
 	sudo pacman -S python-pip
-	# Verfy, remember.
+	# Check, remember.
 	python -m pip
 
 
 	# If you did but failed, we should use other methods to install pip:
 	wget https://bootstrap.pypa.io/get-pip.py
 	sudo python get-pip.py
-	# Verfy, must.
+	# Double check, must.
 	python -m pip
 	```
 
 2.	After checking, let's install the dependences.
 	
 	```bash
-	pip install mido -i
-	pip install brotli -i
+	pip install -r requirements_cli.txt -i https://mirrors.aliyun.com/pypi/simple/
 	```
 
 3.	See the tips below as successfully installed：
@@ -78,25 +91,25 @@
 	<img src="https://foruda.gitee.com/images/1662737676719454287/f61a70f7_9911226.png">
 
 
-## Download this lib's sources code and Using its demos.
+### Download this lib's sources code and Using its demos.
 
 1.	Download via Git
 
 	```bash
-	git clone -b pkgver https://github.com/TriM-Organization/Musicreater.git MSCTpkgver
+	git clone https://gitee.com/TriM-Organization/Linglun-Converter.git llc
 	```
 
-	If succeed, a directory named `MSCTpkgver` well be found in the path you run this command, and inside it is the source code and demo(s) we wantted to download.
-	What we want to use is the demo(s) so enter the folder via:
+	If succeed, a directory named `llc` well be found in the path you run this command, and inside it is the source codes we wantted to download.
+	What we want to use is in the folder so enter the folder via:
 
 	```bash
-	cd MSCTpkgver
+	cd llc
 	```
 
-1.	Starting Using Demo(s)
+1.	Starting Using
 
 	Via
 
 	```bash
-	python magicDemo.py
+	python llc_cli.py
 	```
