@@ -19,28 +19,40 @@ The Licensor of _Linglun Converter CLI_("this project") is Eilles Wan.
 详细的准许和限制条款请见原协议文本。
 """
 
-__version__ = "0.0.9.1"
+__version__ = "0.0.9.2"
 
 
 import os
 import random
 
-import Musicreater
-from Musicreater import DEFAULT_PROGRESSBAR_STYLE
-from Musicreater.plugin.addonpack import (
-    to_addon_pack_in_delay,
-    to_addon_pack_in_repeater,
-    to_addon_pack_in_score,
-)
-from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
-from Musicreater.plugin.mcstructfile import (
-    to_mcstructure_file_in_delay,
-    to_mcstructure_file_in_repeater,
-    to_mcstructure_file_in_score,
-)
+try:
 
-from utils.io import bool_str, float_str, int_str, ipt, isin, logger, prt
-from utils.yanlun import solar_date, yanlun_texts
+    import Musicreater
+    from Musicreater import DEFAULT_PROGRESSBAR_STYLE
+    from Musicreater.plugin.addonpack import (
+        to_addon_pack_in_delay,
+        to_addon_pack_in_repeater,
+        to_addon_pack_in_score,
+    )
+    from Musicreater.plugin.bdxfile import to_BDX_file_in_delay, to_BDX_file_in_score
+    from Musicreater.plugin.mcstructfile import (
+        to_mcstructure_file_in_delay,
+        to_mcstructure_file_in_repeater,
+        to_mcstructure_file_in_score,
+    )
+
+    from utils.io import bool_str, float_str, int_str, ipt, isin, logger, prt
+    from utils.yanlun import solar_date, yanlun_texts
+
+except ImportError:
+    if input("[ERROR] 当前环境中未安装所需依赖库，是否直接安装依赖库？[Y/n]") in (
+        "y",
+        "Y",
+    ):
+        os.system("pip install -r ./requirements_cli.txt")
+        print("[INFO] 安装完成，请重新启动。")
+
+    exit()
 
 # import sys
 

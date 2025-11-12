@@ -4,6 +4,8 @@
 
 这里我们选用 **Termux** 作为我们的终端工具来安装，这是一个强大的终端模拟器，旨在安卓环境下模拟Linux的软件包环境。
 
+> **注意** 若你的设备中已经有终端工具（例如 Utermux 之类的），请跳过此步骤。
+
 1.	下载
 
 	下载可以通过 [GitHub源](https://github.com/termux/termux-app/releases) 或者 [F-Droid源](https://f-droid.org/en/packages/com.termux/) ，个人建议选择 F-Droid 源，因为在国内可以访问得到，而 GitHub 源就看运气。
@@ -26,6 +28,8 @@
 
 	首先，我估计你等不了多久，急得要死，所以我们要让下载速度稍微快一点，先来换个源。在 **Termux** 中，输入以下指令：
 
+	> **注意** 这条指令很长，执行时请左右滑动以复制全部内容。
+
 	```bash
 	echo "deb https://mirror.mwt.me/termux/main stable main" > /data/data/com.termux/files/usr/etc/apt/sources.list
 	```
@@ -33,8 +37,10 @@
 	*感谢 天如<QQ 3291691454>为我们带来的简单换源方法。*
     
 	-	*非必要步骤*：手动编辑换源
+
+		> **注意** 这是非必要的步骤，执行了也没有好处，小白别闲着没事干。
     
-		如果你闲着没事，非要要手动编辑个文档来换源，那用啥？用普通的编辑器肯定可以，于是我们就让他更普通一点，用**nano**吧！
+		如果你闲着没事，非要要手动编辑个文档来换源，那就可以遵循这一部分的内容，我们先打开 **nano** 吧。
 
 		在 **Termux** 中，输入以下指令：
 
@@ -59,13 +65,13 @@
 
 		然后键入 `Ctrl`+`S`，再键入 `Ctrl`+`X`，退出`nano`。
 
-	在换源之后，你可能会见到类似的提示：
+	在换源之后，你可能会见到类似的提示（“可能会”的意思是也可能不会）：
 
 	```bash
 	Your '/data/data/com.termux/files/usr/etc/apt/sources.list' file changed. Please run 'apt-get update'.
 	```
 
-	那就遵循它的指引，输入：
+	那就遵循它的指引（但无论出没出现上面的那个提示，都请执行下面的指令），输入：
 
 	```bash
 	apt-get update
@@ -94,35 +100,24 @@
 
 	如果输出了形如 `Python 3.X.X` 的提示，则完成。
 
-3.	安装依赖库
+3.	构建环境并安装依赖库
+
+	以下长段中井号“#”开头的是注释，无需复制输入。
 	
 	```bash
 	# 首先换源
 	pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/
-	# 然后安装（依次执行下面的指令）
+	# 然后安装 numpy
     apt-get install python-numpy
-	pip install -r requirements_cli.txt
+	# 新建虚拟环境
+	python -m venv ./.venv
 	```
 
-	- 如果出现以下情况，真是死了鬼的，我们要来再搞个设置：
-
-		<img height="512" src="https://foruda.gitee.com/images/1665933289612919459/b87b7804_9911226.jpeg">
-
-		我们来修改收信任的源设置：
-
-		```bash
-		pip config set global.trusted-host mirrors.aliyun.com/
-		```
-
-		之后再来安装即可
-
-		```bash
-	    python -m pip install --upgrade -r requirements_cli.txt
-		```
-
+	<!--
 	安装成功后您可能会见到类似下图的提示：
 
 	<img src="https://foruda.gitee.com/images/1662737676719454287/f61a70f7_9911226.png">
+	-->
 
 ###	安装下载工具
 
@@ -132,15 +127,23 @@
 apt install git
 ```
 
-安装完成后记得测试一下：
+安装完成后可以测试一下是否安装成功：
 
+```bash
+git --version
+```
+
+你可能会见到类似 `git version 2.x.x` 的提示，表示安装成功。
+
+<!--
 <img height="512" src="https://foruda.gitee.com/images/1665933331269483373/9374c85d_9911226.jpeg">
+-->
 
 ## 本软件的下载与使用
 
-1. 使用Git下载本程序代码
+0. 使用Git下载本程序代码
 
-	```bash
+	```git
 	git clone https://gitee.com/TriM-Organization/Linglun-Converter.git llc
 	```
 
@@ -153,13 +156,20 @@ apt install git
 
 1. 开始使用命令行程序
 
-	依照你的需要，执行以下命令以运行程序：
+	执行以下命令以运行伶伦转换器：
 
 	```bash
-	python llc_cli.py
+	source ./run_cli.sh
 	```
 
 	运行成功了，哦耶！
 
 	<img height="512" src="https://foruda.gitee.com/images/1686963721390700714/b82fb3d5_9911226.png">
 
+2. 软件更新
+
+	有时可能需要更新本程序，请在进入到本程序所在的文件夹（上述`cd llc`即此）后，执行以下命令：
+
+	```bash
+	git pull
+	```

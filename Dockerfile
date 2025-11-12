@@ -36,7 +36,7 @@ RUN python3 -m venv /app/venv
 RUN . /app/venv/bin/activate && \
     pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/ && \
     /app/venv/bin/python3 -m pip install --upgrade pip && \
-    pip install --no-cache-dir --upgrade "Musicreater[full]" TrimLog requests zhDateTime "setuptools<80"
+    pip install --no-cache-dir --upgrade /app/Linglun-Converter/requirements_cli.txt
 
 # 切换到克隆下来的仓库目录
 WORKDIR /app/Linglun-Converter

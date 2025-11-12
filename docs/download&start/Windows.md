@@ -1,4 +1,4 @@
-## 运行打包文件（推荐）
+## 运行可执行文件（推荐）
 
 ### 一、下载打包好的应用程序
 
@@ -21,7 +21,7 @@
 	<img src=https://foruda.gitee.com/images/1699106948861444130/30c156bc_9911226.png>
 
 
-## 从代码运行（最新功能）
+## 从代码运行（不建议）
 
 ### 一、运行环境安装
 
@@ -29,7 +29,7 @@
 
 1.	首先需要下载Python的安装包，最好是 *Python3.10*，因为作者就用的是这个版本
 
-    ！注意！此程序现已不支持Python3.6。请更新到至少Python3.8，但是，我们对于Python3.8的支持也即将停止，为了更好的兼容，避免不必要的麻烦，我们强烈建议您更新到Python3.10。(这意味着我们即将放弃对Windows7的支持)
+    ！注意！此程序现已不支持 Python3.6。请更新到至少Python3.8，但是，我们对于 Python3.8 的支持也即将停止，为了更好的兼容，避免不必要的麻烦，我们强烈建议您更新到 Python3.10。（这意味着我们即将放弃对 Windows7 的支持）
 
 	> [下载64位Python3.10安装包](https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe)
 	> [下载32位Python3.10安装包](https://www.python.org/ftp/python/3.10.11/python-3.10.11.exe)
@@ -38,13 +38,13 @@
 
 	<img src=https://foruda.gitee.com/images/1662736520757331846/e38efb81_9911226.png>
 
-	-   若您对Python一知半解或者不怎么了解、并对自己的系统盘（通常是C盘）有大约150*兆字节*(MB)的信心的话，您可以在安装时直接选择*快速安装*(Install Now)
+	-   若您对 Python 一知半解或者不怎么了解、并对自己的系统盘（通常是C盘）有大约 150 *兆字节*(MB)的信心的话，您可以在安装时直接选择*快速安装*(Install Now)
 
 3.	若您选择了*自定义安装*(Customize Installation)，请务必勾选 `pip` 和 `py launcher` 便于后续安装依赖，如下图：
 
 	<img src=https://foruda.gitee.com/images/1662736621235871190/2ac3d98f_9911226.png>
 
-4.	安装结束之后可以在*终端*(命令行/PowerShell/Bash/etc)中输入：`python -V` 试试是否安装成功，成功安装之后，在终端中输入python会显示诸如如下图片的提示：
+4.	安装结束之后可以在*终端*工具（例如 命令行/PowerShell/Bash 之类的都是终端工具）中输入：`python -V` 试试是否安装成功，成功安装之后，在终端中输入python会显示诸如如下图片的提示：
 
 	<img src=https://foruda.gitee.com/images/1699107336707287940/1837e2f6_9911226.png>
 
@@ -82,7 +82,7 @@
 
 1. 开始使用
 
-	您可以直接双击 `llc_cli.py` 以运行演示程序，或者按照以下步骤使用终端应用运行。
+	您可以直接双击 `llc_cli.py` 以运行软件，或者按照以下步骤使用终端应用运行。
 
 	在目录下打开终端。
 	
