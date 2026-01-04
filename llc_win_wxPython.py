@@ -57,7 +57,7 @@ from Musicreater.plugin.websocket import to_websocket_server
 
 from utils.authorp import go_author_page
 from utils.io import TrimLog, log__init__, logger, object_constants
-from utils.packdata import enpack_llc_pack, load_msct_packed_data, unpack_llc_pack
+from utils.packdata import enpack_llc_pack, unpack_llc_pack
 from utils.update_check import check_update_release
 from utils.webview import go_update_tip
 from utils.yanlun import STANDARD_WHITE, STANDART_BLACK, yanlun_texts
@@ -78,8 +78,8 @@ yanlun_fg_colour = wx.Colour(*STANDARD_WHITE)
 yanlun_bg_colour = wx.Colour(*STANDART_BLACK)
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.2.2"
-__zhver__ = "WX图形界面 初代次版二编"
+__version__ = "WXGUI 1.2.3"
+__zhver__ = "WX图形界面 初代次版三编"
 
 
 if __name__ == "__main__":
@@ -95,7 +95,6 @@ if __name__ == "__main__":
         "！有新版本！\n新版本 {app} {latest} 可用，当前仍是 {current}\n请前往下载地址更新\n",
     )
 
-
     if down_paths:
         wx.LaunchDefaultBrowser(
             "https://gitee.com{}".format(
@@ -104,6 +103,7 @@ if __name__ == "__main__":
         )
         exit()
         # go_update_tip("点击下方链接下载更新：",'<a href="https://gitee.com{}">点击此处下载</a>'.format(list(down_paths.values())[0]))
+
 
 """
 msct_main = msct_plugin = msct_plugin_function = None
@@ -283,10 +283,56 @@ if down_paths:
 """
 
 
+logger.info("初始化日志系统……")
+
+osc = object_constants.ObjectStateConstant(
+    logging_project_name=__appname__,
+    logging_project_version=__version__,
+    logging_exit_exec=lambda sth: wx.MessageDialog(
+        None,
+        sth + "\n问题不大吧？有问题拜托请报给开发者！谢谢！",
+        "崩溃",
+        wx.YES_DEFAULT | wx.ICON_STOP,
+    ).ShowModal(),
+    # is_this_a_release=True,
+)
+# print(osc.exit_execution)
+osc.set_console(logger.console)
+
+log__init__(osc, TrimLog.PipManage(True, True, 40), True)
+
+logger.is_logging = True
+logger.suffix = ".llc"
+logger.is_tips = True
+logger.printing = not osc.is_release
+
+
+logger.info("初始化窗口应用……")
+
+
+# 创建应用程序类
+class LinglunConverterApp(wx.App):
+    def OnInit(self):
+        # 创建主窗口
+        self.SetAppName(__appname__)
+        return True
+
+    def re_init(self, frameClass):
+
+        self.frame = frameClass(None)
+        self.SetTopWindow(self.frame)
+        self.frame.Show()
+
+
+if __name__ == "__main__":
+    app = LinglunConverterApp()
+
+
 logger.info("注册变量并读取内容……")
 
+yanlun_length = len(yanlun_texts)
 
-pgb_style: Musicreater.ProgressBarStyle = Musicreater.DEFAULT_PROGRESSBAR_STYLE.copy()  # type: ignore
+pgb_style: Musicreater.ProgressBarStyle = Musicreater.DEFAULT_PROGRESSBAR_STYLE.copy()
 on_exit_saving: bool = True
 ignore_midi_mismatch_error: bool = True
 convert_tables = {
@@ -312,7 +358,14 @@ ConvertClass = (Musicreater.MidiConvert, "常规转换")
 if os.path.isfile("save.llc.config"):
     unpacked_data = unpack_llc_pack("save.llc.config", False)
     if isinstance(unpacked_data, Exception):
-        logger.warning("读取设置文件失败：{}；使用默认设置信息。")
+        wx.MessageBox(
+            logger.warning(
+                "读取设置文件失败：{}；使用默认设置信息。".format(unpacked_data)
+            ),
+            "警告",
+            wx.YES_DEFAULT | wx.ICON_WARNING,
+        )
+
     else:
         (
             pgb_style,
@@ -324,55 +377,14 @@ if os.path.isfile("save.llc.config"):
         ) = unpacked_data
 
 
-osc = object_constants.ObjectStateConstant(
-    logging_project_name=__appname__,
-    logging_project_version=__version__,
-    logging_exit_exec=lambda sth: wx.MessageDialog(
-        None,
-        sth + "\n问题不大吧？有问题拜托请报给开发者！谢谢！",
-        "崩溃",
-        wx.YES_DEFAULT | wx.ICON_STOP,
-    ).ShowModal(),
-    # is_this_a_release=True,
-)
-# print(osc.exit_execution)
-osc.set_console(logger.console)
-
-log__init__(osc, TrimLog.PipManage(True, True, 40), True)
-
-logger.is_logging = True
-logger.suffix = ".llc"
-logger.is_tips = True
-logger.printing = not osc.is_release
-
-
-yanlun_length = len(yanlun_texts)
-
-
 logger.info("音·创内核版本：{}".format(Musicreater.__version__), mandatory_use=True)
-
-
-logger.info("加载窗口布局……")
-
-
-# 创建应用程序类
-class LinglunConverterApp(wx.App):
-    def OnInit(self):
-        # 创建主窗口
-        self.SetAppName(__appname__)
-        self.frame = LingLunMainFrame(
-            None,
-        )
-        self.SetTopWindow(self.frame)
-        self.frame.Show()
-        return True
 
 
 logger.info("加载主框架……")
 
 
 class LingLunMainFrame(wx.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         wx.Frame.__init__(
             self,
             parent,
@@ -1419,8 +1431,8 @@ class ConvertPagePanel(wx.Panel):
 
     def onStartButtonPressed(self, event):
         global pgb_style
-        for file_name in self.m_midiFilesList_listBox2.GetStrings():
-            if file_name == "诸葛亮与八卦阵-山水千年":
+        for file_path_location in self.m_midiFilesList_listBox2.GetStrings():
+            if file_path_location == "诸葛亮与八卦阵-山水千年":
                 mid_cvt = ConvertClass[0].from_mido_obj(
                     midi_obj=None,
                     midi_name="山水千年",
@@ -1437,7 +1449,7 @@ class ConvertPagePanel(wx.Panel):
                 )
             else:
                 mid_cvt = ConvertClass[0].from_midi_file(
-                    midi_file_path=file_name,
+                    midi_file_path=file_path_location,
                     mismatch_error_ignorance=ignore_midi_mismatch_error,
                     play_speed=self.m_speed_spinCtrlDouble.GetValue(),
                     pitched_note_table=convert_tables["PITCHED"][
@@ -1452,7 +1464,7 @@ class ConvertPagePanel(wx.Panel):
                 )
 
             cvt_dist = (
-                os.path.split(file_name)[0]
+                os.path.split(file_path_location)[0]
                 if self.m_Check_Every_Their_Path_checkBox7.GetValue()
                 else self.m_Convertion_Destination_Picker_dirPicker1.GetTextCtrl().GetValue()
             )
@@ -1497,7 +1509,11 @@ class ConvertPagePanel(wx.Panel):
                     return
                 wx.MessageDialog(
                     None,
-                    "完成！\n指令数量：{}\n延迟总长：{}".format(cmd_num, total_delay),
+                    logger.info(
+                        "{} - 转换完成！\n指令数量：{}\n延迟总长：{}".format(
+                            mid_cvt.music_name, cmd_num, total_delay
+                        )
+                    ),
                     "转换成功",
                     wx.YES_DEFAULT | wx.ICON_INFORMATION,
                 ).ShowModal()
@@ -1533,14 +1549,17 @@ class ConvertPagePanel(wx.Panel):
                     return
                 wx.MessageDialog(
                     None,
-                    "完成！\n结构大小：{}\n延迟总长：{}{}".format(
-                        size,
-                        total_delay,
-                        (
-                            "\n指令数量：{}".format(cmd_num)  # type: ignore
-                            if self.m_playerChoice_choice2.GetSelection() == 0
-                            else ""
-                        ),
+                    logger.info(
+                        "{} - 转换完成！\n结构大小：{}\n延迟总长：{}{}".format(
+                            mid_cvt.music_name,
+                            size,
+                            total_delay,
+                            (
+                                "\n指令数量：{}".format(cmd_num)  # type: ignore
+                                if self.m_playerChoice_choice2.GetSelection() == 0
+                                else ""
+                            ),
+                        )
                     ),
                     "转换成功",
                     wx.YES_DEFAULT | wx.ICON_INFORMATION,
@@ -1575,8 +1594,10 @@ class ConvertPagePanel(wx.Panel):
                     return
                 wx.MessageDialog(
                     None,
-                    "{}\n\n完成！\n指令数量：{}\n延迟总长：{}\n结构大小：{}\n终点坐标：{}".format(
-                        file_name, cmd_num, total_delay, size, final_pos
+                    logger.info(
+                        "{} - 转换完成！\n指令数量：{}\n延迟总长：{}\n结构大小：{}\n终点坐标：{}".format(
+                            mid_cvt.music_name, cmd_num, total_delay, size, final_pos
+                        )
                     ),
                     "转换成功",
                     wx.YES_DEFAULT | wx.ICON_INFORMATION,
@@ -1590,9 +1611,43 @@ class ConvertPagePanel(wx.Panel):
                 ).ShowModal()
                 return
 
+            if ConvertClass[1] == "羽音缭绕":
+                shenyu_inst_list = set()
+                for _inst in set(
+                    [
+                        n.split(".")[0].replace("c", "").replace("d", "")
+                        for n in mid_cvt.note_count_per_instrument.keys()
+                    ]
+                ):
+                    try:
+                        _fnl_inst = int(_inst.strip())
+                        shenyu_inst_list.add(
+                            "-1 \t- 打击乐组"
+                            if _fnl_inst == -1
+                            else "{} \t- {}".format(
+                                _fnl_inst,
+                                Musicreater.MIDI_PITCHED_NOTE_NAME_TABLE[_fnl_inst + 1][
+                                    0
+                                ],
+                            )
+                        )
+                    except Exception as e:
+                        logger.warning("`{}` 出现以下问题：{}".format(_inst, e))
+                        shenyu_inst_list.add(_inst)
+                wx.MessageDialog(
+                    None,
+                    "曲目 {} 乐器使用情况如下，请自行加载羽音缭绕资源包系列的：\n{}".format(
+                        mid_cvt.music_name,
+                        "\n".join(sorted(shenyu_inst_list)),
+                    ),
+                    "羽音缭绕提示",
+                    wx.YES_DEFAULT | wx.ICON_INFORMATION,
+                ).ShowModal()
+                del shenyu_inst_list
+
             if self.m_done_then_remove_checkBox6.GetValue():
                 self.m_midiFilesList_listBox2.Delete(
-                    self.m_midiFilesList_listBox2.FindString(file_name)
+                    self.m_midiFilesList_listBox2.FindString(file_path_location)
                 )
 
 
@@ -1764,7 +1819,13 @@ class SettingPagePannel(wx.Panel):
             5,
         )
 
-        experiment_type_choiceChoices = ["常规转换", "长音插值", "同刻偏移"]
+        experiment_type_choiceChoices = [
+            "常规转换",
+            "长音插值",
+            "同刻偏移",
+            "羽音缭绕",
+            "歌词测试",
+        ]
         self.experiment_type_choice = wx.Choice(
             setting_page1_experiment_style.GetStaticBox(),
             wx.ID_ANY,
@@ -2062,6 +2123,7 @@ class SettingPagePannel(wx.Panel):
     def onConvertMethodUpdating(self, event):
         global ConvertClass
         #  0  "常规转换",  1 "长音插值",  2 "同刻偏移"
+        #  3  "羽音缭绕" 4 "歌词测试"
         match self.experiment_type_choice.GetSelection():
             case 0:
                 ConvertClass = (Musicreater.MidiConvert, "常规转换")
@@ -2069,6 +2131,28 @@ class SettingPagePannel(wx.Panel):
                 ConvertClass = (Musicreater_experiment.FutureMidiConvertM4, "长音插值")
             case 2:
                 ConvertClass = (Musicreater_experiment.FutureMidiConvertM5, "同刻偏移")
+                wx.MessageDialog(
+                    self,
+                    "本转换方法“同刻偏移”仅支持以延迟播放器播放，请在转换参数主页“选择播放器”一栏中选择“命令延迟”",
+                    "敬告",
+                    wx.OK | wx.ICON_WARNING,
+                ).ShowModal()
+            case 3:
+                ConvertClass = (
+                    Musicreater_experiment.FutureMidiConvertKamiRES,
+                    "羽音缭绕",
+                )
+            case 4:
+                ConvertClass = (
+                    Musicreater_experiment.FutureMidiConvertLyricSupport,
+                    "歌词测试",
+                )
+                wx.MessageDialog(
+                    self,
+                    "本转换方法“歌词测试”仅支持以延迟播放器播放，请在转换参数主页“选择播放器”一栏中选择“命令延迟”\n另外，本功能仅对部分包含歌词的midi文件生效，且与进度条显示有冲突，请谨慎使用",
+                    "敬告",
+                    wx.OK | wx.ICON_WARNING,
+                ).ShowModal()
 
     def onMidiFaultIgnoranceChecking(self, event):
         global ignore_midi_mismatch_error
@@ -2179,10 +2263,9 @@ if __name__ == "__main__":
 
     logger.info("开启窗口")
 
-    app = LinglunConverterApp()
-
     try:
-        app.MainLoop()
+        app.re_init(LingLunMainFrame)  # type: ignore
+        app.MainLoop()  # type: ignore
     except Exception as e:
         logger.error(f"程序异常退出：{e}")
 
@@ -2202,9 +2285,9 @@ if __name__ == "__main__":
         )
     else:
         for path, dir_list, file_list in os.walk(r"./"):
-            for file_name in file_list:
-                if file_name.endswith(".llc.config"):
+            for file_name_ in file_list:
+                if file_name_.endswith(".llc.config"):
                     os.remove(
-                        os.path.join(path, file_name),
+                        os.path.join(path, file_name_),
                     )
     # input("按下回车退出……")

@@ -8,6 +8,7 @@ __pycache__/
 *.mid
 *.midi
 *.mcpack
+*.mcstructure
 *.bdx
 *.json
 /Musicreater
