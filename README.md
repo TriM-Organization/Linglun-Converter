@@ -45,17 +45,44 @@
 
 ## 致谢 🙏
 
--   感谢由 **𝘼𝙪𝙤 “可白”**\<QQ2425476216\> 带来的 Dockerfile 文件参考；  
-    在此特别授予其利用本软件进行商业使用之权利：  
-    特别声明：依据《汉钰律许可协议，第一版》，准许**可白**\<QQ2425476216\>在中国大陆范围内非专有地对本作品进行商业性使用，包括但不限于：出售本作品之副本、将本作品嵌入云平台后租赁等。
+*   感谢由 **𝘼𝙪𝙤 “可白”**\<QQ2425476216\> 带来的 Dockerfile 文件参考；  
 
 > 感谢广大群友为此软件提供的测试和建议
+
+## 授权 📃
+
+```md
+伶伦转换器 WXGUI
+Linglun Converter
+
+版权所有 © 2026 金羿
+Copyright © 2026 Eilles
+
+伶伦转换器项目（“本项目”）的协议颁发者为 金羿
+The Licensor of _Linglun Converter Project_("this project") is Eilles.
+
+本项目根据 汉钰律许可协议，第一版（“本协议”）授权。
+任何人皆可从以下地址获得本协议副本：https://gitee.com/EillesWan/YulvLicenses。
+若非因法律要求或经过了特殊准许，此作品在根据本协议“原样”提供的基础上，不予提供任何形式的担保、任何明示、任何暗示或类似承诺。也就是说，用户将自行承担因此作品的质量或性能问题而产生的全部风险。
+详细的准许和限制条款请见原协议文本。
+```
+
+该协议禁止在未经许可的情况下对本软件进行商业性使用，因此如需商用请联系本项目开发者。
+
+**在此特别授予以下用户相关权利：**
+
+* 特别声明：依据《汉钰律许可协议，第一版》，准许以下用户在中国大陆范围内非专有地对本作品进行商业性使用，包括但不限于：出售本作品之副本、将本作品嵌入云平台后租赁等。
+
+    1. **可白**\<QQ2425476216\>
+    2. **星白**\<QQ3939721331\>
+
+**权利授予特别声明结束**
 
 ## 联系 📞
 
 QQ 群 [861684859](https://jq.qq.com/?_wv=1027&k=hpeRxrYr)
 
-电邮 [TriM-Organization@hotmail.com](mailto:TriM-Organization@hotmail.com)
+电邮 [TriM-Organization@hotmail.com](mailto://TriM-Organization@hotmail.com)
 
 [Bilibili: 金羿ELS]: https://img.shields.io/badge/Bilibili-%E9%87%91%E7%BE%BFELS-00A1E7?style=for-the-badge
 [Bilibili: 诸葛亮与八卦阵]: https://img.shields.io/badge/Bilibili-%E8%AF%B8%E8%91%9B%E4%BA%AE%E4%B8%8E%E5%85%AB%E5%8D%A6%E9%98%B5-00A1E7?style=for-the-badge

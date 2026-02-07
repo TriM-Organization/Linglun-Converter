@@ -11,10 +11,11 @@ Copyright © 2025 EillesWan
 Terms & Conditions: License.md in the root directory
 """
 
-import requests
+# import requests
 import zhDateTime
+import Musicreater
 
-from .io import logger, prt
+from .io import logger
 
 STANDARD_WHITE = (242, 244, 246)
 STANDART_BLACK = (18, 17, 16)
@@ -38,20 +39,22 @@ elif solar_date == (8, 16):
     yanlun_texts = ["鱼旧梦 生日快乐~！", "Happy Birthday, ElapsingDreams~!"]
 
 else:
-    try:
-        yanlun_texts = (
-            requests.get(
-                "https://nd.liteyuki.org/api/v3/share/content/Xpue?path=null",
-            )
-            .text.strip("\n")
-            .split("\n")
-        )
-    except (ConnectionError, requests.HTTPError, requests.RequestException) as E:
-        logger.warning(f"读取言·论信息发生 互联网连接 错误：\n{E}")
-        yanlun_texts = ["以梦想为驱使 创造属于自己的未来"]
-    # noinspection PyBroadException
-    except BaseException as E:
-        logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
-        yanlun_texts = ["灵光焕发 深艺献心"]
+
+    yanlun_texts = ["伶伦转换器 - 音·创{}".format(Musicreater.__version__), "Linglun Converter with Musicreater{}".format(Musicreater.__version__),]
+    # try:
+    #     yanlun_texts = (
+    #         requests.get(
+    #             "https://nd.liteyuki.org/api/v3/share/content/Xpue?path=null",
+    #         )
+    #         .text.strip("\n")
+    #         .split("\n")
+    #     )
+    # except (ConnectionError, requests.HTTPError, requests.RequestException) as E:
+    #     logger.warning(f"读取言·论信息发生 互联网连接 错误：\n{E}")
+    #     yanlun_texts = ["以梦想为驱使 创造属于自己的未来"]
+    # # noinspection PyBroadException
+    # except BaseException as E:
+    #     logger.warning(f"读取言·论信息发生 未知 错误：\n{E}")
+    #     yanlun_texts = ["灵光焕发 深艺献心"]
 
 logger.info("已获取言·论 {} 条".format(len(yanlun_texts)))

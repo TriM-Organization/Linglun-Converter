@@ -106,6 +106,7 @@ elif solar_date == (8, 16):
     style_ = "#F0F2F4 on #0089F2"  # TODO
 else:
     style_ = "#121110 on #F0F2F4"
+    yanlun_texts = [""]
 # 显示箴言部分
 logger.console.print(
     "[{}]{}".format(style_, random.choice(yanlun_texts)),
@@ -207,7 +208,7 @@ def is_in_player(sth: str, in_ok: tuple = (0, 1, 2)):
                     ),
                     (
                         2,
-                        ("repeater", "2", "中继器", "瑞皮特"),
+                        ("repeater", "2", "中继器", "瑞皮特尔"),
                     ),
                 ]
                 if i in in_ok
