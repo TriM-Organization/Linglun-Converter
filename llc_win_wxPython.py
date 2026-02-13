@@ -24,6 +24,7 @@ import sys
 import threading
 
 # from types import ModuleType
+# from tempfile import gettempdir
 
 # import requests
 
@@ -78,7 +79,7 @@ yanlun_fg_colour = wx.Colour(*STANDARD_WHITE)
 yanlun_bg_colour = wx.Colour(*STANDART_BLACK)
 
 __appname__ = "伶伦转换器"
-__version__ = "WXGUI 1.2.3"
+__version__ = "WXGUI 1.2.3.1"
 __zhver__ = "WX图形界面 初代次版三编"
 
 
@@ -1461,6 +1462,7 @@ class ConvertPagePanel(wx.Panel):
                     old_exe_format=self.m_oldExeFormatChecker_checkBox3.GetValue(),
                     min_volume=self.m_volumn_spinCtrlDouble1.GetValue() / 100,
                     music_pitch_deviation=0,
+                    midi_charset="latin1",
                 )
 
             cvt_dist = (
@@ -2262,6 +2264,15 @@ logger.info("执行应用。")
 if __name__ == "__main__":
 
     logger.info("开启窗口")
+
+    # if "NUITKA_ONEFILE_PARENT" in os.environ:
+    #     splash_filename = os.path.join(
+    #         gettempdir(),
+    #         "onefile_%d_splash_feedback.tmp" % int(os.environ["NUITKA_ONEFILE_PARENT"]),
+    #     )
+
+    #     if os.path.exists(splash_filename):
+    #         os.unlink(splash_filename)
 
     try:
         app.re_init(LingLunMainFrame)  # type: ignore

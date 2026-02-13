@@ -1,7 +1,7 @@
 <h1 align="center">伶伦转换器</h1>
 
 <p align="center">
-    <img width="128" height="128" src="https://gitee.com/TriM-Organization/Linglun-Converter/raw/master/resources/LLC_LOGO_OK_PLAIN_BANNER.png">
+    <img width="128" height="128" src="../../raw/master/resources/LLC_LOGO_OK_PLAIN_BANNER.png">
     </img>
 </p>
 
@@ -37,11 +37,11 @@
 
 [对于本软件部分疑问的一些解答](./docs/问与答.md)
 
-[生成文件的使用](https://gitee.com/TriM-Organization/Musicreater/blob/master/docs/%E7%94%9F%E6%88%90%E6%96%87%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
+[生成文件的结构和原理](./docs/生成功能文档.md)
 
-[转换库的代码文档](https://gitee.com/TriM-Organization/Musicreater/blob/master/docs/%E5%BA%93%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E5%8A%9F%E8%83%BD%E6%96%87%E6%A1%A3.md)
+[生成文件的使用](./docs/生成文件的使用说明.md)
 
-[转换乐器对照参考表](https://gitee.com/TriM-Organization/Musicreater/blob/master/docs/%E8%BD%AC%E6%8D%A2%E4%B9%90%E5%99%A8%E5%AF%B9%E7%85%A7%E8%A1%A8.md)
+[转换乐器对照参考表](../../../Musicreater/blob/master/docs/%E8%BD%AC%E6%8D%A2%E4%B9%90%E5%99%A8%E5%AF%B9%E7%85%A7%E8%A1%A8.md)
 
 ## 致谢 🙏
 

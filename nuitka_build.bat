@@ -1,0 +1,3 @@
+echo "这个命令需要在符合 ASCII 的路径下运行"
+pause
+python -m nuitka .\llc_win_wxPython.py --mingw64 --clang --show-scons --follow-imports --enable-plugin=dill-compat --windows-icon-from-ico="./resources/LLC_LOGO_OK_PLAIN_BANNER.ico" --windows-console-mode=hide --product-name="伶伦转换器" --product-version="1.2.3.1" --file-description="《我的世界》数字音乐转换工具" --copyright="版权所有 © 2025 金羿，保留所有权利。\nCopyright © 2025 EillesWan, All Rights Reserved." --onefile-windows-splash-screen-image="./resources/LLC_LOGO_OK_PLAIN_BANNER.png"

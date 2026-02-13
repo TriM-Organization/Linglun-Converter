@@ -113,7 +113,7 @@ class LingLunAuthorPageFrame(wx.Frame):
         self.m_bitmap1 = wx.StaticBitmap(
             self.eilles_pannel,
             wx.ID_ANY,
-            wx.Bitmap("../resources/金羿ELSV4.png", wx.BITMAP_TYPE_ANY),
+            wx.Bitmap("../resources/金羿ELSV5.png", wx.BITMAP_TYPE_ANY),
             wx.DefaultPosition,
             wx.DefaultSize,
             0,

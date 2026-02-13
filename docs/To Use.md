@@ -1,23 +1,18 @@
 <h1 align="center">Linglun Converter</h1>
 
-# Instructions for Using Demo(s)
+# Instructions overall
 
-*This is a tutorial for using the demo(s) of this library, not the Development Guide.*
-
-*Developing Documentation is now not translated yet, you can see here for the [Chinese Orignal Version](%E5%BA%93%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E5%8A%9F%E8%83%BD%E6%96%87%E6%A1%A3.md) if you understand Chinese*
-
-## Instructions of Downloading and Starting using Demo
+## Download and Start using
 
 ### [Windows OS](./download%26start_EN/Windows.md)
 ### [Linux OS](./download%26start_EN/Linux.md)
 ### [Android OS](./download%26start_EN/Android.md)
 
+## For command-line versions
 
+> WARNING: for the GUI app users, this part is not needed.
 
-
-
-
-2. More Info for Parameters of Our Demo Program(s)
+1. Parameters
 
 	<img src=https://foruda.gitee.com/images/1659974810147043475/运行.png>
 
@@ -35,7 +30,7 @@
 
 
 
-# Instructions for **Customize Progress Bar**
+## Instructions for **Customize Progress Bar**
 
 We have supported the function of making progress bar in *Minecraft*'s music player. And also the method of customize them. So the following instructions are about the parameters of the Progress Bar Customizition.
 

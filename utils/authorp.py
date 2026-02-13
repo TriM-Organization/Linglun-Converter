@@ -259,7 +259,7 @@ def go_author_page(
     res_list: list = [
         "./resources/TriMO_Theme.mp4",
         "./resources/TriMO_LOGO.png",
-        "./resources/金羿ELSV4.png",
+        "./resources/金羿ELSV5.png",
     ]
 ):
     app = wx.App()

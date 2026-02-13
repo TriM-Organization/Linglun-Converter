@@ -19,7 +19,7 @@ The Licensor of _Linglun Converter CLI_("this project") is Eilles Wan.
 详细的准许和限制条款请见原协议文本。
 """
 
-__version__ = "0.0.9.2"
+__version__ = "0.0.9.3"
 
 
 import os
@@ -379,6 +379,7 @@ for singleMidi in midis:
         play_speed=prompts[0],
         old_exe_format=old_exe_enabled,
         min_volume=prompts[1],
+        midi_charset="latin1",
     )
 
     conversion_result = (

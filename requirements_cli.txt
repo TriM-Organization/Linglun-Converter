@@ -1,4 +1,5 @@
 setuptools < 80
+rich < 14
 Musicreater[full]>=2.1.0.1, <3.0
 TrimLog>=0.8.3
 requests>=2.0.0
